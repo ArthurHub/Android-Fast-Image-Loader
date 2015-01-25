@@ -1,5 +1,0 @@
-C:\Source\GitHub\Android-Fast-Image-Loader\demo\build\intermediates\classes\debug
-C:\Source\GitHub\Android-Fast-Image-Loader\demo\build\intermediates\pre-dexed\debug\support-annotations-21.0.3-786945910b7357080aeb62006c0c485e289e9410.jar
-C:\Source\GitHub\Android-Fast-Image-Loader\demo\build\intermediates\pre-dexed\debug\internal_impl-21.0.3-4709d27d4d7ea3295862ca879f9d0592a25327c0.jar
-C:\Source\GitHub\Android-Fast-Image-Loader\demo\build\intermediates\pre-dexed\debug\classes-3736077305bce4294f2cd996ee77e20e747ac60b.jar
-C:\Source\GitHub\Android-Fast-Image-Loader\demo\build\intermediates\pre-dexed\debug\classes-646588b8202d7134f93d0799a7605aae48497d2e.jar

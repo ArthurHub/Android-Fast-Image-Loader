@@ -25,7 +25,7 @@ import com.theartofdev.fastimageloader.impl.Logger;
 /**
  * TODO:a add doc
  */
-public abstract class TargetImageView extends ImageView implements Target {
+public class TargetImageView extends ImageView implements Target {
 
     //region: Fields and Consts
 

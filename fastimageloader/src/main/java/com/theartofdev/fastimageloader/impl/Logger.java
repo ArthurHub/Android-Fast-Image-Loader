@@ -14,8 +14,6 @@ package com.theartofdev.fastimageloader.impl;
 
 import android.util.Log;
 
-import com.theartofdev.fastimageloader.impl.CommonUtils;
-
 /**
  * Logger.
  */
@@ -24,7 +22,7 @@ public final class Logger {
     public static final String TAG = "FastImgLoad";
 
     public static boolean isLogCatEnabled() {
-        return false;
+        return true;
     }
 
     public static void debug(String msg) {
