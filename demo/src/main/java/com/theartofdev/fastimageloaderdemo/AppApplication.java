@@ -20,6 +20,7 @@ import android.view.WindowManager;
 
 import com.theartofdev.fastimageloader.FastImageLoader;
 import com.theartofdev.fastimageloader.ImageLoadSpec;
+import com.theartofdev.fastimageloader.enhancer.ImgIXUriEnhancer;
 
 /**
  * TODO:a add doc
@@ -29,7 +30,7 @@ public class AppApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        FastImageLoader.init(this);
+        FastImageLoader.init(this, new ImgIXUriEnhancer());
 
         Point p = new Point();
         Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();

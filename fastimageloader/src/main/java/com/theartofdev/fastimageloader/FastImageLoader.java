@@ -14,8 +14,9 @@ package com.theartofdev.fastimageloader;
 
 import android.app.Application;
 
-import com.theartofdev.fastimageloader.impl.ImageHandler;
+import com.theartofdev.fastimageloader.enhancer.ImageServiceUriEnhancer;
 import com.theartofdev.fastimageloader.impl.CommonUtils;
+import com.theartofdev.fastimageloader.impl.ImageHandler;
 
 /**
  * TODO:a add doc
@@ -65,13 +66,17 @@ public final class FastImageLoader {
      * Initialize the image loader with given android application context.
      *
      * @param context the android application instance
+     * @param urlEnhancer Enhancer to use for image loading URL with format/size/etc. parameters by image loading
+     * specification.
      * @throws IllegalStateException already initialized
      */
-    public static FastImageLoader init(Application context) {
+    public static FastImageLoader init(Application context, ImageServiceUriEnhancer urlEnhancer) {
         CommonUtils.notNull(context, "context");
+        CommonUtils.notNull(urlEnhancer, "urlEnhancer");
+
         if (INST.mImageHandler == null) {
             CommonUtils.density = context.getResources().getDisplayMetrics().density;
-            INST.mImageHandler = new ImageHandler(context);
+            INST.mImageHandler = new ImageHandler(context, urlEnhancer);
             return INST;
         } else {
             throw new IllegalStateException("Fast Image Loader is already initialized");
@@ -97,4 +102,3 @@ public final class FastImageLoader {
         }
     }
 }
-

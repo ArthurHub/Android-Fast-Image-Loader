@@ -19,6 +19,7 @@ import android.text.TextUtils;
 import com.theartofdev.fastimageloader.ImageLoadSpec;
 import com.theartofdev.fastimageloader.LoadedFrom;
 import com.theartofdev.fastimageloader.Target;
+import com.theartofdev.fastimageloader.enhancer.ImageServiceUriEnhancer;
 
 import java.io.File;
 import java.util.HashMap;
@@ -35,6 +36,11 @@ public final class ImageHandler implements ImageDiskCache.GetCallback, ImageDown
      * map of url to image request running it to reuse if same image is requested again
      */
     private final Map<String, ImageRequest> mLoadingRequests = new HashMap<>();
+
+    /**
+     * Enhance image loading URL with format/size/etc. parameters by image loading specification.
+     */
+    private ImageServiceUriEnhancer mUrlEnhancer;
 
     /**
      * The folder to save the cached images in
@@ -85,7 +91,10 @@ public final class ImageHandler implements ImageDiskCache.GetCallback, ImageDown
     /**
      * Init.
      */
-    public ImageHandler(Context context) {
+    public ImageHandler(Context context, ImageServiceUriEnhancer urlEnhancer) {
+
+        mUrlEnhancer = urlEnhancer;
+
         mCacheFolder = new File(CommonUtils.pathCombine(context.getCacheDir().getPath(), "ImageCache"));
 
         //noinspection ResultOfMethodCallIgnored
@@ -131,7 +140,7 @@ public final class ImageHandler implements ImageDiskCache.GetCallback, ImageDown
             ImageLoadSpec spec = target.getSpec();
             if (!TextUtils.isEmpty(url)) {
 
-                String thumborUrl = createThumborUrl(url, spec);
+                String enhancedUrl = mUrlEnhancer.enhance(url, spec);
 
                 RecycleBitmapImpl image = mMemoryCache.get(url, spec);
                 if (image != null) {
@@ -148,14 +157,14 @@ public final class ImageHandler implements ImageDiskCache.GetCallback, ImageDown
                         }
                     }
 
-                    ImageRequest imageRequest = mLoadingRequests.get(thumborUrl);
+                    ImageRequest imageRequest = mLoadingRequests.get(enhancedUrl);
                     if (imageRequest != null) {
                         Logger.debug("Memory cache miss, image already requested, add target to request... [{}] [{}]", imageRequest, target);
                         imageRequest.addTarget(target);
                     } else {
                         // start async process of loading image from disk cache or network
-                        imageRequest = new ImageRequest(target, url, thumborUrl, spec, getCacheFile(thumborUrl));
-                        mLoadingRequests.put(thumborUrl, imageRequest);
+                        imageRequest = new ImageRequest(target, url, enhancedUrl, spec, getCacheFile(enhancedUrl));
+                        mLoadingRequests.put(enhancedUrl, imageRequest);
 
                         Logger.debug("Memory cache miss, start image request handling... [{}]", imageRequest);
                         mDiskCache.getAsync(imageRequest, this);
@@ -256,20 +265,6 @@ public final class ImageHandler implements ImageDiskCache.GetCallback, ImageDown
             mLoadingRequests.remove(imageRequest.getThumborUrl());
             Logger.critical("Error in load image downloader callback", e);
         }
-    }
-
-    /**
-     * Create thumbor URL with required dimensions from the given raw URL.
-     */
-    private String createThumborUrl(String url, ImageLoadSpec spec) {
-        String split = "/images/";
-        int idx = url.indexOf(split);
-        if (idx > -1) {
-            String thumborPart = url.substring(0, idx);
-            String imagePart = url.substring(idx + split.length());
-            return CommonUtils.format("{}/unsafe/{}x{}/filters:fill(fff,true):format(jpeg)/{}", thumborPart, spec.getWidth(), spec.getHeight(), imagePart);
-        }
-        return url;
     }
 
     /**
