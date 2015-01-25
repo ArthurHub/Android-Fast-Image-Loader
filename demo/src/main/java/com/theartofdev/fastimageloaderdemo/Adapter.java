@@ -25,7 +25,14 @@ public final class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
 
     private String[] mItems = new String[]{
             "http://assets.imgix.net/examples/clownfish.jpg",
-            "http://assets.imgix.net/examples/espresso.jpg"
+            "http://assets.imgix.net/examples/espresso.jpg",
+            "http://assets.imgix.net/examples/kayaks.png",
+            "http://assets.imgix.net/examples/leaves.jpg",
+            "http://assets.imgix.net/examples/puffins.jpg",
+            "http://assets.imgix.net/examples/redleaf.jpg",
+            "http://assets.imgix.net/examples/butterfly.jpg",
+            "http://assets.imgix.net/examples/blueberries.jpg",
+            "http://assets.imgix.net/examples/octopus.jpg"
     };
 
     @Override
