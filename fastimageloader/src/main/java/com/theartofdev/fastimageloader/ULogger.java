@@ -17,9 +17,9 @@ import android.util.Log;
 /**
  * Logger.
  */
-final class Logger {
+final class ULogger {
 
-    public static final String TAG = "FastImgLoad";
+    private static final String TAG = "FastImgLoad";
 
     public static boolean isLogCatEnabled() {
         return true;
@@ -32,27 +32,27 @@ final class Logger {
 
     public static void debug(String msg, Object arg1) {
         if (isLogCatEnabled())
-            Log.d(TAG, CommonUtils.format(msg, arg1));
+            Log.d(TAG, Utils.format(msg, arg1));
     }
 
     public static void debug(String msg, Object arg1, Object arg2) {
         if (isLogCatEnabled())
-            Log.d(TAG, CommonUtils.format(msg, arg1, arg2));
+            Log.d(TAG, Utils.format(msg, arg1, arg2));
     }
 
     public static void debug(String msg, Object arg1, Object arg2, Object arg3) {
         if (isLogCatEnabled())
-            Log.d(TAG, CommonUtils.format(msg, arg1, arg2, arg3));
+            Log.d(TAG, Utils.format(msg, arg1, arg2, arg3));
     }
 
     public static void debug(String msg, Object arg1, Object arg2, Object arg3, Object arg4) {
         if (isLogCatEnabled())
-            Log.d(TAG, CommonUtils.format(msg, arg1, arg2, arg3, arg4));
+            Log.d(TAG, Utils.format(msg, arg1, arg2, arg3, arg4));
     }
 
     public static void debug(String msg, Object... args) {
         if (isLogCatEnabled())
-            Log.d(TAG, CommonUtils.format(msg, args));
+            Log.d(TAG, Utils.format(msg, args));
     }
 
     public static void info(String msg) {
@@ -62,27 +62,27 @@ final class Logger {
 
     public static void info(String msg, Object arg1) {
         if (isLogCatEnabled())
-            Log.i(TAG, CommonUtils.format(msg, arg1));
+            Log.i(TAG, Utils.format(msg, arg1));
     }
 
     public static void info(String msg, Object arg1, Object arg2) {
         if (isLogCatEnabled())
-            Log.i(TAG, CommonUtils.format(msg, arg1, arg2));
+            Log.i(TAG, Utils.format(msg, arg1, arg2));
     }
 
     public static void info(String msg, Object arg1, Object arg2, Object arg3) {
         if (isLogCatEnabled())
-            Log.i(TAG, CommonUtils.format(msg, arg1, arg2, arg3));
+            Log.i(TAG, Utils.format(msg, arg1, arg2, arg3));
     }
 
     public static void info(String msg, Object arg1, Object arg2, Object arg3, Object arg4) {
         if (isLogCatEnabled())
-            Log.i(TAG, CommonUtils.format(msg, arg1, arg2, arg3, arg4));
+            Log.i(TAG, Utils.format(msg, arg1, arg2, arg3, arg4));
     }
 
     public static void info(String msg, Object... args) {
         if (isLogCatEnabled())
-            Log.i(TAG, CommonUtils.format(msg, args));
+            Log.i(TAG, Utils.format(msg, args));
     }
 
     public static void warn(String msg) {
@@ -92,27 +92,27 @@ final class Logger {
 
     public static void warn(String msg, Object arg1) {
         if (isLogCatEnabled())
-            Log.w(TAG, CommonUtils.format(msg, arg1));
+            Log.w(TAG, Utils.format(msg, arg1));
     }
 
     public static void warn(String msg, Object arg1, Object arg2) {
         if (isLogCatEnabled())
-            Log.w(TAG, CommonUtils.format(msg, arg1, arg2));
+            Log.w(TAG, Utils.format(msg, arg1, arg2));
     }
 
     public static void warn(String msg, Object... args) {
         if (isLogCatEnabled())
-            Log.w(TAG, CommonUtils.format(msg, args));
+            Log.w(TAG, Utils.format(msg, args));
     }
 
     public static void warn(String msg, Throwable e, Object arg1) {
         if (isLogCatEnabled())
-            Log.w(TAG, CommonUtils.format(msg, arg1), e);
+            Log.w(TAG, Utils.format(msg, arg1), e);
     }
 
     public static void warn(String msg, Throwable e, Object... args) {
         if (isLogCatEnabled())
-            Log.w(TAG, CommonUtils.format(msg, args), e);
+            Log.w(TAG, Utils.format(msg, args), e);
     }
 
     public static void error(String msg) {
@@ -122,25 +122,25 @@ final class Logger {
 
     public static void error(String msg, Object... args) {
         if (isLogCatEnabled())
-            Log.e(TAG, CommonUtils.format(msg, args));
+            Log.e(TAG, Utils.format(msg, args));
     }
 
     public static void error(String msg, Throwable e, Object... args) {
         if (isLogCatEnabled())
-            Log.e(TAG, CommonUtils.format(msg, args), e);
+            Log.e(TAG, Utils.format(msg, args), e);
     }
 
     public static void critical(String msg, Object... args) {
-        String format = CommonUtils.format(msg, args);
+        String format = Utils.format(msg, args);
         Exception e = new Exception(format);
         if (isLogCatEnabled())
-            Log.e(TAG, CommonUtils.format(msg, args), e);
+            Log.e(TAG, Utils.format(msg, args), e);
     }
 
     public static void critical(String msg, Throwable e, Object... args) {
-        String format = CommonUtils.format(msg, args);
+        String format = Utils.format(msg, args);
         if (isLogCatEnabled())
-            Log.e(TAG, CommonUtils.format(msg, args), e);
+            Log.e(TAG, Utils.format(msg, args), e);
     }
 }
 

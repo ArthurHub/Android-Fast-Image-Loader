@@ -84,11 +84,11 @@ public final class FastImageLoader {
      * @throws IllegalStateException already initialized
      */
     public static FastImageLoader init(Application application, ImageServiceUriEnhancer urlEnhancer) {
-        CommonUtils.notNull(application, "context");
-        CommonUtils.notNull(urlEnhancer, "urlEnhancer");
+        Utils.notNull(application, "context");
+        Utils.notNull(urlEnhancer, "urlEnhancer");
 
         if (INST.mImageLoaderHandler == null) {
-            CommonUtils.density = application.getResources().getDisplayMetrics().density;
+            Utils.density = application.getResources().getDisplayMetrics().density;
 
             if (INST.mHttpClient == null) {
                 INST.mHttpClient = new OkHttpClient();
@@ -114,7 +114,7 @@ public final class FastImageLoader {
      * @throws IllegalStateException already initialized
      */
     public static void loadImage(Target target, ImageLoadSpec altSpec) {
-        CommonUtils.notNull(target, "target");
+        Utils.notNull(target, "target");
         if (INST.mImageLoaderHandler != null) {
             INST.mImageLoaderHandler.loadImage(target, altSpec);
         } else {

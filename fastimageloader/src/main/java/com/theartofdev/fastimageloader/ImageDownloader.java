@@ -68,8 +68,8 @@ final class ImageDownloader {
      * @param imageReader
      */
     public ImageDownloader(OkHttpClient client, Handler handler, ImageReader imageReader) {
-        CommonUtils.notNull(handler, "handler");
-        CommonUtils.notNull(imageReader, "imageLoader");
+        Utils.notNull(handler, "handler");
+        Utils.notNull(imageReader, "imageLoader");
 
         mClient = client;
         mHandler = handler;
@@ -112,12 +112,12 @@ final class ImageDownloader {
                             }
                         } else {
                             error = new ConnectException(response.code() + ": " + response.message());
-                            Logger.error("Failed to download image... [{}] [{}] [{}]", response.code(), response.message(), imageRequest);
+                            ULogger.error("Failed to download image... [{}] [{}] [{}]", response.code(), response.message(), imageRequest);
                         }
                     }
                 } catch (Exception e) {
                     error = e;
-                    Logger.error("Failed to download image [{}]", e, imageRequest);
+                    ULogger.error("Failed to download image [{}]", e, imageRequest);
                 }
 
                 // TODO:a. send HTTP data
@@ -172,7 +172,7 @@ final class ImageDownloader {
             buffer = getBuffer();
 
             // don't cancel download if passed 50%
-            long contentLength = CommonUtils.parseLong(response.header("content-length"), -1);
+            long contentLength = Utils.parseLong(response.header("content-length"), -1);
             while ((contentLength < 0 || contentLength * .5f < size || imageRequest.isValid()) && (len = in.read(buffer)) != -1) {
                 size += len;
                 out.write(buffer, 0, len);
@@ -184,13 +184,13 @@ final class ImageDownloader {
                     imageRequest.setFileSize(size);
                     return true;
                 } else {
-                    Logger.warn("Failed to rename temp download file to target file");
+                    ULogger.warn("Failed to rename temp download file to target file");
                 }
             }
         } finally {
-            CommonUtils.closeSafe(out);
-            CommonUtils.closeSafe(in);
-            CommonUtils.deleteSafe(tmpFile);
+            Utils.closeSafe(out);
+            Utils.closeSafe(in);
+            Utils.deleteSafe(tmpFile);
             returnBuffer(buffer);
         }
         return false;

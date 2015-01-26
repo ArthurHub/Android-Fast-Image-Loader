@@ -23,7 +23,7 @@ import java.util.Collection;
 /**
  * General utility methods.
  */
-final class CommonUtils {
+final class Utils {
 
     /**
      * Rect to draw circle
@@ -136,7 +136,7 @@ final class CommonUtils {
             try {
                 closeable.close();
             } catch (IOException e) {
-                Logger.warn("Failed to close closable object [{}]", e, closeable);
+                ULogger.warn("Failed to close closable object [{}]", e, closeable);
             }
         }
     }
@@ -152,7 +152,7 @@ final class CommonUtils {
                 //noinspection ResultOfMethodCallIgnored
                 file.delete();
             } catch (Throwable e) {
-                Logger.warn("Failed to delete file [{}]", e, file);
+                ULogger.warn("Failed to delete file [{}]", e, file);
             }
         }
     }

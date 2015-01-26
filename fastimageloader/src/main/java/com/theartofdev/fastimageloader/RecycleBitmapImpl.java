@@ -63,8 +63,8 @@ final class RecycleBitmapImpl implements RecycleBitmap {
      * @param spec the spec to load the image by
      */
     public RecycleBitmapImpl(Bitmap bitmap, ImageLoadSpec spec) {
-        CommonUtils.notNull(bitmap, "bitmap");
-        CommonUtils.notNull(spec, "spec");
+        Utils.notNull(bitmap, "bitmap");
+        Utils.notNull(spec, "spec");
         mBitmap = bitmap;
         mSpec = spec;
     }
@@ -138,7 +138,7 @@ final class RecycleBitmapImpl implements RecycleBitmap {
      * Release the inner bitmap.
      */
     public void close() {
-        Logger.debug("Close recycle bitmap [{}]", this);
+        ULogger.debug("Close recycle bitmap [{}]", this);
         mClosed = true;
         mBitmapUrl = null;
         mBitmap.recycle();

@@ -98,7 +98,7 @@ public final class ImageLoadSpecBuilder {
             throw new IllegalArgumentException("width must be set");
         if (mHeight < 1)
             throw new IllegalArgumentException("height must be set");
-        float densityAdj = CommonUtils.density > mMaxDensity ? mMaxDensity / CommonUtils.density : 1f;
+        float densityAdj = Utils.density > mMaxDensity ? mMaxDensity / Utils.density : 1f;
         return new ImageLoadSpec((int) (mWidth * densityAdj), (int) (mHeight * densityAdj), mFormat, mPixelConfig);
     }
 }

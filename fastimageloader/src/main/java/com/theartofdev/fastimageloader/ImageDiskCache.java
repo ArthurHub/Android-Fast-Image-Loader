@@ -128,10 +128,10 @@ final class ImageDiskCache {
      * @param cacheFolder The folder to save the cached images in
      */
     public ImageDiskCache(Context context, Handler handler, ImageReader imageReader, File cacheFolder) {
-        CommonUtils.notNull(context, "application");
-        CommonUtils.notNull(handler, "handler");
-        CommonUtils.notNull(imageReader, "imageLoader");
-        CommonUtils.notNull(cacheFolder, "cacheFolder");
+        Utils.notNull(context, "application");
+        Utils.notNull(handler, "handler");
+        Utils.notNull(imageReader, "imageLoader");
+        Utils.notNull(cacheFolder, "cacheFolder");
 
         mHandler = handler;
         mContext = context;
@@ -199,7 +199,7 @@ final class ImageDiskCache {
     public void clear() {
         String[] list = mCacheFolder.list();
         for (String filePath : list) {
-            File f = new File(CommonUtils.pathCombine(mCacheFolder.getAbsolutePath(), filePath));
+            File f = new File(Utils.pathCombine(mCacheFolder.getAbsolutePath(), filePath));
             //noinspection ResultOfMethodCallIgnored
             f.delete();
         }
@@ -297,14 +297,14 @@ final class ImageDiskCache {
 
                     saveStats();
 
-                    Logger.info("Image disk cache scan complete [Before: {} / {}K] [After: {} / {}K] [Delete TTL: {}] [Delete size: {}]",
+                    ULogger.info("Image disk cache scan complete [Before: {} / {}K] [After: {} / {}K] [Delete TTL: {}] [Delete size: {}]",
                             allImages.length, totalSizeFull / 1024, allImages.length - deleteByTTL - deleteByMaxSize, totalSize / 1024, deleteByTTL, deleteByMaxSize);
                 } finally {
-                    Logger.info("ImageCacheScan [{}]", System.currentTimeMillis() - startTime);
+                    ULogger.info("ImageCacheScan [{}]", System.currentTimeMillis() - startTime);
                 }
             }
         } catch (Exception e) {
-            Logger.critical("Error in image disk cache scan", e);
+            ULogger.critical("Error in image disk cache scan", e);
         }
     }
 

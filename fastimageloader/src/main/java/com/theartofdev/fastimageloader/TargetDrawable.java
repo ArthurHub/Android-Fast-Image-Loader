@@ -28,11 +28,13 @@ import static android.graphics.Color.WHITE;
 import static android.graphics.Color.YELLOW;
 
 /**
- * Drawable used for loaded images that has 2 capabilities:<br/>
- * 1. fade effect for showing the image at start.<br/>
- * 2. showing indicator if the image was loading from memory/disk/network.<br/>
+ * Drawable used for loaded images with additional capabilities:<br/>
+ * 1. scale the image to the set rectangle.<br/>
+ * 2. render round image<br/>
+ * 3. fade effect for showing the image at start.<br/>
+ * 4. showing indicator if the image was loading from memory/disk/network.<br/>
  */
-public final class ImageDrawable extends Drawable {
+public class TargetDrawable extends Drawable {
 
     //region: Fields and Consts
 
@@ -61,14 +63,24 @@ public final class ImageDrawable extends Drawable {
      */
     protected boolean mRounded;
 
+    /**
+     * used for fade animation progress
+     */
     protected long mStartTimeMillis;
-
-    protected boolean mAnimating;
     //endregion
 
-    ImageDrawable(Bitmap bitmap, LoadedFrom loadedFrom, boolean rounded, boolean showFade) {
+    /**
+     * @param bitmap the bitmap to render in the drawable
+     * @param loadedFrom where the bitmap was loaded from MEMORY/DISK/NETWORK for debug indicator
+     * @param rounded is to render the bitmap rounded or rectangle
+     * @param showFade if to show fade effect starting from now
+     */
+    TargetDrawable(Bitmap bitmap, LoadedFrom loadedFrom, boolean rounded, boolean showFade) {
+        Utils.notNull(bitmap, "bitmap");
 
+        mLoadedFrom = loadedFrom;
         mRounded = rounded;
+
         mBitmapWidth = bitmap.getWidth();
         mBitmapHeight = bitmap.getHeight();
 
@@ -76,19 +88,7 @@ public final class ImageDrawable extends Drawable {
         mPaint.setAntiAlias(true);
         mPaint.setShader(new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP));
 
-        mLoadedFrom = loadedFrom;
-
-        if (showFade) {
-            mAnimating = true;
-            mStartTimeMillis = SystemClock.uptimeMillis();
-        }
-    }
-
-    /**
-     * Is the drawable is currently animating transition to set bitmap.
-     */
-    public boolean isAnimating() {
-        return mAnimating;
+        mStartTimeMillis = showFade ? SystemClock.uptimeMillis() : 0;
     }
 
     @Override
@@ -110,8 +110,8 @@ public final class ImageDrawable extends Drawable {
      * {@inheritDoc}
      * <p>
      * On set of bounds update the transform matrix applied on the bitmap to fit into the bounds.<br/>
-     * Scale to fit the dimensions of the image into the bounded rectangle.<br/>
-     * Offset the rendered bitmap to center the dimension that is larger\smaller than the bounds.
+     * - Scale to fit the dimensions of the image into the bounded rectangle.<br/>
+     * - Offset the rendered bitmap to center the dimension that is larger\smaller than the bounds.
      * </p>
      */
     @Override
@@ -147,12 +147,12 @@ public final class ImageDrawable extends Drawable {
      */
     @Override
     public void draw(Canvas canvas) {
-        float normalized = mAnimating ? (SystemClock.uptimeMillis() - mStartTimeMillis) / FADE_DURATION : 1;
+        float normalized = (SystemClock.uptimeMillis() - mStartTimeMillis) / FADE_DURATION;
         if (normalized >= 1f) {
             drawBitmap(canvas);
-            if (mAnimating)
+            if (mStartTimeMillis > 0)
                 invalidateSelf();
-            mAnimating = false;
+            mStartTimeMillis = 0;
         } else {
             mPaint.setAlpha((int) (255 * normalized));
             drawBitmap(canvas);
@@ -171,11 +171,11 @@ public final class ImageDrawable extends Drawable {
     protected void drawBitmap(Canvas canvas) {
         int width = getBounds().width();
         int height = getBounds().height();
-        CommonUtils.mRect.set(0, 0, width, height);
+        Utils.mRect.set(0, 0, width, height);
         if (mRounded) {
-            canvas.drawRoundRect(CommonUtils.mRect, width / 2, height / 2, mPaint);
+            canvas.drawRoundRect(Utils.mRect, width / 2, height / 2, mPaint);
         } else {
-            canvas.drawRect(CommonUtils.mRect, mPaint);
+            canvas.drawRect(Utils.mRect, mPaint);
         }
     }
 
@@ -193,9 +193,9 @@ public final class ImageDrawable extends Drawable {
         int height = getBounds().height();
 
         mDebugPaint.setColor(WHITE);
-        canvas.drawCircle(width / 2, height / 2, (int) (5 * CommonUtils.density), mDebugPaint);
+        canvas.drawCircle(width / 2, height / 2, (int) (5 * Utils.density), mDebugPaint);
 
         mDebugPaint.setColor(mLoadedFrom == LoadedFrom.MEMORY ? GREEN : mLoadedFrom == LoadedFrom.DISK ? YELLOW : RED);
-        canvas.drawCircle(width / 2, height / 2, (int) (3 * CommonUtils.density), mDebugPaint);
+        canvas.drawCircle(width / 2, height / 2, (int) (3 * Utils.density), mDebugPaint);
     }
 }

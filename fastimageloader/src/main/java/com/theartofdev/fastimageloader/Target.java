@@ -40,11 +40,11 @@ public interface Target {
      * Callback when an image has been successfully loaded.<br/>
      * <strong>Note:</strong> You must not recycle the bitmap.
      */
-    public void onBitmapLoaded(RecycleBitmap bitmap, LoadedFrom from);
+    void onBitmapLoaded(RecycleBitmap bitmap, LoadedFrom from);
 
     /**
      * Callback indicating the image could not be successfully loaded.<br/>
      */
-    public void onBitmapFailed();
+    void onBitmapFailed();
 }
 

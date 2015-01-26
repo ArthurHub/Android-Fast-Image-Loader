@@ -95,7 +95,7 @@ final class ImageLoaderHandler implements ImageDiskCache.GetCallback, ImageDownl
 
         mUrlEnhancer = urlEnhancer;
 
-        mCacheFolder = new File(CommonUtils.pathCombine(context.getCacheDir().getPath(), "ImageCache"));
+        mCacheFolder = new File(Utils.pathCombine(context.getCacheDir().getPath(), "ImageCache"));
 
         //noinspection ResultOfMethodCallIgnored
         mCacheFolder.mkdirs();
@@ -159,20 +159,20 @@ final class ImageLoaderHandler implements ImageDiskCache.GetCallback, ImageDownl
 
                     ImageRequest imageRequest = mLoadingRequests.get(enhancedUrl);
                     if (imageRequest != null) {
-                        Logger.debug("Memory cache miss, image already requested, add target to request... [{}] [{}]", imageRequest, target);
+                        ULogger.debug("Memory cache miss, image already requested, add target to request... [{}] [{}]", imageRequest, target);
                         imageRequest.addTarget(target);
                     } else {
                         // start async process of loading image from disk cache or network
                         imageRequest = new ImageRequest(target, url, enhancedUrl, spec, getCacheFile(enhancedUrl));
                         mLoadingRequests.put(enhancedUrl, imageRequest);
 
-                        Logger.debug("Memory cache miss, start image request handling... [{}]", imageRequest);
+                        ULogger.debug("Memory cache miss, start image request handling... [{}]", imageRequest);
                         mDiskCache.getAsync(imageRequest, this);
                     }
                 }
             }
         } catch (Exception e) {
-            Logger.critical("Error in load image [{}]", e, target);
+            ULogger.critical("Error in load image [{}]", e, target);
             target.onBitmapFailed();
         }
     }
@@ -187,7 +187,7 @@ final class ImageLoaderHandler implements ImageDiskCache.GetCallback, ImageDownl
     @Override
     public void loadImageGetDiskCacheCallback(ImageRequest imageRequest, boolean canceled) {
         try {
-            Logger.debug("Get image from disk cache callback... [{}] [Canceled: {}]", imageRequest, canceled);
+            ULogger.debug("Get image from disk cache callback... [{}] [Canceled: {}]", imageRequest, canceled);
 
             // if image object was loaded - add it to memory cache
             if (imageRequest.getBitmap() != null) {
@@ -215,7 +215,7 @@ final class ImageLoaderHandler implements ImageDiskCache.GetCallback, ImageDownl
             }
         } catch (Exception e) {
             mLoadingRequests.remove(imageRequest.getThumborUrl());
-            Logger.critical("Error in load image disk callback", e);
+            ULogger.critical("Error in load image disk callback", e);
         }
     }
 
@@ -227,7 +227,7 @@ final class ImageLoaderHandler implements ImageDiskCache.GetCallback, ImageDownl
     @Override
     public void loadImageDownloaderCallback(ImageRequest imageRequest, boolean downloaded, boolean canceled) {
         try {
-            Logger.debug("Load image from network callback... [{}] [Downloaded: {}] [Canceled: {}]", imageRequest, downloaded, canceled);
+            ULogger.debug("Load image from network callback... [{}] [Downloaded: {}] [Canceled: {}]", imageRequest, downloaded, canceled);
 
             // if image was downloaded - notify disk cache
             if (downloaded) {
@@ -263,7 +263,7 @@ final class ImageLoaderHandler implements ImageDiskCache.GetCallback, ImageDownl
             }
         } catch (Exception e) {
             mLoadingRequests.remove(imageRequest.getThumborUrl());
-            Logger.critical("Error in load image downloader callback", e);
+            ULogger.critical("Error in load image downloader callback", e);
         }
     }
 
@@ -279,7 +279,7 @@ final class ImageLoaderHandler implements ImageDiskCache.GetCallback, ImageDownl
             return null;
         }
         String name = Integer.toHexString(uri.substring(0, lastSlash).hashCode()) + "_" + uri.substring(lastSlash + 1).hashCode();
-        return new File(CommonUtils.pathCombine(mCacheFolder.getAbsolutePath(), name));
+        return new File(Utils.pathCombine(mCacheFolder.getAbsolutePath(), name));
     }
     //endregion
 }

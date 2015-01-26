@@ -287,7 +287,7 @@ final class ImageMemoryCache {
          * Trim the items kept in the cache to the given count and size.
          */
         private void trimToSize(int maxItems, int maxSize, boolean recycle) {
-            Logger.debug("trim image cache to size [{}] [{}] [{}] [{}]", mName, maxItems, maxSize, recycle);
+            ULogger.debug("trim image cache to size [{}] [{}] [{}] [{}]", mName, maxItems, maxSize, recycle);
             for (Iterator<String> iterator = mList.descendingIterator(); iterator.hasNext() && (mList.size() > maxItems || mSize > maxSize); ) {
                 String toEvict = iterator.next();
                 RecycleBitmapImpl toEvictBitmap = mMap.get(toEvict);
