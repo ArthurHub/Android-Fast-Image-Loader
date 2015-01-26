@@ -23,8 +23,6 @@ import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
 import android.os.SystemClock;
 
-import com.theartofdev.fastimageloader.impl.CommonUtils;
-
 import static android.graphics.Color.GREEN;
 import static android.graphics.Color.RED;
 import static android.graphics.Color.WHITE;
@@ -165,7 +163,7 @@ public final class ImageDrawable extends Drawable {
             invalidateSelf();
         }
 
-        if (FastImageLoader.getDebugIndicator() > 0) {
+        if (FastImageLoader.getDebugIndicator()) {
             drawDebugIndicator(canvas);
         }
     }

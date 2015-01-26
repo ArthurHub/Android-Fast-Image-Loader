@@ -14,8 +14,6 @@ package com.theartofdev.fastimageloader;
 
 import android.graphics.Bitmap;
 
-import com.theartofdev.fastimageloader.impl.CommonUtils;
-
 /**
  * The image loading spec data.
  */

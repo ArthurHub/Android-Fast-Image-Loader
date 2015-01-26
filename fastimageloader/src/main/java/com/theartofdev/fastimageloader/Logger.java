@@ -10,14 +10,14 @@
 // - Sun Tsu,
 // "The Art of War"
 
-package com.theartofdev.fastimageloader.impl;
+package com.theartofdev.fastimageloader;
 
 import android.util.Log;
 
 /**
  * Logger.
  */
-public final class Logger {
+final class Logger {
 
     public static final String TAG = "FastImgLoad";
 

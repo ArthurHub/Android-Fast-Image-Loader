@@ -15,8 +15,6 @@ package com.theartofdev.fastimageloader;
 import android.app.Application;
 
 import com.theartofdev.fastimageloader.enhancer.ImageServiceUriEnhancer;
-import com.theartofdev.fastimageloader.impl.CommonUtils;
-import com.theartofdev.fastimageloader.impl.ImageHandler;
 
 /**
  * TODO:a add doc
@@ -38,7 +36,7 @@ public final class FastImageLoader {
     /**
      * Is to show indicator if the image was loaded from MEMORY/DISK/NETWORK.
      */
-    private int mDebugIndicator;
+    private boolean mDebugIndicator;
     //endregion
 
     /**
@@ -50,14 +48,14 @@ public final class FastImageLoader {
     /**
      * Is to show indicator if the image was loaded from MEMORY/DISK/NETWORK.
      */
-    public static int getDebugIndicator() {
+    public static boolean getDebugIndicator() {
         return INST.mDebugIndicator;
     }
 
     /**
      * Is to show indicator if the image was loaded from MEMORY/DISK/NETWORK.
      */
-    public FastImageLoader setDebugIndicator(int enable) {
+    public FastImageLoader setDebugIndicator(boolean enable) {
         mDebugIndicator = enable;
         return INST;
     }

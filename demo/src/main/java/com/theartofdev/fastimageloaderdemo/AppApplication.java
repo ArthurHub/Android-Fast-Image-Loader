@@ -30,7 +30,9 @@ public class AppApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        FastImageLoader.init(this, new ImgIXUriEnhancer());
+        FastImageLoader
+                .init(this, new ImgIXUriEnhancer())
+                .setDebugIndicator(true);
 
         Point p = new Point();
         Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();

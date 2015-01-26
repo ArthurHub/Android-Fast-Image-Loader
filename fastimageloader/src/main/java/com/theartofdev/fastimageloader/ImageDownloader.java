@@ -10,7 +10,7 @@
 // - Sun Tsu,
 // "The Art of War"
 
-package com.theartofdev.fastimageloader.impl;
+package com.theartofdev.fastimageloader;
 
 import android.os.Handler;
 

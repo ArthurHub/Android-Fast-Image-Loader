@@ -10,7 +10,7 @@
 // - Sun Tsu,
 // "The Art of War"
 
-package com.theartofdev.fastimageloader.impl;
+package com.theartofdev.fastimageloader;
 
 import android.text.TextUtils;
 
@@ -22,7 +22,7 @@ import java.util.Collection;
 /**
  * General utility methods.
  */
-public final class CommonUtils {
+final class CommonUtils {
 
     /**
      * the logical density of the display.

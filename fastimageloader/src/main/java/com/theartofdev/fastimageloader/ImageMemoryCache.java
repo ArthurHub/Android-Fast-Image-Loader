@@ -10,9 +10,7 @@
 // - Sun Tsu,
 // "The Art of War"
 
-package com.theartofdev.fastimageloader.impl;
-
-import com.theartofdev.fastimageloader.ImageLoadSpec;
+package com.theartofdev.fastimageloader;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -193,27 +191,27 @@ final class ImageMemoryCache {
      * Handle trim memory event to release image caches on memory pressure.
      */
     @SuppressWarnings("UnusedDeclaration")
-//    public void onEvent(TrimMemoryEvent event) {
-//        switch (event.getLevel()) {
-//            case UI_HIDDEN:
-//                //mLargeCache.trimToSize(.7f, false);
-//                break;
-//            case BACKGROUND:
-//                //mLargeCache.trimToSize(.5f, false);
-//                break;
-//            case MODERATE:
-//            case RUNNING_MODERATE:
-//                //mLargeCache.trimToSize(.4f, false);
-//                break;
-//            case RUNNING_LOW:
-//                //mLargeCache.trimToSize(.2f, false);
-//                break;
-//            case RUNNING_CRITICAL:
-//            case COMPLETE:
-//                //mLargeCache.trimToSize(0, false);
-//                break;
-//        }
-//    }
+    //    public void onEvent(TrimMemoryEvent event) {
+    //        switch (event.getLevel()) {
+    //            case UI_HIDDEN:
+    //                //mLargeCache.trimToSize(.7f, false);
+    //                break;
+    //            case BACKGROUND:
+    //                //mLargeCache.trimToSize(.5f, false);
+    //                break;
+    //            case MODERATE:
+    //            case RUNNING_MODERATE:
+    //                //mLargeCache.trimToSize(.4f, false);
+    //                break;
+    //            case RUNNING_LOW:
+    //                //mLargeCache.trimToSize(.2f, false);
+    //                break;
+    //            case RUNNING_CRITICAL:
+    //            case COMPLETE:
+    //                //mLargeCache.trimToSize(0, false);
+    //                break;
+    //        }
+    //    }
 
     //region: Inner class: RecycleCache
 

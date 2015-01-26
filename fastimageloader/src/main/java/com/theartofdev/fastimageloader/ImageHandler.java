@@ -10,15 +10,12 @@
 // - Sun Tsu,
 // "The Art of War"
 
-package com.theartofdev.fastimageloader.impl;
+package com.theartofdev.fastimageloader;
 
 import android.content.Context;
 import android.os.Handler;
 import android.text.TextUtils;
 
-import com.theartofdev.fastimageloader.ImageLoadSpec;
-import com.theartofdev.fastimageloader.LoadedFrom;
-import com.theartofdev.fastimageloader.Target;
 import com.theartofdev.fastimageloader.enhancer.ImageServiceUriEnhancer;
 
 import java.io.File;
@@ -28,7 +25,7 @@ import java.util.Map;
 /**
  * Handler for image loading using memory/disk cache and other features.
  */
-public final class ImageHandler implements ImageDiskCache.GetCallback, ImageDownloader.Callback {
+final class ImageHandler implements ImageDiskCache.GetCallback, ImageDownloader.Callback {
 
     //region: Fields and Consts
 

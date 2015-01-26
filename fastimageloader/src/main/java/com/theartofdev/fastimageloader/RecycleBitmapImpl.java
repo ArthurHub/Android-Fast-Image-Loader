@@ -10,13 +10,10 @@
 // - Sun Tsu,
 // "The Art of War"
 
-package com.theartofdev.fastimageloader.impl;
+package com.theartofdev.fastimageloader;
 
 import android.graphics.Bitmap;
 import android.text.TextUtils;
-
-import com.theartofdev.fastimageloader.ImageLoadSpec;
-import com.theartofdev.fastimageloader.RecycleBitmap;
 
 /**
  * Wrap Bitmap object to know if it is currently in use.

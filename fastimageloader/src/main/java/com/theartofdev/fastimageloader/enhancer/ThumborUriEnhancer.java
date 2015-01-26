@@ -13,22 +13,39 @@
 package com.theartofdev.fastimageloader.enhancer;
 
 import com.theartofdev.fastimageloader.ImageLoadSpec;
-import com.theartofdev.fastimageloader.impl.CommonUtils;
+
+import java.text.MessageFormat;
 
 /**
- * TODO:a add doc
+ * URL enhancer for thumbor (http://thumbor.org/) service.<br/>
+ * Add image load specification into the path of the image URL.<br/>
+ * Using Thumbor service URI to build new URI with the image URI as suffix.
  */
 public class ThumborUriEnhancer implements ImageServiceUriEnhancer {
 
+    //region: Fields and Consts
+
+    /**
+     * the thumbor base URI
+     */
+    private final String mBaseUri;
+    //endregion
+
+    /**
+     * @param baseUri the thumbor base URI
+     */
+    public ThumborUriEnhancer(String baseUri) {
+        if (baseUri == null || baseUri.length() < 1)
+            throw new IllegalArgumentException("argument is null: " + baseUri);
+        mBaseUri = baseUri;
+    }
+
     @Override
     public String enhance(String url, ImageLoadSpec spec) {
-        String split = "/images/";
-        int idx = url.indexOf(split);
-        if (idx > -1) {
-            String thumborPart = url.substring(0, idx);
-            String imagePart = url.substring(idx + split.length());
-            return CommonUtils.format("{}/unsafe/{}x{}/filters:fill(fff,true):format(jpeg)/{}", thumborPart, spec.getWidth(), spec.getHeight(), imagePart);
-        }
-        return url;
+        return MessageFormat.format("{0}/unsafe/{1}x{2}/filters:fill(fff,true):format(jpeg)/{3}",
+                mBaseUri,
+                spec.getWidth(),
+                spec.getHeight(),
+                url);
     }
 }

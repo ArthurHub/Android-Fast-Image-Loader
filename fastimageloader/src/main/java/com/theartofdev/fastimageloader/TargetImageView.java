@@ -19,9 +19,6 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
-import com.theartofdev.fastimageloader.impl.CommonUtils;
-import com.theartofdev.fastimageloader.impl.Logger;
-
 /**
  * TODO:a add doc
  */
