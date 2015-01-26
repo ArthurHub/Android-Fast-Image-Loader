@@ -16,6 +16,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.text.TextUtils;
 
+import com.squareup.okhttp.OkHttpClient;
 import com.theartofdev.fastimageloader.enhancer.ImageServiceUriEnhancer;
 
 import java.io.File;
@@ -87,8 +88,10 @@ final class ImageHandler implements ImageDiskCache.GetCallback, ImageDownloader.
 
     /**
      * Init.
+     *
+     * @param client the OkHttp client to use to download the images.
      */
-    public ImageHandler(Context context, ImageServiceUriEnhancer urlEnhancer) {
+    public ImageHandler(Context context, OkHttpClient client, ImageServiceUriEnhancer urlEnhancer) {
 
         mUrlEnhancer = urlEnhancer;
 
@@ -103,7 +106,7 @@ final class ImageHandler implements ImageDiskCache.GetCallback, ImageDownloader.
         ImageLoader imageLoader = new ImageLoader(mMemoryCache);
         mDiskCache = new ImageDiskCache(context, handler, imageLoader, mCacheFolder);
 
-        mDownloader = new ImageDownloader(handler, imageLoader);
+        mDownloader = new ImageDownloader(client, handler, imageLoader);
     }
 
     /**

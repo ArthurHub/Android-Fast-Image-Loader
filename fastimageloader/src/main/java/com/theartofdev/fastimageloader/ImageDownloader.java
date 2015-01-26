@@ -63,19 +63,17 @@ final class ImageDownloader {
     //endregion
 
     /**
+     * @param client the OkHttp client to use to download the images.
      * @param handler Used to post execution to main thread.
      * @param imageLoader
      */
-    public ImageDownloader(Handler handler, ImageLoader imageLoader) {
+    public ImageDownloader(OkHttpClient client, Handler handler, ImageLoader imageLoader) {
         CommonUtils.notNull(handler, "handler");
         CommonUtils.notNull(imageLoader, "imageLoader");
 
+        mClient = client;
         mHandler = handler;
         mImageLoader = imageLoader;
-
-        mClient = new OkHttpClient();
-        mClient.setConnectTimeout(10, TimeUnit.SECONDS);
-        mClient.setReadTimeout(15, TimeUnit.SECONDS);
 
         mExecutorService = new ThreadPoolExecutor(4, 4, 30, TimeUnit.SECONDS,
                 new LinkedBlockingQueue<Runnable>(), Util.threadFactory("ImageDownloader", true));

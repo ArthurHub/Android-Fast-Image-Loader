@@ -14,7 +14,10 @@ package com.theartofdev.fastimageloader;
 
 import android.app.Application;
 
+import com.squareup.okhttp.OkHttpClient;
 import com.theartofdev.fastimageloader.enhancer.ImageServiceUriEnhancer;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * TODO:a add doc
@@ -34,6 +37,11 @@ public final class FastImageLoader {
     private ImageHandler mImageHandler;
 
     /**
+     * The OK HTTP client to be used to download images
+     */
+    private OkHttpClient mHttpClient;
+
+    /**
      * Is to show indicator if the image was loaded from MEMORY/DISK/NETWORK.
      */
     private boolean mDebugIndicator;
@@ -50,6 +58,14 @@ public final class FastImageLoader {
      */
     public static boolean getDebugIndicator() {
         return INST.mDebugIndicator;
+    }
+
+    /**
+     * The OK HTTP client to be used to download images
+     */
+    public FastImageLoader setHttpClient(OkHttpClient httpClient) {
+        mHttpClient = httpClient;
+        return INST;
     }
 
     /**
@@ -74,7 +90,14 @@ public final class FastImageLoader {
 
         if (INST.mImageHandler == null) {
             CommonUtils.density = context.getResources().getDisplayMetrics().density;
-            INST.mImageHandler = new ImageHandler(context, urlEnhancer);
+
+            if (INST.mHttpClient == null) {
+                INST.mHttpClient = new OkHttpClient();
+                INST.mHttpClient.setConnectTimeout(10, TimeUnit.SECONDS);
+                INST.mHttpClient.setReadTimeout(15, TimeUnit.SECONDS);
+            }
+
+            INST.mImageHandler = new ImageHandler(context, INST.mHttpClient, urlEnhancer);
             return INST;
         } else {
             throw new IllegalStateException("Fast Image Loader is already initialized");
