@@ -17,7 +17,7 @@ import android.graphics.Bitmap;
 import com.theartofdev.fastimageloader.impl.CommonUtils;
 
 /**
- * The image loading spec data.<br/>
+ * The image loading spec data.
  */
 public final class ImageLoadSpec {
 
