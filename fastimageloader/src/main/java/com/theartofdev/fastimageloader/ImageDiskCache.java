@@ -98,7 +98,7 @@ final class ImageDiskCache {
     /**
      * Used to load images from the disk.
      */
-    private final ImageLoader mImageLoader;
+    private final ImageReader mImageReader;
 
     /**
      * The time of the last cache check
@@ -124,18 +124,18 @@ final class ImageDiskCache {
     /**
      * @param context the application object to read config stuff
      * @param handler Used to post execution to main thread.
-     * @param imageLoader Used to load images from the disk.
+     * @param imageReader Used to load images from the disk.
      * @param cacheFolder The folder to save the cached images in
      */
-    public ImageDiskCache(Context context, Handler handler, ImageLoader imageLoader, File cacheFolder) {
+    public ImageDiskCache(Context context, Handler handler, ImageReader imageReader, File cacheFolder) {
         CommonUtils.notNull(context, "application");
         CommonUtils.notNull(handler, "handler");
-        CommonUtils.notNull(imageLoader, "imageLoader");
+        CommonUtils.notNull(imageReader, "imageLoader");
         CommonUtils.notNull(cacheFolder, "cacheFolder");
 
         mHandler = handler;
         mContext = context;
-        mImageLoader = imageLoader;
+        mImageReader = imageReader;
         mCacheFolder = cacheFolder;
 
         mReadExecutorService = new ThreadPoolExecutor(0, 1, 60, TimeUnit.SECONDS,
@@ -161,7 +161,7 @@ final class ImageDiskCache {
                     boolean canceled = true;
                     if (imageRequest.isValid()) {
                         canceled = false;
-                        mImageLoader.loadImageObject(imageRequest);
+                        mImageReader.loadImageObject(imageRequest);
                     }
                     final boolean finalCanceled = canceled;
                     mHandler.post(new Runnable() {

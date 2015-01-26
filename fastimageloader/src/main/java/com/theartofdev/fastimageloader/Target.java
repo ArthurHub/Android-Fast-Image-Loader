@@ -14,9 +14,13 @@ package com.theartofdev.fastimageloader;
 
 /**
  * Represents an arbitrary listener for image loading.<br/>
- * Objects implementing this class <strong>must</strong> have a working implementation of
- * {@link Object#equals(Object)} and {@link Object#hashCode()} for proper storage internally.
- * Instances of this interface will also be compared to determine if view recycling is occurring.
+ * Client will receive the raw instance of {@link RecycleBitmap} and will
+ * be responsible for setting its {@link RecycleBitmap#setInUse(boolean)} state.
+ * <p/>
+ * Instances of this interface will used to determine the image to load by {@link #getUrl()} and the
+ * specification to load the image by {@link #getSpec()}.<br/>
+ * Those methods will also be used to cancel image load request it the returned value have been changed or nullified.
+ * <p/>
  * It is recommended that you add this interface directly on to a custom view type when using in an
  * adapter to ensure correct recycling behavior.
  */

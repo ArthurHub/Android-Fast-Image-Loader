@@ -75,7 +75,6 @@ public class TargetImageView extends ImageView implements Target {
         super(context, attrs);
     }
 
-    @SuppressWarnings("UnusedDeclaration")
     public TargetImageView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }

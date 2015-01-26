@@ -101,9 +101,7 @@ final class RecycleBitmapImpl implements RecycleBitmap {
         mBitmapUrl = url;
     }
 
-    /**
-     * Is the bitmap is currently in use
-     */
+    @Override
     public boolean isInUse() {
         return mInUse > 0 || mInLoadUse;
     }

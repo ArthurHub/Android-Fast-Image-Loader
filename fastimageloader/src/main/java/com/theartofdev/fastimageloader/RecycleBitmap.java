@@ -32,5 +32,10 @@ public interface RecycleBitmap {
     /**
      * Is the bitmap is currently in use
      */
+    boolean isInUse();
+
+    /**
+     * Is the bitmap is currently in use
+     */
     void setInUse(boolean inUse);
 }

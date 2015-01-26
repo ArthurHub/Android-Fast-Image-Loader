@@ -19,7 +19,7 @@ import android.graphics.BitmapFactory;
  * Handler for loading image bitmap object from file on disk.<br/>
  * Load the bitmap so it can be re-used.<br/>
  */
-final class ImageLoader {
+final class ImageReader {
 
     //region: Fields and Consts
 
@@ -34,7 +34,7 @@ final class ImageLoader {
     private final BitmapFactory.Options mOptions;
     //endregion
 
-    ImageLoader(ImageMemoryCache bitmapRecycler) {
+    ImageReader(ImageMemoryCache bitmapRecycler) {
         mBitmapRecycler = bitmapRecycler;
 
         mOptions = new BitmapFactory.Options();

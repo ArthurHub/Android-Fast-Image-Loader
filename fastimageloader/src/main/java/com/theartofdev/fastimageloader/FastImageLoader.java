@@ -34,7 +34,7 @@ public final class FastImageLoader {
     /**
      * Handler for image loading logic
      */
-    private ImageHandler mImageHandler;
+    private ImageLoaderHandler mImageLoaderHandler;
 
     /**
      * The OK HTTP client to be used to download images
@@ -87,7 +87,7 @@ public final class FastImageLoader {
         CommonUtils.notNull(application, "context");
         CommonUtils.notNull(urlEnhancer, "urlEnhancer");
 
-        if (INST.mImageHandler == null) {
+        if (INST.mImageLoaderHandler == null) {
             CommonUtils.density = application.getResources().getDisplayMetrics().density;
 
             if (INST.mHttpClient == null) {
@@ -96,7 +96,7 @@ public final class FastImageLoader {
                 INST.mHttpClient.setReadTimeout(15, TimeUnit.SECONDS);
             }
 
-            INST.mImageHandler = new ImageHandler(application, INST.mHttpClient, urlEnhancer);
+            INST.mImageLoaderHandler = new ImageLoaderHandler(application, INST.mHttpClient, urlEnhancer);
             return INST;
         } else {
             throw new IllegalStateException("Fast Image Loader is already initialized");
@@ -115,8 +115,8 @@ public final class FastImageLoader {
      */
     public static void loadImage(Target target, ImageLoadSpec altSpec) {
         CommonUtils.notNull(target, "target");
-        if (INST.mImageHandler != null) {
-            INST.mImageHandler.loadImage(target, altSpec);
+        if (INST.mImageLoaderHandler != null) {
+            INST.mImageLoaderHandler.loadImage(target, altSpec);
         } else {
             throw new IllegalStateException("Fast Image Loader is NOT initialized, call init(...)");
         }

@@ -40,7 +40,7 @@ public final class ImageDrawable extends Drawable {
 
     private static Paint mDebugPaint;
 
-    private final Paint mPaint = new Paint();
+    private final Paint mPaint;
 
     private final Matrix mMatrix = new Matrix();
 
@@ -50,20 +50,20 @@ public final class ImageDrawable extends Drawable {
 
     private final float mBitmapHeight;
 
-    private float mScale = -1;
+    protected float mScale = -1;
 
-    private int mTranslateX = -1;
+    protected int mTranslateX = -1;
 
-    private int mTranslateY = -1;
+    protected int mTranslateY = -1;
 
     /**
      * If to draw the bitmap as a circle
      */
-    private boolean mRounded;
+    protected boolean mRounded;
 
-    private long mStartTimeMillis;
+    protected long mStartTimeMillis;
 
-    private boolean mAnimating;
+    protected boolean mAnimating;
     //endregion
 
     ImageDrawable(Bitmap bitmap, LoadedFrom loadedFrom, boolean rounded, boolean showFade) {
@@ -72,12 +72,12 @@ public final class ImageDrawable extends Drawable {
         mBitmapWidth = bitmap.getWidth();
         mBitmapHeight = bitmap.getHeight();
 
+        mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mPaint.setShader(new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP));
 
         mLoadedFrom = loadedFrom;
 
-        showFade = showFade && loadedFrom != LoadedFrom.MEMORY;
         if (showFade) {
             mAnimating = true;
             mStartTimeMillis = SystemClock.uptimeMillis();
@@ -168,7 +168,7 @@ public final class ImageDrawable extends Drawable {
     /**
      * Draw the bitmap on the canvas either rounded or rectangular.
      */
-    private void drawBitmap(Canvas canvas) {
+    protected void drawBitmap(Canvas canvas) {
         int width = getBounds().width();
         int height = getBounds().height();
         CommonUtils.mRect.set(0, 0, width, height);

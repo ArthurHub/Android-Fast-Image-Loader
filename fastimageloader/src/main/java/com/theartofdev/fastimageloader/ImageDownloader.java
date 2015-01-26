@@ -44,7 +44,7 @@ final class ImageDownloader {
     /**
      * Used to load images from the disk.
      */
-    private final ImageLoader mImageLoader;
+    private final ImageReader mImageReader;
 
     /**
      * The HTTP client used to execute download image requests
@@ -65,15 +65,15 @@ final class ImageDownloader {
     /**
      * @param client the OkHttp client to use to download the images.
      * @param handler Used to post execution to main thread.
-     * @param imageLoader
+     * @param imageReader
      */
-    public ImageDownloader(OkHttpClient client, Handler handler, ImageLoader imageLoader) {
+    public ImageDownloader(OkHttpClient client, Handler handler, ImageReader imageReader) {
         CommonUtils.notNull(handler, "handler");
-        CommonUtils.notNull(imageLoader, "imageLoader");
+        CommonUtils.notNull(imageReader, "imageLoader");
 
         mClient = client;
         mHandler = handler;
-        mImageLoader = imageLoader;
+        mImageReader = imageReader;
 
         mExecutorService = new ThreadPoolExecutor(4, 4, 30, TimeUnit.SECONDS,
                 new LinkedBlockingQueue<Runnable>(), Util.threadFactory("ImageDownloader", true));
@@ -132,7 +132,7 @@ final class ImageDownloader {
                     canceled = !imageRequest.isValid();
                     if (!canceled) {
                         canceled = false;
-                        mImageLoader.loadImageObject(imageRequest);
+                        mImageReader.loadImageObject(imageRequest);
                     }
                 }
 

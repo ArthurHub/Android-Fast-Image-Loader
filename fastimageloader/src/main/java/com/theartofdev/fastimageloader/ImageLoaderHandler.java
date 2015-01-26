@@ -26,7 +26,7 @@ import java.util.Map;
 /**
  * Handler for image loading using memory/disk cache and other features.
  */
-final class ImageHandler implements ImageDiskCache.GetCallback, ImageDownloader.Callback {
+final class ImageLoaderHandler implements ImageDiskCache.GetCallback, ImageDownloader.Callback {
 
     //region: Fields and Consts
 
@@ -91,7 +91,7 @@ final class ImageHandler implements ImageDiskCache.GetCallback, ImageDownloader.
      *
      * @param client the OkHttp client to use to download the images.
      */
-    public ImageHandler(Context context, OkHttpClient client, ImageServiceUriEnhancer urlEnhancer) {
+    public ImageLoaderHandler(Context context, OkHttpClient client, ImageServiceUriEnhancer urlEnhancer) {
 
         mUrlEnhancer = urlEnhancer;
 
@@ -103,10 +103,10 @@ final class ImageHandler implements ImageDiskCache.GetCallback, ImageDownloader.
         mMemoryCache = new ImageMemoryCache();
 
         Handler handler = new Handler();
-        ImageLoader imageLoader = new ImageLoader(mMemoryCache);
-        mDiskCache = new ImageDiskCache(context, handler, imageLoader, mCacheFolder);
+        ImageReader imageReader = new ImageReader(mMemoryCache);
+        mDiskCache = new ImageDiskCache(context, handler, imageReader, mCacheFolder);
 
-        mDownloader = new ImageDownloader(client, handler, imageLoader);
+        mDownloader = new ImageDownloader(client, handler, imageReader);
     }
 
     /**
