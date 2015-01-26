@@ -18,7 +18,6 @@ import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
 import android.os.SystemClock;
@@ -38,8 +37,6 @@ public final class ImageDrawable extends Drawable {
     //region: Fields and Consts
 
     private static final float FADE_DURATION = 200f;
-
-    private static final RectF mRect = new RectF();
 
     private static Paint mDebugPaint;
 
@@ -174,11 +171,11 @@ public final class ImageDrawable extends Drawable {
     private void drawBitmap(Canvas canvas) {
         int width = getBounds().width();
         int height = getBounds().height();
-        mRect.set(0, 0, width, height);
+        CommonUtils.mRect.set(0, 0, width, height);
         if (mRounded) {
-            canvas.drawRoundRect(mRect, width / 2, height / 2, mPaint);
+            canvas.drawRoundRect(CommonUtils.mRect, width / 2, height / 2, mPaint);
         } else {
-            canvas.drawRect(mRect, mPaint);
+            canvas.drawRect(CommonUtils.mRect, mPaint);
         }
     }
 

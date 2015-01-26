@@ -12,6 +12,7 @@
 
 package com.theartofdev.fastimageloader;
 
+import android.graphics.RectF;
 import android.text.TextUtils;
 
 import java.io.Closeable;
@@ -23,6 +24,11 @@ import java.util.Collection;
  * General utility methods.
  */
 final class CommonUtils {
+
+    /**
+     * Rect to draw circle
+     */
+    static final RectF mRect = new RectF();
 
     /**
      * the logical density of the display.

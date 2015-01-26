@@ -112,11 +112,6 @@ public class TargetImageView extends ImageView implements Target {
     }
 
     @Override
-    public boolean isFailed() {
-        return mFailed;
-    }
-
-    @Override
     public void setImageDrawable(Drawable drawable) {
         super.setImageDrawable(drawable);
         if (drawable == null) {

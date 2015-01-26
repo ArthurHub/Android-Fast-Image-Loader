@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.RectF;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 
@@ -18,11 +17,6 @@ import android.util.AttributeSet;
 public final class AvatarImageView extends TargetImageView {
 
     //region: Fields and Consts
-
-    /**
-     * Rect to draw circle
-     */
-    private final RectF mRect = new RectF();
 
     /**
      * Full AuthorName
@@ -131,11 +125,11 @@ public final class AvatarImageView extends TargetImageView {
                 mPadPaint.setAntiAlias(true);
                 mPadPaint.setColor(mPaddingBackgroundColor);
             }
-            mRect.set(0, 0, getWidth(), getHeight());
+            CommonUtils.mRect.set(0, 0, getWidth(), getHeight());
             if (isRounded()) {
-                canvas.drawRoundRect(mRect, getWidth(), getHeight(), mPadPaint);
+                canvas.drawRoundRect(CommonUtils.mRect, getWidth(), getHeight(), mPadPaint);
             } else {
-                canvas.drawRect(mRect, mPadPaint);
+                canvas.drawRect(CommonUtils.mRect, mPadPaint);
             }
         }
         super.draw(canvas);
@@ -148,11 +142,11 @@ public final class AvatarImageView extends TargetImageView {
                 init();
             }
 
-            mRect.set(getPaddingLeft(), getPaddingTop(), getWidth() - getPaddingRight(), getHeight() - getPaddingBottom());
+            CommonUtils.mRect.set(getPaddingLeft(), getPaddingTop(), getWidth() - getPaddingRight(), getHeight() - getPaddingBottom());
             if (isRounded()) {
-                canvas.drawRoundRect(mRect, getWidth(), getHeight(), mBackgroundPaint);
+                canvas.drawRoundRect(CommonUtils.mRect, getWidth(), getHeight(), mBackgroundPaint);
             } else {
-                canvas.drawRect(mRect, mBackgroundPaint);
+                canvas.drawRect(CommonUtils.mRect, mBackgroundPaint);
             }
 
             int xPos = (canvas.getWidth() / 2);

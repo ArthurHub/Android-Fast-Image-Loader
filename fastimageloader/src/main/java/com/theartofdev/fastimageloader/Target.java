@@ -33,11 +33,6 @@ public interface Target {
     ImageLoadSpec getSpec();
 
     /**
-     * Is the image loading has failed
-     */
-    boolean isFailed();
-
-    /**
      * Callback when an image has been successfully loaded.<br/>
      * <strong>Note:</strong> You must not recycle the bitmap.
      */
@@ -45,7 +40,6 @@ public interface Target {
 
     /**
      * Callback indicating the image could not be successfully loaded.<br/>
-     * <strong>Note:</strong> The passed {@link android.graphics.drawable.Drawable} may be {@code null}.
      */
     public void onBitmapFailed();
 }

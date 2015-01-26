@@ -79,17 +79,16 @@ public final class FastImageLoader {
     /**
      * Initialize the image loader with given android application context.
      *
-     * @param context the android application instance
-     * @param urlEnhancer Enhancer to use for image loading URL with format/size/etc. parameters by image loading
-     * specification.
+     * @param application the android application instance
+     * @param urlEnhancer used to enhance image URI by spec for image service (Thumbor\imgIX\etc.)
      * @throws IllegalStateException already initialized
      */
-    public static FastImageLoader init(Application context, ImageServiceUriEnhancer urlEnhancer) {
-        CommonUtils.notNull(context, "context");
+    public static FastImageLoader init(Application application, ImageServiceUriEnhancer urlEnhancer) {
+        CommonUtils.notNull(application, "context");
         CommonUtils.notNull(urlEnhancer, "urlEnhancer");
 
         if (INST.mImageHandler == null) {
-            CommonUtils.density = context.getResources().getDisplayMetrics().density;
+            CommonUtils.density = application.getResources().getDisplayMetrics().density;
 
             if (INST.mHttpClient == null) {
                 INST.mHttpClient = new OkHttpClient();
@@ -97,7 +96,7 @@ public final class FastImageLoader {
                 INST.mHttpClient.setReadTimeout(15, TimeUnit.SECONDS);
             }
 
-            INST.mImageHandler = new ImageHandler(context, INST.mHttpClient, urlEnhancer);
+            INST.mImageHandler = new ImageHandler(application, INST.mHttpClient, urlEnhancer);
             return INST;
         } else {
             throw new IllegalStateException("Fast Image Loader is already initialized");
