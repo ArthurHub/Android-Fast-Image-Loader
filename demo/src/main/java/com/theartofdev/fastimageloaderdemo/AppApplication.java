@@ -14,12 +14,13 @@ package com.theartofdev.fastimageloaderdemo;
 
 import android.app.Application;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.view.Display;
 import android.view.WindowManager;
 
 import com.theartofdev.fastimageloader.FastImageLoader;
-import com.theartofdev.fastimageloader.ImageLoadSpec;
+import com.theartofdev.fastimageloader.ImageLoadSpecBuilder;
 import com.theartofdev.fastimageloader.enhancer.ImgIXUriEnhancer;
 
 /**
@@ -38,7 +39,10 @@ public class AppApplication extends Application {
         Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
         display.getSize(p);
 
-        Specs.IMAGE = new ImageLoadSpec(p.x, getResources().getDimensionPixelSize(R.dimen.image_height));
+        Specs.IMAGE = new ImageLoadSpecBuilder()
+                .setDimension(p.x, getResources().getDimensionPixelSize(R.dimen.image_height))
+                .setPixelConfig(Bitmap.Config.RGB_565)
+                .build();
     }
 }
 

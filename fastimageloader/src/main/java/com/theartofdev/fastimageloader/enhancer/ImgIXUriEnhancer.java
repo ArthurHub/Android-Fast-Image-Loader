@@ -14,8 +14,6 @@ package com.theartofdev.fastimageloader.enhancer;
 
 import com.theartofdev.fastimageloader.ImageLoadSpec;
 
-import java.text.MessageFormat;
-
 /**
  * URL enhancer for imgIX (http://www.imgix.com) service.<br/>
  * Add image load specification as query params to the image URL.
@@ -24,11 +22,22 @@ public class ImgIXUriEnhancer implements ImageServiceUriEnhancer {
 
     @Override
     public String enhance(String url, ImageLoadSpec spec) {
+        StringBuilder sb = new StringBuilder(url);
+
         int qIdx = url.indexOf('?');
-        return MessageFormat.format("{0}{1}auto=jpeg&fit=crop&w={2}&h={3}",
-                url,
-                qIdx > -1 ? '&' : '?',
-                spec.getWidth(),
-                spec.getHeight());
+        sb.append(qIdx > -1 ? '&' : '?');
+
+        if (spec.getFormat() == ImageLoadSpec.Format.JPEG)
+            sb.append("auto=jpeg&");
+        else if (spec.getFormat() == ImageLoadSpec.Format.PNG)
+            sb.append("auto=png&");
+        else if (spec.getFormat() == ImageLoadSpec.Format.WEBP)
+            sb.append("auto=webp&");
+
+        sb.append("fit=crop&");
+
+        sb.append("w=").append(spec.getWidth()).append("&");
+        sb.append("h=").append(spec.getHeight());
+        return sb.toString();
     }
 }

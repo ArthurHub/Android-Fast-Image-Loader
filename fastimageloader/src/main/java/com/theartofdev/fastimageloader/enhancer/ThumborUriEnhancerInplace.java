@@ -14,8 +14,6 @@ package com.theartofdev.fastimageloader.enhancer;
 
 import com.theartofdev.fastimageloader.ImageLoadSpec;
 
-import java.text.MessageFormat;
-
 /**
  * URL enhancer for thumbor (http://thumbor.org/) service.<br/>
  * Add image load specification into the path of the image URL.<br/>
@@ -43,11 +41,23 @@ public class ThumborUriEnhancerInPlace implements ImageServiceUriEnhancer {
         if (idx > -1) {
             String thumborPart = url.substring(0, idx);
             String imagePart = url.substring(idx + mPathPartSplit.length());
-            return MessageFormat.format("{0}/unsafe/{1}x{2}/filters:fill(fff,true):format(jpeg)/{3}",
-                    thumborPart,
-                    spec.getWidth(),
-                    spec.getHeight(),
-                    imagePart);
+
+            StringBuilder sb = new StringBuilder();
+            sb.append(thumborPart);
+            sb.append("/unsafe/");
+            sb.append(spec.getWidth());
+            sb.append("x");
+            sb.append(spec.getHeight());
+            sb.append("/filters:fill(fff,true)");
+            if (spec.getFormat() == ImageLoadSpec.Format.JPEG)
+                sb.append(":format(jpeg)");
+            else if (spec.getFormat() == ImageLoadSpec.Format.PNG)
+                sb.append(":format(png)");
+            else if (spec.getFormat() == ImageLoadSpec.Format.WEBP)
+                sb.append(":format(webp)");
+            sb.append("/");
+            sb.append(imagePart);
+            return sb.toString();
         }
         return url;
     }

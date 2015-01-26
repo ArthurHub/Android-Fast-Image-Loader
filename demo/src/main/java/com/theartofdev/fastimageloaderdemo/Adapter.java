@@ -51,7 +51,7 @@ public final class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
     public void onBindViewHolder(ViewHolder holder, int position) {
         ImageLoadSpec spec = Specs.IMAGE;
         holder.mUrlTextView.setText(mItems[position]);
-        holder.mSpecTextView.setText("Size: (" + spec.getWidth() + "," + spec.getHeight() + ") Config: " + spec.getPixelConfig());
+        holder.mSpecTextView.setText(spec.getFormat() + ": (" + spec.getWidth() + "," + spec.getHeight() + ") Config: " + spec.getPixelConfig());
         holder.mTargetImageView.loadImage(mItems[position], spec);
     }
 

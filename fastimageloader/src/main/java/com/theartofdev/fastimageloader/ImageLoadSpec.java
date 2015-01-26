@@ -32,44 +32,27 @@ public final class ImageLoadSpec {
     private final int mHeight;
 
     /**
+     * The format of the image.
+     */
+    private final Format mFormat;
+
+    /**
      * the pixel configuration to load the image in (4 bytes per image pixel, 2 bytes, etc.)
      */
     private final Bitmap.Config mPixelConfig;
     //endregion
 
     /**
-     * Init image loading spec with default max-density of 1.5 and pixel config of RGB_565 (2 bytes, no alpha channel).
-     *
-     * @param width the width of the image in pixels
-     * @param height the height of the image in pixels
-     */
-    public ImageLoadSpec(int width, int height) {
-        this(width, height, 1.5f, Bitmap.Config.RGB_565);
-    }
-
-    /**
-     * Init image loading spec with default pixel config of RGB_565 (2 bytes, no alpha channel).
-     *
-     * @param width the width of the image in pixels
-     * @param height the height of the image in pixels
-     * @param maxDensity the max pixel per inch density to load the image in
-     */
-    public ImageLoadSpec(int width, int height, float maxDensity) {
-        this(width, height, maxDensity, Bitmap.Config.RGB_565);
-    }
-
-    /**
      * Init image loading spec.
-     *
-     * @param width the width of the image in pixels
+     *  @param width the width of the image in pixels
      * @param height the height of the image in pixels
-     * @param maxDensity the max pixel per inch density to load the image in
+     * @param format The format of the image.
      * @param pixelConfig the pixel configuration to load the image in (4 bytes per image pixel, 2 bytes, etc.)
      */
-    public ImageLoadSpec(int width, int height, float maxDensity, Bitmap.Config pixelConfig) {
-        float densityAdj = CommonUtils.density > maxDensity ? maxDensity / CommonUtils.density : 1f;
-        mWidth = (int) (width * densityAdj);
-        mHeight = (int) (height * densityAdj);
+    ImageLoadSpec(int width, int height, Format format, Bitmap.Config pixelConfig) {
+        mWidth = width;
+        mHeight = height;
+        mFormat = format;
         mPixelConfig = pixelConfig;
     }
 
@@ -85,6 +68,13 @@ public final class ImageLoadSpec {
      */
     public int getHeight() {
         return mHeight;
+    }
+
+    /**
+     * The format of the image.
+     */
+    public Format getFormat() {
+        return mFormat;
     }
 
     /**
@@ -127,7 +117,21 @@ public final class ImageLoadSpec {
         return "ImageLoadSpec{" +
                 "mWidth=" + mWidth +
                 ", mHeight=" + mHeight +
+                ", mFormat=" + mFormat +
                 ", mPixelConfig=" + mPixelConfig +
                 '}';
     }
+
+    //region: Inner class: Format
+
+    /**
+     * The format of the image.
+     */
+    public static enum Format {
+        UNCHANGE,
+        JPEG,
+        PNG,
+        WEBP,
+    }
+    //endregion
 }
