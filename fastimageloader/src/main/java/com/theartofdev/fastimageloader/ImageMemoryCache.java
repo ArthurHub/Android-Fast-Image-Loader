@@ -30,7 +30,7 @@ final class ImageMemoryCache {
     //region: Fields and Consts
 
     /**
-     *
+     * Cache and pool of reusable bitmaps.
      */
     private final Map<ImageLoadSpec, LinkedList<ReusableBitmapImpl>> mBitmapsCachePool = new LinkedHashMap<>();
 
@@ -194,6 +194,9 @@ final class ImageMemoryCache {
      */
     public void onTrimMemory(int level) {
         switch (level) {
+            case ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN:
+                releaseUnUsedBitmaps(3);
+                break;
             case ComponentCallbacks2.TRIM_MEMORY_BACKGROUND:
                 releaseUnUsedBitmaps(1);
                 break;
@@ -207,10 +210,15 @@ final class ImageMemoryCache {
         }
     }
 
-    private void releaseUnUsedBitmaps(int grace) {
-        Logger.debug("trim image cache to size [{}]", grace);
+    /**
+     * Release unused bitmaps that are currently in the pool.
+     *
+     * @param graceLevel the number of unused bitmaps NOT to release
+     */
+    private void releaseUnUsedBitmaps(int graceLevel) {
+        Logger.debug("trim image cache to size [{}]", graceLevel);
         for (LinkedList<ReusableBitmapImpl> list : mBitmapsCachePool.values()) {
-            int listGrace = grace;
+            int listGrace = graceLevel;
             Iterator<ReusableBitmapImpl> iter = list.iterator();
             while (iter.hasNext()) {
                 ReusableBitmapImpl bitmap = iter.next();

@@ -25,7 +25,7 @@ public class TargetImageView extends ImageView {
     //region: Fields and Consts
 
     /**
-     *
+     * The target image handler to load the image and control its lifecycle.
      */
     private TargetImageViewHandler mHandler;
     //endregion
@@ -91,5 +91,18 @@ public class TargetImageView extends ImageView {
      */
     public void loadImage(String url, ImageLoadSpec spec, ImageLoadSpec altSpec, boolean force) {
         mHandler.loadImage(url, spec, altSpec, force);
+    }
+
+    /**
+     * On image view visibility change set show/hide on the image handler to it will update its in-use status.
+     */
+    @Override
+    protected void onWindowVisibilityChanged(int visibility) {
+        super.onWindowVisibilityChanged(visibility);
+        if (visibility == VISIBLE) {
+            mHandler.onViewShown();
+        } else {
+            mHandler.onViewHidden();
+        }
     }
 }

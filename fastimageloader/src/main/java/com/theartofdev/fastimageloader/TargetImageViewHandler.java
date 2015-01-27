@@ -23,9 +23,23 @@ import android.widget.ImageView;
  * Use {@link #loadImage(String, ImageLoadSpec, ImageLoadSpec, boolean)} to load of image into the
  * handler, it will handle cancellation of unfinished requests if a new loading request is given.
  * <p/>
- * The handler attaches itself to ImageView StateChange to update the in-use of the loaded bitmap, allowing
- * to reuse bitmap that are currently not showed, on re-attach to window if the bitmap was reused the image
- * will be re-loaded.
+ * The handler attaches itself to ImageView StateChange to update the in-use of the loaded
+ * bitmap, allowing to reuse bitmaps that are detached from window. This ensures the bitmap is
+ * reused when the activity/fragment is destroyed.<br/>
+ * On reattach to window if the bitmap was reused the image will be reloaded.
+ * <p/>
+ * For improved reuse it is advisable to override {@link android.widget.ImageView#onWindowVisibilityChanged(int)}
+ * method and call {@link #onViewShown()}/{@link #onViewHidden()} on the handler to update in-use state.
+ * <pre>
+ * {@code protected void onWindowVisibilityChanged(int visibility) {
+ *   super.onWindowVisibilityChanged(visibility);
+ *   if (visibility == VISIBLE) {
+ *     mHandler.onViewShown();
+ *   } else {
+ *     mHandler.onViewHidden();
+ *   }
+ * }}
+ * </pre>
  */
 public class TargetImageViewHandler implements Target, View.OnAttachStateChangeListener {
 
@@ -168,13 +182,11 @@ public class TargetImageViewHandler implements Target, View.OnAttachStateChangeL
     }
 
     /**
-     * On attach of the ImageView to window verify that the set bitmap is still valid for the
-     * image view (not reused).<br/>
+     * On image view shown verify that the set bitmap is still valid for the image view (not reused).<br/>
      * If valid: set in-use on the bitmap.<br/>
      * If not valid: execute image load request to re-load the image needed for the image view.<br/>
      */
-    @Override
-    public void onViewAttachedToWindow(View v) {
+    public void onViewShown() {
         if (mReusableBitmap != null && !mInUse) {
             if (TextUtils.equals(mReusableBitmap.getUrl(), mUrl)) {
                 mInUse = true;
@@ -187,14 +199,29 @@ public class TargetImageViewHandler implements Target, View.OnAttachStateChangeL
     }
 
     /**
-     * On detach of the ImageView from window set the used bitmap to not-in-use so it can be reused.
+     * On image view hidden set the used bitmap to not-in-use so it can be reused.
      */
-    @Override
-    public void onViewDetachedFromWindow(View v) {
+    public void onViewHidden() {
         if (mReusableBitmap != null && mInUse) {
             mInUse = false;
             mReusableBitmap.decrementInUse();
         }
+    }
+
+    /**
+     * On attach of the ImageView to window call {@link #onViewShown()}.
+     */
+    @Override
+    public void onViewAttachedToWindow(View v) {
+        onViewShown();
+    }
+
+    /**
+     * On detach of the ImageView from window call {@link #onViewHidden()}.
+     */
+    @Override
+    public void onViewDetachedFromWindow(View v) {
+        onViewHidden();
     }
 
     /**
