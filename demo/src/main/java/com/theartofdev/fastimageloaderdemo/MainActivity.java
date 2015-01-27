@@ -19,6 +19,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.theartofdev.fastimageloader.FastImageLoader;
+
 public class MainActivity extends ActionBarActivity {
 
     private Adapter mAdapter;
@@ -43,6 +45,10 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.clear_disk_cache) {
+            FastImageLoader.clearDiskCache();
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 }

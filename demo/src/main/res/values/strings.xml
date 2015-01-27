@@ -2,5 +2,6 @@
 <resources>
 
     <string name="app_name">Fast Image Loader</string>
+    <string name="clear_disk_cache">Clear Disk Cache</string>
 
 </resources>
