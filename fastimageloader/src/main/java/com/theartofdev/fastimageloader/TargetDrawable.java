@@ -160,7 +160,7 @@ public class TargetDrawable extends Drawable {
             invalidateSelf();
         }
 
-        if (FastImageLoader.getDebugIndicator()) {
+        if (Utils.debugIndicator) {
             drawDebugIndicator(canvas);
         }
     }

@@ -36,6 +36,11 @@ final class Utils {
     public static float density = 1;
 
     /**
+     * If to show indicator if the image was loaded from MEMORY/DISK/NETWORK.
+     */
+    public static boolean debugIndicator;
+
+    /**
      * Validate given argument isn't null.
      *
      * @param arg argument to validate

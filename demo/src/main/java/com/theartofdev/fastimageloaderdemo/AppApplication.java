@@ -32,7 +32,8 @@ public class AppApplication extends Application {
     public void onCreate() {
         super.onCreate();
         FastImageLoader
-                .init(this, new ImgIXUriEnhancer())
+                .init(this)
+                .setUriEnhancer(new ImgIXUriEnhancer())
                 .setDebugIndicator(true);
 
         Point p = new Point();

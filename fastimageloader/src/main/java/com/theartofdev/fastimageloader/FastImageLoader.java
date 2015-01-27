@@ -16,6 +16,7 @@ import android.app.Application;
 
 import com.squareup.okhttp.OkHttpClient;
 import com.theartofdev.fastimageloader.enhancer.ImageServiceUriEnhancer;
+import com.theartofdev.fastimageloader.enhancer.NoOpUriEnhancer;
 
 import java.util.concurrent.TimeUnit;
 
@@ -37,14 +38,19 @@ public final class FastImageLoader {
     private ImageLoaderHandler mImageLoaderHandler;
 
     /**
+     * Android application to init by
+     */
+    private Application mApplication;
+
+    /**
+     * used to enhance image URI by spec for image service (Thumbor\imgIX\etc.)
+     */
+    private ImageServiceUriEnhancer mUriEnhancer;
+
+    /**
      * The OK HTTP client to be used to download images
      */
     private OkHttpClient mHttpClient;
-
-    /**
-     * Is to show indicator if the image was loaded from MEMORY/DISK/NETWORK.
-     */
-    private boolean mDebugIndicator;
     //endregion
 
     /**
@@ -54,10 +60,34 @@ public final class FastImageLoader {
     }
 
     /**
-     * Is to show indicator if the image was loaded from MEMORY/DISK/NETWORK.
+     * Initialize the image loader with given android application context.<br/>
+     * Image loader can be initialized only once where you can set all the configuration
+     * properties:
+     * {@link #setUriEnhancer(com.theartofdev.fastimageloader.enhancer.ImageServiceUriEnhancer)},
+     * {@link #setHttpClient(com.squareup.okhttp.OkHttpClient)},
+     * {@link #setDebugIndicator(boolean)}.
+     *
+     * @param application the android mApplication instance
+     * @throws IllegalStateException already initialized
      */
-    public static boolean getDebugIndicator() {
-        return INST.mDebugIndicator;
+    public static FastImageLoader init(Application application) {
+        Utils.notNull(application, "context");
+
+        if (INST.mImageLoaderHandler == null) {
+            INST.mApplication = application;
+            Utils.density = application.getResources().getDisplayMetrics().density;
+            return INST;
+        } else {
+            throw new IllegalStateException("Fast Image Loader is already initialized");
+        }
+    }
+
+    /**
+     * used to enhance image URI by spec for image service (Thumbor\imgIX\etc.)
+     */
+    public FastImageLoader setUriEnhancer(ImageServiceUriEnhancer uriEnhancer) {
+        mUriEnhancer = uriEnhancer;
+        return INST;
     }
 
     /**
@@ -72,35 +102,8 @@ public final class FastImageLoader {
      * Is to show indicator if the image was loaded from MEMORY/DISK/NETWORK.
      */
     public FastImageLoader setDebugIndicator(boolean enable) {
-        mDebugIndicator = enable;
+        Utils.debugIndicator = enable;
         return INST;
-    }
-
-    /**
-     * Initialize the image loader with given android application context.
-     *
-     * @param application the android application instance
-     * @param urlEnhancer used to enhance image URI by spec for image service (Thumbor\imgIX\etc.)
-     * @throws IllegalStateException already initialized
-     */
-    public static FastImageLoader init(Application application, ImageServiceUriEnhancer urlEnhancer) {
-        Utils.notNull(application, "context");
-        Utils.notNull(urlEnhancer, "urlEnhancer");
-
-        if (INST.mImageLoaderHandler == null) {
-            Utils.density = application.getResources().getDisplayMetrics().density;
-
-            if (INST.mHttpClient == null) {
-                INST.mHttpClient = new OkHttpClient();
-                INST.mHttpClient.setConnectTimeout(10, TimeUnit.SECONDS);
-                INST.mHttpClient.setReadTimeout(15, TimeUnit.SECONDS);
-            }
-
-            INST.mImageLoaderHandler = new ImageLoaderHandler(application, INST.mHttpClient, urlEnhancer);
-            return INST;
-        } else {
-            throw new IllegalStateException("Fast Image Loader is already initialized");
-        }
     }
 
     /**
@@ -111,14 +114,33 @@ public final class FastImageLoader {
      *
      * @param target the target to load the image to, use it's URL and Spec
      * @param altSpec optional: alternative specification to load image from cache if primary is no available in cache.
-     * @throws IllegalStateException already initialized
+     * @throws IllegalStateException NOT initialized
      */
     public static void loadImage(Target target, ImageLoadSpec altSpec) {
         Utils.notNull(target, "target");
-        if (INST.mImageLoaderHandler != null) {
-            INST.mImageLoaderHandler.loadImage(target, altSpec);
+        if (INST.mImageLoaderHandler == null) {
+            finishInit();
+        }
+        INST.mImageLoaderHandler.loadImage(target, altSpec);
+    }
+
+    /**
+     * Finish the initialization process.
+     */
+    private static void finishInit() {
+        if (INST.mApplication != null) {
+            if (INST.mHttpClient == null) {
+                INST.mHttpClient = new OkHttpClient();
+                INST.mHttpClient.setConnectTimeout(10, TimeUnit.SECONDS);
+                INST.mHttpClient.setReadTimeout(15, TimeUnit.SECONDS);
+            }
+            if (INST.mUriEnhancer == null) {
+                INST.mUriEnhancer = new NoOpUriEnhancer();
+            }
+            INST.mImageLoaderHandler = new ImageLoaderHandler(INST.mApplication, INST.mHttpClient, INST.mUriEnhancer);
         } else {
             throw new IllegalStateException("Fast Image Loader is NOT initialized, call init(...)");
         }
     }
+
 }
