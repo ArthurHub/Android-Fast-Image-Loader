@@ -27,7 +27,7 @@ import java.util.Map;
 /**
  * Handler for image loading using memory/disk cache and other features.
  */
-final class ImageLoadHandler implements ImageDiskCache.GetCallback, ImageDownloader.Callback, ComponentCallbacks2 {
+final class ImageLoadHandler implements DiskCache.GetCallback, Downloader.Callback, ComponentCallbacks2 {
 
     //region: Fields and Consts
 
@@ -49,17 +49,17 @@ final class ImageLoadHandler implements ImageDiskCache.GetCallback, ImageDownloa
     /**
      * Memory cache for images loaded
      */
-    private final ImageMemoryCache mMemoryCache;
+    private final MemoryCachePool mMemoryCache;
 
     /**
      * Disk cache for images loaded
      */
-    private final ImageDiskCache mDiskCache;
+    private final DiskCache mDiskCache;
 
     /**
      * Downloader to download images from the web
      */
-    private final ImageDownloader mDownloader;
+    private final Downloader mDownloader;
 
     /**
      * stats on the number of memory cache hits
@@ -101,13 +101,13 @@ final class ImageLoadHandler implements ImageDiskCache.GetCallback, ImageDownloa
         //noinspection ResultOfMethodCallIgnored
         mCacheFolder.mkdirs();
 
-        mMemoryCache = new ImageMemoryCache();
+        mMemoryCache = new MemoryCachePool();
 
         Handler handler = new Handler();
-        ImageReader imageReader = new ImageReader(mMemoryCache);
-        mDiskCache = new ImageDiskCache(application, handler, imageReader, mCacheFolder);
+        DiskLoader diskLoader = new DiskLoader(mMemoryCache);
+        mDiskCache = new DiskCache(application, handler, diskLoader, mCacheFolder);
 
-        mDownloader = new ImageDownloader(client, handler, imageReader);
+        mDownloader = new Downloader(client, handler, diskLoader);
 
         application.registerComponentCallbacks(this);
     }

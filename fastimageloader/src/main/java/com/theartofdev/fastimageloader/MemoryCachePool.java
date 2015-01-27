@@ -25,7 +25,7 @@ import java.util.Map;
  * and small for smaller.<br/>
  * Caches may be evicted when memory pressure is detected.
  */
-final class ImageMemoryCache {
+final class MemoryCachePool {
 
     //region: Fields and Consts
 

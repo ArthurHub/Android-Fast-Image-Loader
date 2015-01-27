@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Disk cache for image handler.<br/>
  */
-final class ImageDiskCache {
+final class DiskCache {
 
     //region: Fields and Consts
 
@@ -93,7 +93,7 @@ final class ImageDiskCache {
     /**
      * Used to load images from the disk.
      */
-    private final ImageReader mImageReader;
+    private final DiskLoader mDiskLoader;
 
     /**
      * The time of the last cache check
@@ -119,18 +119,18 @@ final class ImageDiskCache {
     /**
      * @param context the application object to read config stuff
      * @param handler Used to post execution to main thread.
-     * @param imageReader Used to load images from the disk.
+     * @param diskLoader Used to load images from the disk.
      * @param cacheFolder The folder to save the cached images in
      */
-    public ImageDiskCache(Context context, Handler handler, ImageReader imageReader, File cacheFolder) {
+    public DiskCache(Context context, Handler handler, DiskLoader diskLoader, File cacheFolder) {
         Utils.notNull(context, "application");
         Utils.notNull(handler, "handler");
-        Utils.notNull(imageReader, "imageLoader");
+        Utils.notNull(diskLoader, "imageLoader");
         Utils.notNull(cacheFolder, "cacheFolder");
 
         mHandler = handler;
         mContext = context;
-        mImageReader = imageReader;
+        mDiskLoader = diskLoader;
         mCacheFolder = cacheFolder;
 
         mReadExecutorService = new ThreadPoolExecutor(0, 1, 60, TimeUnit.SECONDS,
@@ -154,7 +154,7 @@ final class ImageDiskCache {
                     boolean canceled = true;
                     if (imageRequest.isValid()) {
                         canceled = false;
-                        mImageReader.loadImageObject(imageRequest);
+                        mDiskLoader.loadImageObject(imageRequest);
                     }
                     final boolean finalCanceled = canceled;
                     mHandler.post(new Runnable() {

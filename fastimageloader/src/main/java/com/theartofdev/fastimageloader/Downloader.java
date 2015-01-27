@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * TODO:a add doc
  */
-final class ImageDownloader {
+final class Downloader {
 
     //region: Fields and Consts
 
@@ -44,7 +44,7 @@ final class ImageDownloader {
     /**
      * Used to load images from the disk.
      */
-    private final ImageReader mImageReader;
+    private final DiskLoader mDiskLoader;
 
     /**
      * The HTTP client used to execute download image requests
@@ -65,15 +65,15 @@ final class ImageDownloader {
     /**
      * @param client the OkHttp client to use to download the images.
      * @param handler Used to post execution to main thread.
-     * @param imageReader
+     * @param diskLoader
      */
-    public ImageDownloader(OkHttpClient client, Handler handler, ImageReader imageReader) {
+    public Downloader(OkHttpClient client, Handler handler, DiskLoader diskLoader) {
         Utils.notNull(handler, "handler");
-        Utils.notNull(imageReader, "imageLoader");
+        Utils.notNull(diskLoader, "imageLoader");
 
         mClient = client;
         mHandler = handler;
-        mImageReader = imageReader;
+        mDiskLoader = diskLoader;
 
         mExecutorService = new ThreadPoolExecutor(4, 4, 30, TimeUnit.SECONDS,
                 new LinkedBlockingQueue<Runnable>(), Util.threadFactory("ImageDownloader", true));
@@ -132,7 +132,7 @@ final class ImageDownloader {
                     canceled = !imageRequest.isValid();
                     if (!canceled) {
                         canceled = false;
-                        mImageReader.loadImageObject(imageRequest);
+                        mDiskLoader.loadImageObject(imageRequest);
                     }
                 }
 
