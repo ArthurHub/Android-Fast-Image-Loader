@@ -14,8 +14,9 @@ package com.theartofdev.fastimageloader;
 
 /**
  * Represents an arbitrary listener for image loading.<br/>
- * Client will receive the raw instance of {@link RecycleBitmap} and will
- * be responsible for setting its {@link RecycleBitmap#setInUse(boolean)} state.
+ * Client will receive the raw instance of {@link ReusableBitmap} and will
+ * be responsible for setting its {@link ReusableBitmap#incrementInUse()} and
+ * {@link ReusableBitmap#decrementInUse()} state correctly.
  * <p/>
  * Instances of this interface will used to determine the image to load by {@link #getUrl()} and the
  * specification to load the image by {@link #getSpec()}.<br/>
@@ -40,7 +41,7 @@ public interface Target {
      * Callback when an image has been successfully loaded.<br/>
      * <strong>Note:</strong> You must not recycle the bitmap.
      */
-    void onBitmapLoaded(RecycleBitmap bitmap, LoadedFrom from);
+    void onBitmapLoaded(ReusableBitmap bitmap, LoadedFrom from);
 
     /**
      * Callback indicating the image could not be successfully loaded.<br/>

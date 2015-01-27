@@ -30,7 +30,7 @@ final class ImageMemoryCache {
     /**
      *
      */
-    private final Map<ImageLoadSpec, LinkedList<RecycleBitmapImpl>> mBitmapsCachePool = new LinkedHashMap<>();
+    private final Map<ImageLoadSpec, LinkedList<ReusableBitmapImpl>> mBitmapsCachePool = new LinkedHashMap<>();
 
     /**
      * stats on the number of cache hit
@@ -61,13 +61,13 @@ final class ImageMemoryCache {
     /**
      * Retrieve an image for the specified {@code url} and {@code spec}.
      */
-    public RecycleBitmapImpl get(String url, ImageLoadSpec spec) {
+    public ReusableBitmapImpl get(String url, ImageLoadSpec spec) {
         synchronized (mBitmapsCachePool) {
-            LinkedList<RecycleBitmapImpl> list = mBitmapsCachePool.get(spec);
+            LinkedList<ReusableBitmapImpl> list = mBitmapsCachePool.get(spec);
             if (list != null) {
-                Iterator<RecycleBitmapImpl> iter = list.iterator();
+                Iterator<ReusableBitmapImpl> iter = list.iterator();
                 while (iter.hasNext()) {
-                    RecycleBitmapImpl bitmap = iter.next();
+                    ReusableBitmapImpl bitmap = iter.next();
                     if (url.equals(bitmap.getUrl())) {
                         iter.remove();
                         list.addLast(bitmap);
@@ -84,10 +84,10 @@ final class ImageMemoryCache {
     /**
      * Store an image in the cache for the specified {@code key}.
      */
-    public void set(RecycleBitmapImpl bitmap) {
+    public void set(ReusableBitmapImpl bitmap) {
         synchronized (mBitmapsCachePool) {
             if (bitmap != null) {
-                LinkedList<RecycleBitmapImpl> list = mBitmapsCachePool.get(bitmap.getSpec());
+                LinkedList<ReusableBitmapImpl> list = mBitmapsCachePool.get(bitmap.getSpec());
                 if (list == null) {
                     list = new LinkedList<>();
                     mBitmapsCachePool.put(bitmap.getSpec(), list);
@@ -100,13 +100,13 @@ final class ImageMemoryCache {
     /**
      * TODO:a. doc
      */
-    public RecycleBitmapImpl getUnused(ImageLoadSpec spec) {
+    public ReusableBitmapImpl getUnused(ImageLoadSpec spec) {
         synchronized (mBitmapsCachePool) {
-            LinkedList<RecycleBitmapImpl> list = mBitmapsCachePool.get(spec);
+            LinkedList<ReusableBitmapImpl> list = mBitmapsCachePool.get(spec);
             if (list != null) {
-                Iterator<RecycleBitmapImpl> iter = list.iterator();
+                Iterator<ReusableBitmapImpl> iter = list.iterator();
                 while (iter.hasNext()) {
-                    RecycleBitmapImpl bitmap = iter.next();
+                    ReusableBitmapImpl bitmap = iter.next();
                     if (!bitmap.isInUse()) {
                         iter.remove();
                         mReUsed++;
@@ -122,12 +122,12 @@ final class ImageMemoryCache {
     /**
      * TODO:a. doc
      */
-    public void returnUnused(RecycleBitmapImpl bitmap) {
+    public void returnUnused(ReusableBitmapImpl bitmap) {
         synchronized (mBitmapsCachePool) {
             mReUsed--;
             mReturned++;
             bitmap.setInLoadUse(false);
-            LinkedList<RecycleBitmapImpl> list = mBitmapsCachePool.get(bitmap.getSpec());
+            LinkedList<ReusableBitmapImpl> list = mBitmapsCachePool.get(bitmap.getSpec());
             if (list != null) {
                 list.addFirst(bitmap);
             } else {
@@ -226,7 +226,7 @@ final class ImageMemoryCache {
 
         private final LinkedList<String> mList;
 
-        private final Map<String, RecycleBitmapImpl> mMap;
+        private final Map<String, ReusableBitmapImpl> mMap;
 
         private final int mMaxItems;
 
@@ -250,8 +250,8 @@ final class ImageMemoryCache {
         /**
          * Get cached item by key if exists.
          */
-        public RecycleBitmapImpl get(String key) {
-            RecycleBitmapImpl value = mMap.get(key);
+        public ReusableBitmapImpl get(String key) {
+            ReusableBitmapImpl value = mMap.get(key);
             if (value != null) {
                 mList.remove(key);
                 mList.addFirst(key);
@@ -262,7 +262,7 @@ final class ImageMemoryCache {
         /**
          * Add given item to cache, evict items if cache size is reached.
          */
-        public void put(String key, RecycleBitmapImpl bitmap) {
+        public void put(String key, ReusableBitmapImpl bitmap) {
             if (!mMap.containsKey(key)) {
                 mList.addFirst(key);
                 mMap.put(key, bitmap);
@@ -290,7 +290,7 @@ final class ImageMemoryCache {
             ULogger.debug("trim image cache to size [{}] [{}] [{}] [{}]", mName, maxItems, maxSize, recycle);
             for (Iterator<String> iterator = mList.descendingIterator(); iterator.hasNext() && (mList.size() > maxItems || mSize > maxSize); ) {
                 String toEvict = iterator.next();
-                RecycleBitmapImpl toEvictBitmap = mMap.get(toEvict);
+                ReusableBitmapImpl toEvictBitmap = mMap.get(toEvict);
                 if (toEvictBitmap != null) {
                     if (toEvictBitmap.canBeRecycled()) {
                         iterator.remove();

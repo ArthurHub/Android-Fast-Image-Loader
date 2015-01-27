@@ -54,7 +54,7 @@ class ImageRequest {
     /**
      * the loaded image bitmap
      */
-    private RecycleBitmapImpl mBitmap;
+    private ReusableBitmapImpl mBitmap;
 
     /**
      * the target to load the image into
@@ -122,14 +122,14 @@ class ImageRequest {
     /**
      * the loaded image bitmap
      */
-    public RecycleBitmapImpl getBitmap() {
+    public ReusableBitmapImpl getBitmap() {
         return mBitmap;
     }
 
     /**
      * the loaded image bitmap
      */
-    public void setBitmap(RecycleBitmapImpl bitmap) {
+    public void setBitmap(ReusableBitmapImpl bitmap) {
         if (mBitmap != null)
             mBitmap.setInLoadUse(false);
         mBitmap = bitmap;

@@ -50,7 +50,7 @@ final class ImageReader {
             //noinspection ResultOfMethodCallIgnored
             imageRequest.getFile().setLastModified(System.currentTimeMillis());
 
-            RecycleBitmapImpl bitmap = mBitmapRecycler.getUnused(imageRequest.getSpec());
+            ReusableBitmapImpl bitmap = mBitmapRecycler.getUnused(imageRequest.getSpec());
             mOptions.inBitmap = bitmap != null ? bitmap.getBitmap() : null;
             mOptions.inPreferredConfig = imageRequest.getSpec().getPixelConfig();
 
@@ -70,7 +70,7 @@ final class ImageReader {
                 }
                 if (bitmap == null) {
                     // create cached bitmap wrapper with new raw bitmap
-                    bitmap = new RecycleBitmapImpl(rawBitmap, imageRequest.getSpec());
+                    bitmap = new ReusableBitmapImpl(rawBitmap, imageRequest.getSpec());
                     imageRequest.setBitmap(bitmap);
                 }
             } else {

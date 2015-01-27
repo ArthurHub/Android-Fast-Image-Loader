@@ -18,7 +18,7 @@ import android.util.AttributeSet;
 import android.widget.ImageView;
 
 /**
- * TODO:a add doc
+ * {@link ImageView} with embedded handling of loading image using {@link FastImageLoader} and managing its lifecycle.
  */
 public class TargetImageView extends ImageView {
 
@@ -63,7 +63,7 @@ public class TargetImageView extends ImageView {
     public void setImageDrawable(Drawable drawable) {
         super.setImageDrawable(drawable);
         if (drawable == null) {
-            mHandler.clearUsedBitmap(true);
+            mHandler.clearUsedBitmap();
         }
     }
 
@@ -71,14 +71,14 @@ public class TargetImageView extends ImageView {
      * See: {@link #loadImage(String, ImageLoadSpec, ImageLoadSpec, boolean)}.
      */
     public void loadImage(String url, ImageLoadSpec spec) {
-        loadImage(url, spec, null, false);
+        mHandler.loadImage(url, spec, null, false);
     }
 
     /**
      * See: {@link #loadImage(String, ImageLoadSpec, ImageLoadSpec, boolean)}.
      */
     public void loadImage(String url, ImageLoadSpec spec, ImageLoadSpec altSpec) {
-        loadImage(url, spec, altSpec, false);
+        mHandler.loadImage(url, spec, altSpec, false);
     }
 
     /**
@@ -89,20 +89,7 @@ public class TargetImageView extends ImageView {
      * @param altSpec optional: the spec to use for memory cached image in case the primary is not found.
      * @param force true - force image load even if it is the same source
      */
-    protected void loadImage(String url, ImageLoadSpec spec, ImageLoadSpec altSpec, boolean force) {
+    public void loadImage(String url, ImageLoadSpec spec, ImageLoadSpec altSpec, boolean force) {
         mHandler.loadImage(url, spec, altSpec, force);
-    }
-
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        mHandler.attachedToWindow();
-
-    }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        mHandler.detachedFromWindow();
     }
 }

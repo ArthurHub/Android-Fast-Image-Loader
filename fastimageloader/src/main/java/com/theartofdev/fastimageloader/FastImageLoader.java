@@ -142,5 +142,4 @@ public final class FastImageLoader {
             throw new IllegalStateException("Fast Image Loader is NOT initialized, call init(...)");
         }
     }
-
 }

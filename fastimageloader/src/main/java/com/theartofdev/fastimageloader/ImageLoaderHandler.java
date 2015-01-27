@@ -142,7 +142,7 @@ final class ImageLoaderHandler implements ImageDiskCache.GetCallback, ImageDownl
 
                 String enhancedUrl = mUrlEnhancer.enhance(url, spec);
 
-                RecycleBitmapImpl image = mMemoryCache.get(url, spec);
+                ReusableBitmapImpl image = mMemoryCache.get(url, spec);
                 if (image != null) {
                     mMemoryHits++;
                     target.onBitmapLoaded(image, LoadedFrom.MEMORY);

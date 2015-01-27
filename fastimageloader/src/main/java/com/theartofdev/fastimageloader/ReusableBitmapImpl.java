@@ -13,12 +13,13 @@
 package com.theartofdev.fastimageloader;
 
 import android.graphics.Bitmap;
-import android.text.TextUtils;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Wrap Bitmap object to know if it is currently in use.
  */
-final class RecycleBitmapImpl implements RecycleBitmap {
+final class ReusableBitmapImpl implements ReusableBitmap {
 
     //region: Fields and Consts
 
@@ -40,7 +41,7 @@ final class RecycleBitmapImpl implements RecycleBitmap {
     /**
      * Is the bitmap is currently in use
      */
-    private int mInUse;
+    private AtomicInteger mInUse = new AtomicInteger();
 
     /**
      * Is the bitmap is currently in use by loading, not real use
@@ -62,7 +63,7 @@ final class RecycleBitmapImpl implements RecycleBitmap {
      * @param bitmap The actual bitmap
      * @param spec the spec to load the image by
      */
-    public RecycleBitmapImpl(Bitmap bitmap, ImageLoadSpec spec) {
+    public ReusableBitmapImpl(Bitmap bitmap, ImageLoadSpec spec) {
         Utils.notNull(bitmap, "bitmap");
         Utils.notNull(spec, "spec");
         mBitmap = bitmap;
@@ -74,21 +75,12 @@ final class RecycleBitmapImpl implements RecycleBitmap {
         return mBitmap;
     }
 
-    /**
-     * the spec to load the image by
-     */
+    @Override
     public ImageLoadSpec getSpec() {
         return mSpec;
     }
 
     @Override
-    public boolean isMatchingUrl(String url) {
-        return TextUtils.equals(mBitmapUrl, url);
-    }
-
-    /**
-     * the URL of the loaded image in the bitmap.
-     */
     public String getUrl() {
         return mBitmapUrl;
     }
@@ -103,14 +95,18 @@ final class RecycleBitmapImpl implements RecycleBitmap {
 
     @Override
     public boolean isInUse() {
-        return mInUse > 0 || mInLoadUse;
+        return mInUse.get() > 0 || mInLoadUse;
     }
 
     @Override
-    public void setInUse(boolean inUse) {
-        mInUse += inUse ? 1 : -1;
-        if (inUse)
-            mInLoadUse = false;
+    public void incrementInUse() {
+        mInUse.incrementAndGet();
+        mInLoadUse = false;
+    }
+
+    @Override
+    public void decrementInUse() {
+        mInUse.decrementAndGet();
     }
 
     /**
@@ -150,7 +146,7 @@ final class RecycleBitmapImpl implements RecycleBitmap {
         return "RecycleBitmap{" +
                 "hash=" + hashCode() +
                 ", mSpec='" + mSpec + '\'' +
-                ", mInUse=" + mInUse +
+                ", mInUse=" + mInUse.get() +
                 ", mInLoadUse=" + mInLoadUse +
                 ", mRecycleCount=" + mRecycleCount +
                 ", mClosed=" + mClosed +
