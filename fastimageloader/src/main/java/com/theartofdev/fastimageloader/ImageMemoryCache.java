@@ -12,6 +12,8 @@
 
 package com.theartofdev.fastimageloader;
 
+import android.content.ComponentCallbacks2;
+
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -190,159 +192,35 @@ final class ImageMemoryCache {
     /**
      * Handle trim memory event to release image caches on memory pressure.
      */
-    @SuppressWarnings("UnusedDeclaration")
-    //    public void onEvent(TrimMemoryEvent event) {
-    //        switch (event.getLevel()) {
-    //            case UI_HIDDEN:
-    //                //mLargeCache.trimToSize(.7f, false);
-    //                break;
-    //            case BACKGROUND:
-    //                //mLargeCache.trimToSize(.5f, false);
-    //                break;
-    //            case MODERATE:
-    //            case RUNNING_MODERATE:
-    //                //mLargeCache.trimToSize(.4f, false);
-    //                break;
-    //            case RUNNING_LOW:
-    //                //mLargeCache.trimToSize(.2f, false);
-    //                break;
-    //            case RUNNING_CRITICAL:
-    //            case COMPLETE:
-    //                //mLargeCache.trimToSize(0, false);
-    //                break;
-    //        }
-    //    }
-
-    //region: Inner class: RecycleCache
-
-    /**
-     * A memory cache which uses a least-recently used eviction policy.
-     */
-    private final class LruCache {
-
-        //region: Fields and Consts
-
-        private final String mName;
-
-        private final LinkedList<String> mList;
-
-        private final Map<String, ReusableBitmapImpl> mMap;
-
-        private final int mMaxItems;
-
-        private final int mMaxSize;
-
-        private int mSize;
-        //endregion
-
-        /**
-         * Create a cache with a given maximum items.
-         */
-        public LruCache(String name, int maxItems, int maxSize) {
-
-            mName = name;
-            mMaxItems = maxItems;
-            mMaxSize = maxSize;
-            mList = new LinkedList<>();
-            mMap = new LinkedHashMap<>(0, 0.75f);
+    public void onTrimMemory(int level) {
+        switch (level) {
+            case ComponentCallbacks2.TRIM_MEMORY_BACKGROUND:
+                releaseUnUsedBitmaps(1);
+                break;
+            case ComponentCallbacks2.TRIM_MEMORY_MODERATE:
+            case ComponentCallbacks2.TRIM_MEMORY_RUNNING_MODERATE:
+            case ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW:
+            case ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL:
+            case ComponentCallbacks2.TRIM_MEMORY_COMPLETE:
+                releaseUnUsedBitmaps(0);
+                break;
         }
+    }
 
-        /**
-         * Get cached item by key if exists.
-         */
-        public ReusableBitmapImpl get(String key) {
-            ReusableBitmapImpl value = mMap.get(key);
-            if (value != null) {
-                mList.remove(key);
-                mList.addFirst(key);
-            }
-            return value;
-        }
-
-        /**
-         * Add given item to cache, evict items if cache size is reached.
-         */
-        public void put(String key, ReusableBitmapImpl bitmap) {
-            if (!mMap.containsKey(key)) {
-                mList.addFirst(key);
-                mMap.put(key, bitmap);
-                mSize += bitmap.getBitmap().getByteCount();
-                if (mList.size() > mMaxItems || mSize > mMaxSize)
-                    trimToSize(.9f, true);
-            }
-        }
-
-        /**
-         * Trim the items kept in the cache to the given ration from max count/size.
-         */
-        private void trimToSize(float ratio, boolean recycle) {
-            int maxItems = (int) (mMaxItems * ratio);
-            int maxSize = (int) (mMaxSize * ratio);
-            if (mList.size() > maxItems || mSize > maxSize) {
-                trimToSize(maxItems, maxSize, recycle);
-            }
-        }
-
-        /**
-         * Trim the items kept in the cache to the given count and size.
-         */
-        private void trimToSize(int maxItems, int maxSize, boolean recycle) {
-            Logger.debug("trim image cache to size [{}] [{}] [{}] [{}]", mName, maxItems, maxSize, recycle);
-            for (Iterator<String> iterator = mList.descendingIterator(); iterator.hasNext() && (mList.size() > maxItems || mSize > maxSize); ) {
-                String toEvict = iterator.next();
-                ReusableBitmapImpl toEvictBitmap = mMap.get(toEvict);
-                if (toEvictBitmap != null) {
-                    if (toEvictBitmap.canBeRecycled()) {
-                        iterator.remove();
-                        mSize -= toEvictBitmap.getBitmap().getByteCount();
-                        mMap.remove(toEvict);
-
-                        //                        if (recycle)
-                        //                            mBitmapRecycler.add(toEvictBitmap);
-                        //                        else
-                        //                            toEvictBitmap.close();
-                    }
-                } else {
-                    iterator.remove();
+    private void releaseUnUsedBitmaps(int grace) {
+        Logger.debug("trim image cache to size [{}]", grace);
+        for (LinkedList<ReusableBitmapImpl> list : mBitmapsCachePool.values()) {
+            int listGrace = grace;
+            Iterator<ReusableBitmapImpl> iter = list.iterator();
+            while (iter.hasNext()) {
+                ReusableBitmapImpl bitmap = iter.next();
+                if (!bitmap.isInUse() && listGrace-- < 1) {
+                    mThrown++;
+                    iter.remove();
+                    bitmap.close();
                 }
             }
         }
-
-        /**
-         * Clear the cache.
-         */
-        public void evictAll() {
-            trimToSize(-1, true);
-        }
-
-        /**
-         * Returns the number of cached items in this cache.
-         */
-        public int items() {
-            return mList.size();
-        }
-
-        /**
-         * Returns the sum of the sizes of the entries in this cache.
-         */
-        public int size() {
-            return mSize;
-        }
-
-        /**
-         * Returns the maximum number of items in this cache.
-         */
-        public int getMaxItems() {
-            return mMaxItems;
-        }
-
-        /**
-         * Returns the maximum sum of the sizes of the items in this cache.
-         */
-        public int maxSize() {
-            return mMaxSize;
-        }
     }
-    //endregion
 }
 

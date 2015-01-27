@@ -12,7 +12,9 @@
 
 package com.theartofdev.fastimageloader;
 
-import android.content.Context;
+import android.app.Application;
+import android.content.ComponentCallbacks2;
+import android.content.res.Configuration;
 import android.os.Handler;
 import android.text.TextUtils;
 
@@ -25,7 +27,7 @@ import java.util.Map;
 /**
  * Handler for image loading using memory/disk cache and other features.
  */
-final class ImageLoaderHandler implements ImageDiskCache.GetCallback, ImageDownloader.Callback {
+final class ImageLoadHandler implements ImageDiskCache.GetCallback, ImageDownloader.Callback, ComponentCallbacks2 {
 
     //region: Fields and Consts
 
@@ -90,11 +92,11 @@ final class ImageLoaderHandler implements ImageDiskCache.GetCallback, ImageDownl
      *
      * @param client the OkHttp client to use to download the images.
      */
-    public ImageLoaderHandler(Context context, OkHttpClient client, UriEnhancer urlEnhancer) {
+    public ImageLoadHandler(Application application, OkHttpClient client, UriEnhancer urlEnhancer) {
 
         mUrlEnhancer = urlEnhancer;
 
-        mCacheFolder = new File(Utils.pathCombine(context.getCacheDir().getPath(), "ImageCache"));
+        mCacheFolder = new File(Utils.pathCombine(application.getCacheDir().getPath(), "ImageCache"));
 
         //noinspection ResultOfMethodCallIgnored
         mCacheFolder.mkdirs();
@@ -103,9 +105,11 @@ final class ImageLoaderHandler implements ImageDiskCache.GetCallback, ImageDownl
 
         Handler handler = new Handler();
         ImageReader imageReader = new ImageReader(mMemoryCache);
-        mDiskCache = new ImageDiskCache(context, handler, imageReader, mCacheFolder);
+        mDiskCache = new ImageDiskCache(application, handler, imageReader, mCacheFolder);
 
         mDownloader = new ImageDownloader(client, handler, imageReader);
+
+        application.registerComponentCallbacks(this);
     }
 
     /**
@@ -286,6 +290,21 @@ final class ImageLoaderHandler implements ImageDiskCache.GetCallback, ImageDownl
         }
         String name = Integer.toHexString(uri.substring(0, lastSlash).hashCode()) + "_" + uri.substring(lastSlash + 1).hashCode();
         return new File(Utils.pathCombine(mCacheFolder.getAbsolutePath(), name));
+    }
+
+    @Override
+    public void onTrimMemory(int level) {
+        mMemoryCache.onTrimMemory(level);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+
+    }
+
+    @Override
+    public void onLowMemory() {
+        mMemoryCache.onTrimMemory(0);
     }
     //endregion
 }

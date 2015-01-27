@@ -33,7 +33,7 @@ public final class FastImageLoader {
     /**
      * Handler for image loading logic
      */
-    private ImageLoaderHandler mImageLoaderHandler;
+    private ImageLoadHandler mImageLoadHandler;
 
     /**
      * Android application to init by
@@ -71,7 +71,7 @@ public final class FastImageLoader {
     public static FastImageLoader init(Application application) {
         Utils.notNull(application, "context");
 
-        if (INST.mImageLoaderHandler == null) {
+        if (INST.mImageLoadHandler == null) {
             INST.mApplication = application;
             Utils.density = application.getResources().getDisplayMetrics().density;
             return INST;
@@ -116,20 +116,20 @@ public final class FastImageLoader {
      */
     public static void loadImage(Target target, ImageLoadSpec altSpec) {
         Utils.notNull(target, "target");
-        if (INST.mImageLoaderHandler == null) {
+        if (INST.mImageLoadHandler == null) {
             finishInit();
         }
-        INST.mImageLoaderHandler.loadImage(target, altSpec);
+        INST.mImageLoadHandler.loadImage(target, altSpec);
     }
 
     /**
      * Clear the disk image cache, deleting all cached images.
      */
     public static void clearDiskCache() {
-        if (INST.mImageLoaderHandler == null) {
+        if (INST.mImageLoadHandler == null) {
             finishInit();
         }
-        INST.mImageLoaderHandler.clearDiskCache();
+        INST.mImageLoadHandler.clearDiskCache();
     }
 
     /**
@@ -145,7 +145,7 @@ public final class FastImageLoader {
             if (INST.mUriEnhancer == null) {
                 INST.mUriEnhancer = new UriEnhancerIdentity();
             }
-            INST.mImageLoaderHandler = new ImageLoaderHandler(INST.mApplication, INST.mHttpClient, INST.mUriEnhancer);
+            INST.mImageLoadHandler = new ImageLoadHandler(INST.mApplication, INST.mHttpClient, INST.mUriEnhancer);
         } else {
             throw new IllegalStateException("Fast Image Loader is NOT initialized, call init(...)");
         }
