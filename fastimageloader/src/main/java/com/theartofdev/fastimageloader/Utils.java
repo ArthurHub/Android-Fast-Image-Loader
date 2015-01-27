@@ -12,6 +12,8 @@
 
 package com.theartofdev.fastimageloader;
 
+import android.app.Application;
+import android.graphics.Point;
 import android.graphics.RectF;
 import android.text.TextUtils;
 
@@ -31,6 +33,11 @@ final class Utils {
     static final RectF mRect = new RectF();
 
     /**
+     * The android application object
+     */
+    public static Application application;
+
+    /**
      * the logical density of the display.
      */
     public static float density = 1;
@@ -39,6 +46,11 @@ final class Utils {
      * If to show indicator if the image was loaded from MEMORY/DISK/NETWORK.
      */
     public static boolean debugIndicator;
+
+    /**
+     * the size of the device display
+     */
+    public static Point displaySize = new Point();
 
     /**
      * Validate given argument isn't null.

@@ -13,6 +13,9 @@
 package com.theartofdev.fastimageloader;
 
 import android.app.Application;
+import android.content.Context;
+import android.view.Display;
+import android.view.WindowManager;
 
 import com.squareup.okhttp.OkHttpClient;
 
@@ -73,7 +76,14 @@ public final class FastImageLoader {
 
         if (INST.mImageLoadHandler == null) {
             INST.mApplication = application;
+
+            Utils.application = application;
+
             Utils.density = application.getResources().getDisplayMetrics().density;
+
+            Display display = ((WindowManager) application.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+            display.getSize(Utils.displaySize);
+
             return INST;
         } else {
             throw new IllegalStateException("Fast Image Loader is already initialized");

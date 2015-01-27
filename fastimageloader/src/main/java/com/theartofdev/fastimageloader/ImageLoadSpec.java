@@ -15,7 +15,10 @@ package com.theartofdev.fastimageloader;
 import android.graphics.Bitmap;
 
 /**
- * The image loading spec data.
+ * The image loading spec data.<br/>
+ * <p/>
+ * equals and hashCode are used to match image request that can reuse bitmaps by spec, so it
+ * contains only the config that define unique reusable bitmap.
  */
 public final class ImageLoadSpec {
 
@@ -44,7 +47,8 @@ public final class ImageLoadSpec {
 
     /**
      * Init image loading spec.
-     *  @param width the width of the image in pixels
+     *
+     * @param width the width of the image in pixels
      * @param height the height of the image in pixels
      * @param format The format of the image.
      * @param pixelConfig the pixel configuration to load the image in (4 bytes per image pixel, 2 bytes, etc.)
@@ -82,6 +86,13 @@ public final class ImageLoadSpec {
      */
     public Bitmap.Config getPixelConfig() {
         return mPixelConfig;
+    }
+
+    /**
+     * Is the spec define specific width and height for the image.
+     */
+    public boolean isSizeBounded() {
+        return mWidth > 0 && mHeight > 0;
     }
 
     @Override

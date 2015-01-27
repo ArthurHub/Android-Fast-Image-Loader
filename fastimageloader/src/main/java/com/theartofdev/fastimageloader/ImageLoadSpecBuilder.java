@@ -15,7 +15,12 @@ package com.theartofdev.fastimageloader;
 import android.graphics.Bitmap;
 
 /**
- * TODO:a add doc
+ * Builder for creating {@link com.theartofdev.fastimageloader.ImageLoadSpec} instances.
+ * <p/>
+ * Defaults:<br/>
+ * Format - JPEG<br/>
+ * Max Density - 1.5<br/>
+ * Pixel Config - ARGB_8888<br/>
  */
 public final class ImageLoadSpecBuilder {
 
@@ -50,8 +55,9 @@ public final class ImageLoadSpecBuilder {
     /**
      * The format of the image to download.
      */
-    public void setFormat(ImageLoadSpec.Format format) {
+    public ImageLoadSpecBuilder setFormat(ImageLoadSpec.Format format) {
         mFormat = format;
+        return this;
     }
 
     /**
@@ -59,6 +65,15 @@ public final class ImageLoadSpecBuilder {
      */
     public ImageLoadSpecBuilder setPixelConfig(Bitmap.Config pixelConfig) {
         mPixelConfig = pixelConfig;
+        return this;
+    }
+
+    /**
+     * the width and height of the image in pixels to the size of the screen.
+     */
+    public ImageLoadSpecBuilder setDimensionByDisplay() {
+        mWidth = Utils.displaySize.x;
+        mHeight = Utils.displaySize.y;
         return this;
     }
 
@@ -81,6 +96,55 @@ public final class ImageLoadSpecBuilder {
     }
 
     /**
+     * the width of the image in pixels.
+     */
+    public ImageLoadSpecBuilder setWidth(int width) {
+        mWidth = width;
+        return this;
+    }
+
+    /**
+     * the height of the image in pixels.
+     */
+    public ImageLoadSpecBuilder setHeight(int height) {
+        mHeight = height;
+        return this;
+    }
+
+    /**
+     * the width and height of the image in pixels to the same value (square).
+     */
+    public ImageLoadSpecBuilder setDimensionByResource(int resId) {
+        mWidth = mHeight = Utils.application.getResources().getDimensionPixelSize(resId);
+        return this;
+    }
+
+    /**
+     * the width and height of the image in pixels.
+     */
+    public ImageLoadSpecBuilder setDimensionByResource(int widthResId, int heightResId) {
+        mWidth = Utils.application.getResources().getDimensionPixelSize(widthResId);
+        mHeight = Utils.application.getResources().getDimensionPixelSize(heightResId);
+        return this;
+    }
+
+    /**
+     * the width of the image by reading dimension resource by the given key.
+     */
+    public ImageLoadSpecBuilder setWidthByResource(int resId) {
+        mWidth = Utils.application.getResources().getDimensionPixelSize(resId);
+        return this;
+    }
+
+    /**
+     * the height of the image by reading dimension resource by the given key.
+     */
+    public ImageLoadSpecBuilder setHeightByResource(int resId) {
+        mHeight = Utils.application.getResources().getDimensionPixelSize(resId);
+        return this;
+    }
+
+    /**
      * the max pixel per inch density to load the image in
      */
     public ImageLoadSpecBuilder setMaxDensity(float maxDensity) {
@@ -94,10 +158,9 @@ public final class ImageLoadSpecBuilder {
      * Create spec by set parameters.
      */
     public ImageLoadSpec build() {
-        if (mWidth < 1)
-            throw new IllegalArgumentException("width must be set");
-        if (mHeight < 1)
-            throw new IllegalArgumentException("height must be set");
+        if (mWidth < 1 && mHeight < 1)
+            throw new IllegalArgumentException("width and height must be set, or not set together");
+
         float densityAdj = Utils.density > mMaxDensity ? mMaxDensity / Utils.density : 1f;
         return new ImageLoadSpec((int) (mWidth * densityAdj), (int) (mHeight * densityAdj), mFormat, mPixelConfig);
     }
