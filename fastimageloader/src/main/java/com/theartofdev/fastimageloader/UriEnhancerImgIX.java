@@ -34,8 +34,11 @@ public class UriEnhancerImgIX implements UriEnhancer {
 
         sb.append("fit=crop&");
 
-        sb.append("w=").append(spec.getWidth()).append("&");
-        sb.append("h=").append(spec.getHeight());
-        return sb.toString();
+        if (spec.isSizeBounded()) {
+            sb.append("w=").append(spec.getWidth()).append('&');
+            sb.append("h=").append(spec.getHeight()).append('&');
+        }
+
+        return sb.toString().substring(0, sb.length() - 1);
     }
 }

@@ -27,6 +27,10 @@ public class UriEnhancerThumbor implements UriEnhancer {
     private final String mBaseUri;
     //endregion
 
+    protected UriEnhancerThumbor() {
+        mBaseUri = null;
+    }
+
     /**
      * @param baseUri the thumbor base URI
      */
@@ -41,21 +45,33 @@ public class UriEnhancerThumbor implements UriEnhancer {
 
     @Override
     public String enhance(String url, ImageLoadSpec spec) {
+        return createUri(mBaseUri, url, spec);
+    }
+
+    /**
+     * Create thumbor URI from thumbor and image parts for the given spec.
+     */
+    protected String createUri(String thumborPart, String imagePort, ImageLoadSpec spec) {
         StringBuilder sb = new StringBuilder();
-        sb.append(mBaseUri);
-        sb.append("/unsafe/");
-        sb.append(spec.getWidth());
-        sb.append("x");
-        sb.append(spec.getHeight());
+
+        sb.append(thumborPart);
+        sb.append("/unsafe");
+
+        if (spec.isSizeBounded()) {
+            sb.append("/").append(spec.getWidth()).append("x").append(spec.getHeight());
+        }
+
         sb.append("/filters:fill(fff,true)");
+
         if (spec.getFormat() == ImageLoadSpec.Format.JPEG)
             sb.append(":format(jpeg)");
         else if (spec.getFormat() == ImageLoadSpec.Format.PNG)
             sb.append(":format(png)");
         else if (spec.getFormat() == ImageLoadSpec.Format.WEBP)
             sb.append(":format(webp)");
-        sb.append("/");
-        sb.append(url);
+
+        sb.append("/").append(imagePort);
+
         return sb.toString();
     }
 }

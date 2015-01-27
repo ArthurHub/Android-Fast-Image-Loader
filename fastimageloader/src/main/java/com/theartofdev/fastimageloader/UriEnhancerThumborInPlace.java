@@ -17,7 +17,7 @@ package com.theartofdev.fastimageloader;
  * Add image load specification into the path of the image URL.<br/>
  * The image URI is already Thumbor URI, add Thumbor parameters in the middle of the URI.
  */
-public class UriEnhancerThumborInPlace implements UriEnhancer {
+public class UriEnhancerThumborInPlace extends UriEnhancerThumbor {
 
     /**
      * the path part that split the thumbor URI part from image part.
@@ -38,23 +38,7 @@ public class UriEnhancerThumborInPlace implements UriEnhancer {
         if (idx > -1) {
             String thumborPart = url.substring(0, idx);
             String imagePart = url.substring(idx + mPathPartSplit.length());
-
-            StringBuilder sb = new StringBuilder();
-            sb.append(thumborPart);
-            sb.append("/unsafe/");
-            sb.append(spec.getWidth());
-            sb.append("x");
-            sb.append(spec.getHeight());
-            sb.append("/filters:fill(fff,true)");
-            if (spec.getFormat() == ImageLoadSpec.Format.JPEG)
-                sb.append(":format(jpeg)");
-            else if (spec.getFormat() == ImageLoadSpec.Format.PNG)
-                sb.append(":format(png)");
-            else if (spec.getFormat() == ImageLoadSpec.Format.WEBP)
-                sb.append(":format(webp)");
-            sb.append("/");
-            sb.append(imagePart);
-            return sb.toString();
+            return createUri(thumborPart, imagePart, spec);
         }
         return url;
     }
