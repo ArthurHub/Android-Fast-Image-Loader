@@ -123,6 +123,16 @@ public final class FastImageLoader {
     }
 
     /**
+     * Clear the disk image cache, deleting all cached images.
+     */
+    public static void clearDiskCache() {
+        if (INST.mImageLoaderHandler == null) {
+            finishInit();
+        }
+        INST.mImageLoaderHandler.clearDiskCache();
+    }
+
+    /**
      * Finish the initialization process.
      */
     private static void finishInit() {

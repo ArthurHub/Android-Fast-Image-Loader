@@ -176,6 +176,13 @@ final class ImageLoaderHandler implements ImageDiskCache.GetCallback, ImageDownl
         }
     }
 
+    /**
+     * Clear the disk image cache, deleting all cached images.
+     */
+    public void clearDiskCache() {
+        mDiskCache.clear();
+    }
+
     //region: Private methods
 
     /**

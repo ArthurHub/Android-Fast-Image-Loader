@@ -51,14 +51,9 @@ final class ImageDiskCache {
     private static final long MAX_SIZE = 50 * 1024 * 1024;
 
     /**
-     * The max size to start deleting cached data
-     */
-    private static final long MAX_SIZE_UPPER_BOUND = (long) (MAX_SIZE * 1.1);
-
-    /**
      * The bound to delete cached data to this size
      */
-    private static final long MAX_SIZE_LOWER_BOUND = (long) (MAX_SIZE * 0.9);
+    private static final long MAX_SIZE_LOWER_BOUND = (long) (MAX_SIZE * .8);
 
     /**
      * The max time image is cached without use before delete
@@ -143,8 +138,6 @@ final class ImageDiskCache {
 
         mScanExecutorService = new ThreadPoolExecutor(0, 1, 10, TimeUnit.SECONDS,
                 new LinkedBlockingQueue<Runnable>(), Util.threadFactory("ImageCacheScan", true));
-
-        // clear();
     }
 
     /**
@@ -183,7 +176,7 @@ final class ImageDiskCache {
      */
     public void imageAdded(long size) {
         mCurrentCacheSize += size;
-        if (mLastCacheScanTime < 1 || mLastCacheScanTime + SCAN_INTERVAL < System.currentTimeMillis() || mCurrentCacheSize > MAX_SIZE_UPPER_BOUND) {
+        if (mLastCacheScanTime < 1 || mLastCacheScanTime + SCAN_INTERVAL < System.currentTimeMillis() || mCurrentCacheSize > MAX_SIZE) {
             mScanExecutorService.execute(new Runnable() {
                 @Override
                 public void run() {
@@ -197,15 +190,24 @@ final class ImageDiskCache {
      * Clear all the cached files.
      */
     public void clear() {
-        String[] list = mCacheFolder.list();
-        for (String filePath : list) {
-            File f = new File(Utils.pathCombine(mCacheFolder.getAbsolutePath(), filePath));
-            //noinspection ResultOfMethodCallIgnored
-            f.delete();
-        }
-        mCurrentCacheSize = 0;
-        mLastCacheScanTime = System.currentTimeMillis();
-        saveStats();
+        mReadExecutorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                String[] list = mCacheFolder.list();
+                for (String filePath : list) {
+                    try {
+                        File file = new File(Utils.pathCombine(mCacheFolder.getAbsolutePath(), filePath));
+                        //noinspection ResultOfMethodCallIgnored
+                        file.delete();
+                    } catch (Exception e) {
+                        Logger.warn("Failed to delete disk cached image", e);
+                    }
+                }
+                mCurrentCacheSize = 0;
+                mLastCacheScanTime = System.currentTimeMillis();
+                saveStats();
+            }
+        });
     }
 
     /**
@@ -243,7 +245,7 @@ final class ImageDiskCache {
             if (mLastCacheScanTime < 1) {
                 loadStats();
             }
-            if (mLastCacheScanTime + SCAN_INTERVAL < System.currentTimeMillis() || mCurrentCacheSize > MAX_SIZE_UPPER_BOUND) {
+            if (mLastCacheScanTime + SCAN_INTERVAL < System.currentTimeMillis() || mCurrentCacheSize > MAX_SIZE) {
                 long startTime = System.currentTimeMillis();
                 try {
                     long totalSize = 0;
@@ -267,7 +269,7 @@ final class ImageDiskCache {
                     }
 
                     // if cache max size reached, need to delete LRU images
-                    if (totalSize > MAX_SIZE_UPPER_BOUND) {
+                    if (totalSize > MAX_SIZE) {
 
                         // sort all cached files by last access date
                         Arrays.sort(allImages, new Comparator<File>() {
