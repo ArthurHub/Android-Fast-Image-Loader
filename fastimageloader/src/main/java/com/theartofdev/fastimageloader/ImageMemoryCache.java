@@ -107,18 +107,31 @@ final class ImageMemoryCache {
             LinkedList<ReusableBitmapImpl> list = mBitmapsCachePool.get(spec);
             if (list != null) {
                 Iterator<ReusableBitmapImpl> iter = list.iterator();
-                while (iter.hasNext()) {
-                    ReusableBitmapImpl bitmap = iter.next();
-                    if (!bitmap.isInUse()) {
-                        iter.remove();
-                        mReUsed++;
-                        bitmap.setInLoadUse(true);
-                        return bitmap;
+                if (spec.isSizeBounded()) {
+                    while (iter.hasNext()) {
+                        ReusableBitmapImpl bitmap = iter.next();
+                        if (!bitmap.isInUse()) {
+                            iter.remove();
+                            mReUsed++;
+                            bitmap.setInLoadUse(true);
+                            return bitmap;
+                        }
+                    }
+                } else {
+                    // don't keep unbounded bitmaps (only 2 to be nice on quick return)
+                    int grace = 2;
+                    while (iter.hasNext()) {
+                        ReusableBitmapImpl bitmap = iter.next();
+                        if (!bitmap.isInUse() && grace-- < 1) {
+                            mThrown++;
+                            iter.remove();
+                            bitmap.close();
+                        }
                     }
                 }
             }
-            return null;
         }
+        return null;
     }
 
     /**
@@ -140,10 +153,10 @@ final class ImageMemoryCache {
     }
 
     /**
-     * Clears the cache.
+     * Clears the cache/pool.
      */
     public void clear() {
-        // mLargeCache.evictAll();
+        releaseUnUsedBitmaps(0);
     }
 
     /**
