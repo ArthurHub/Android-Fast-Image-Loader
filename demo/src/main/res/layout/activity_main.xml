@@ -1,6 +1,23 @@
-<android.support.v7.widget.RecyclerView
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/recycler_view"
-    android:scrollbars="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"/>
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#fdfdfd">
+
+    <com.astuetz.PagerSlidingTabStrip
+        android:id="@+id/pager_tabs"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="#18000000"
+        app:pstsShouldExpand="true"
+        app:pstsIndicatorColor="#42000000"
+        app:pstsIndicatorHeight="4dp"/>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+</LinearLayout>

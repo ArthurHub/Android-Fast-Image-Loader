@@ -16,6 +16,13 @@ android {
 dependencies {
     compile project(':fastimageloader')
 
+    compile 'com.google.code.gson:gson:2.3.1'
+    compile 'com.squareup.okhttp:okhttp:2.2.0'
+    compile 'com.squareup.retrofit:retrofit:1.9.0'
+
+    compile 'com.jpardogo.materialtabstrip:library:1.0.8'
+
     compile 'com.android.support:appcompat-v7:21.0.3'
     compile "com.android.support:recyclerview-v7:21.0.3"
+    compile "com.android.support:support-v13:21.0.3"
 }
