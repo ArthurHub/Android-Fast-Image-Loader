@@ -19,6 +19,8 @@ import com.theartofdev.fastimageloader.ImageLoadSpec;
  */
 public class Specs {
 
+    public static ImageLoadSpec UNBOUNDED;
+
     public static ImageLoadSpec IMAGE;
 }
 

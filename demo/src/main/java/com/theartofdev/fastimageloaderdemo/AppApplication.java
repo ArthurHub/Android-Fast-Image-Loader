@@ -29,9 +29,14 @@ public class AppApplication extends Application {
                 .setUriEnhancer(new UriEnhancerImgIX())
                 .setDebugIndicator(true);
 
+        Specs.UNBOUNDED = new ImageLoadSpecBuilder()
+                .setUnboundDimension()
+                .setPixelConfig(Bitmap.Config.RGB_565)
+                .build();
+
         Specs.IMAGE = new ImageLoadSpecBuilder()
                 .setDimensionByDisplay()
-                .setHeightByResource(getResources().getDimensionPixelSize(R.dimen.image_height))
+                .setHeightByResource(R.dimen.image_height)
                 .setPixelConfig(Bitmap.Config.RGB_565)
                 .build();
     }

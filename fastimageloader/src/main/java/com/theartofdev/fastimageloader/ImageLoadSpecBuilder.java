@@ -29,12 +29,12 @@ public final class ImageLoadSpecBuilder {
     /**
      * the width of the image in pixels
      */
-    private int mWidth;
+    private int mWidth = -1;
 
     /**
      * the height of the image in pixels
      */
-    private int mHeight;
+    private int mHeight = -1;
 
     /**
      * the max pixel per inch density to load the image in
@@ -74,6 +74,15 @@ public final class ImageLoadSpecBuilder {
     public ImageLoadSpecBuilder setDimensionByDisplay() {
         mWidth = Utils.displaySize.x;
         mHeight = Utils.displaySize.y;
+        return this;
+    }
+
+    /**
+     * the width and height of the image to unbound, will be the size of the downloaded image.
+     */
+    public ImageLoadSpecBuilder setUnboundDimension() {
+        mWidth = 0;
+        mHeight = 0;
         return this;
     }
 
@@ -158,8 +167,10 @@ public final class ImageLoadSpecBuilder {
      * Create spec by set parameters.
      */
     public ImageLoadSpec build() {
-        if (mWidth < 1 && mHeight < 1)
-            throw new IllegalArgumentException("width and height must be set, or not set together");
+        if (mWidth < 0 || mHeight < 0)
+            throw new IllegalArgumentException("width and height must be set");
+        if ((mWidth == 0 && mHeight > 0) || (mHeight == 0 && mWidth > 0))
+            throw new IllegalArgumentException("width and height must be either unbound or both positive");
 
         float densityAdj = Utils.density > mMaxDensity ? mMaxDensity / Utils.density : 1f;
         return new ImageLoadSpec((int) (mWidth * densityAdj), (int) (mHeight * densityAdj), mFormat, mPixelConfig);
