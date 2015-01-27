@@ -10,16 +10,14 @@
 // - Sun Tsu,
 // "The Art of War"
 
-package com.theartofdev.fastimageloader.enhancer;
-
-import com.theartofdev.fastimageloader.ImageLoadSpec;
+package com.theartofdev.fastimageloader;
 
 /**
  * URL enhancer for thumbor (http://thumbor.org/) service.<br/>
  * Add image load specification into the path of the image URL.<br/>
  * Using Thumbor service URI to build new URI with the image URI as suffix.
  */
-public class ThumborUriEnhancer implements ImageServiceUriEnhancer {
+public class UriEnhancerThumbor implements UriEnhancer {
 
     //region: Fields and Consts
 
@@ -32,9 +30,9 @@ public class ThumborUriEnhancer implements ImageServiceUriEnhancer {
     /**
      * @param baseUri the thumbor base URI
      */
-    public ThumborUriEnhancer(String baseUri) {
-        if (baseUri == null || baseUri.length() < 1)
-            throw new IllegalArgumentException("argument is null: " + baseUri);
+    public UriEnhancerThumbor(String baseUri) {
+        Utils.notNullOrEmpty(baseUri, "baseUri");
+
         baseUri = baseUri.trim();
         if (baseUri.endsWith("/"))
             baseUri = baseUri.substring(0, baseUri.length() - 2);

@@ -297,14 +297,14 @@ final class ImageDiskCache {
 
                     saveStats();
 
-                    ULogger.info("Image disk cache scan complete [Before: {} / {}K] [After: {} / {}K] [Delete TTL: {}] [Delete size: {}]",
+                    Logger.info("Image disk cache scan complete [Before: {} / {}K] [After: {} / {}K] [Delete TTL: {}] [Delete size: {}]",
                             allImages.length, totalSizeFull / 1024, allImages.length - deleteByTTL - deleteByMaxSize, totalSize / 1024, deleteByTTL, deleteByMaxSize);
                 } finally {
-                    ULogger.info("ImageCacheScan [{}]", System.currentTimeMillis() - startTime);
+                    Logger.info("ImageCacheScan [{}]", System.currentTimeMillis() - startTime);
                 }
             }
         } catch (Exception e) {
-            ULogger.critical("Error in image disk cache scan", e);
+            Logger.critical("Error in image disk cache scan", e);
         }
     }
 

@@ -141,7 +141,7 @@ final class Utils {
             try {
                 closeable.close();
             } catch (IOException e) {
-                ULogger.warn("Failed to close closable object [{}]", e, closeable);
+                Logger.warn("Failed to close closable object [{}]", e, closeable);
             }
         }
     }
@@ -157,7 +157,7 @@ final class Utils {
                 //noinspection ResultOfMethodCallIgnored
                 file.delete();
             } catch (Throwable e) {
-                ULogger.warn("Failed to delete file [{}]", e, file);
+                Logger.warn("Failed to delete file [{}]", e, file);
             }
         }
     }

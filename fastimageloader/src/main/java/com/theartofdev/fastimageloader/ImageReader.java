@@ -74,7 +74,7 @@ final class ImageReader {
                     imageRequest.setBitmap(bitmap);
                 }
             } else {
-                ULogger.critical("Failed to load image from cache [{}] [{}]", imageRequest, bitmap);
+                Logger.critical("Failed to load image from cache [{}] [{}]", imageRequest, bitmap);
                 if (bitmap != null) {
                     mBitmapRecycler.returnUnused(bitmap);
                     bitmap = null;
@@ -85,7 +85,7 @@ final class ImageReader {
                 bitmap.setUrl(imageRequest.getUrl());
             }
         } catch (Throwable e) {
-            ULogger.warn("Failed to load disk cached image [{}]", e, imageRequest);
+            Logger.warn("Failed to load disk cached image [{}]", e, imageRequest);
         }
     }
 }

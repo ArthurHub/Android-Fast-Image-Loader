@@ -17,7 +17,6 @@ import android.os.Handler;
 import android.text.TextUtils;
 
 import com.squareup.okhttp.OkHttpClient;
-import com.theartofdev.fastimageloader.enhancer.ImageServiceUriEnhancer;
 
 import java.io.File;
 import java.util.HashMap;
@@ -38,7 +37,7 @@ final class ImageLoaderHandler implements ImageDiskCache.GetCallback, ImageDownl
     /**
      * Enhance image loading URL with format/size/etc. parameters by image loading specification.
      */
-    private ImageServiceUriEnhancer mUrlEnhancer;
+    private UriEnhancer mUrlEnhancer;
 
     /**
      * The folder to save the cached images in
@@ -91,7 +90,7 @@ final class ImageLoaderHandler implements ImageDiskCache.GetCallback, ImageDownl
      *
      * @param client the OkHttp client to use to download the images.
      */
-    public ImageLoaderHandler(Context context, OkHttpClient client, ImageServiceUriEnhancer urlEnhancer) {
+    public ImageLoaderHandler(Context context, OkHttpClient client, UriEnhancer urlEnhancer) {
 
         mUrlEnhancer = urlEnhancer;
 
@@ -159,20 +158,20 @@ final class ImageLoaderHandler implements ImageDiskCache.GetCallback, ImageDownl
 
                     ImageRequest imageRequest = mLoadingRequests.get(enhancedUrl);
                     if (imageRequest != null) {
-                        ULogger.debug("Memory cache miss, image already requested, add target to request... [{}] [{}]", imageRequest, target);
+                        Logger.debug("Memory cache miss, image already requested, add target to request... [{}] [{}]", imageRequest, target);
                         imageRequest.addTarget(target);
                     } else {
                         // start async process of loading image from disk cache or network
                         imageRequest = new ImageRequest(target, url, enhancedUrl, spec, getCacheFile(enhancedUrl));
                         mLoadingRequests.put(enhancedUrl, imageRequest);
 
-                        ULogger.debug("Memory cache miss, start image request handling... [{}]", imageRequest);
+                        Logger.debug("Memory cache miss, start image request handling... [{}]", imageRequest);
                         mDiskCache.getAsync(imageRequest, this);
                     }
                 }
             }
         } catch (Exception e) {
-            ULogger.critical("Error in load image [{}]", e, target);
+            Logger.critical("Error in load image [{}]", e, target);
             target.onBitmapFailed();
         }
     }
@@ -187,7 +186,7 @@ final class ImageLoaderHandler implements ImageDiskCache.GetCallback, ImageDownl
     @Override
     public void loadImageGetDiskCacheCallback(ImageRequest imageRequest, boolean canceled) {
         try {
-            ULogger.debug("Get image from disk cache callback... [{}] [Canceled: {}]", imageRequest, canceled);
+            Logger.debug("Get image from disk cache callback... [{}] [Canceled: {}]", imageRequest, canceled);
 
             // if image object was loaded - add it to memory cache
             if (imageRequest.getBitmap() != null) {
@@ -215,7 +214,7 @@ final class ImageLoaderHandler implements ImageDiskCache.GetCallback, ImageDownl
             }
         } catch (Exception e) {
             mLoadingRequests.remove(imageRequest.getThumborUrl());
-            ULogger.critical("Error in load image disk callback", e);
+            Logger.critical("Error in load image disk callback", e);
         }
     }
 
@@ -227,7 +226,7 @@ final class ImageLoaderHandler implements ImageDiskCache.GetCallback, ImageDownl
     @Override
     public void loadImageDownloaderCallback(ImageRequest imageRequest, boolean downloaded, boolean canceled) {
         try {
-            ULogger.debug("Load image from network callback... [{}] [Downloaded: {}] [Canceled: {}]", imageRequest, downloaded, canceled);
+            Logger.debug("Load image from network callback... [{}] [Downloaded: {}] [Canceled: {}]", imageRequest, downloaded, canceled);
 
             // if image was downloaded - notify disk cache
             if (downloaded) {
@@ -263,7 +262,7 @@ final class ImageLoaderHandler implements ImageDiskCache.GetCallback, ImageDownl
             }
         } catch (Exception e) {
             mLoadingRequests.remove(imageRequest.getThumborUrl());
-            ULogger.critical("Error in load image downloader callback", e);
+            Logger.critical("Error in load image downloader callback", e);
         }
     }
 

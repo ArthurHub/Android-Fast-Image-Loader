@@ -134,7 +134,7 @@ final class ReusableBitmapImpl implements ReusableBitmap {
      * Release the inner bitmap.
      */
     public void close() {
-        ULogger.debug("Close recycle bitmap [{}]", this);
+        Logger.debug("Close recycle bitmap [{}]", this);
         mClosed = true;
         mBitmapUrl = null;
         mBitmap.recycle();

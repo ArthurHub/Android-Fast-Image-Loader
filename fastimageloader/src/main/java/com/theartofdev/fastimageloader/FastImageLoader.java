@@ -15,8 +15,6 @@ package com.theartofdev.fastimageloader;
 import android.app.Application;
 
 import com.squareup.okhttp.OkHttpClient;
-import com.theartofdev.fastimageloader.enhancer.ImageServiceUriEnhancer;
-import com.theartofdev.fastimageloader.enhancer.NoOpUriEnhancer;
 
 import java.util.concurrent.TimeUnit;
 
@@ -45,7 +43,7 @@ public final class FastImageLoader {
     /**
      * used to enhance image URI by spec for image service (Thumbor\imgIX\etc.)
      */
-    private ImageServiceUriEnhancer mUriEnhancer;
+    private UriEnhancer mUriEnhancer;
 
     /**
      * The OK HTTP client to be used to download images
@@ -63,7 +61,7 @@ public final class FastImageLoader {
      * Initialize the image loader with given android application context.<br/>
      * Image loader can be initialized only once where you can set all the configuration
      * properties:
-     * {@link #setUriEnhancer(com.theartofdev.fastimageloader.enhancer.ImageServiceUriEnhancer)},
+     * {@link #setUriEnhancer(UriEnhancer)},
      * {@link #setHttpClient(com.squareup.okhttp.OkHttpClient)},
      * {@link #setDebugIndicator(boolean)}.
      *
@@ -85,7 +83,7 @@ public final class FastImageLoader {
     /**
      * used to enhance image URI by spec for image service (Thumbor\imgIX\etc.)
      */
-    public FastImageLoader setUriEnhancer(ImageServiceUriEnhancer uriEnhancer) {
+    public FastImageLoader setUriEnhancer(UriEnhancer uriEnhancer) {
         mUriEnhancer = uriEnhancer;
         return INST;
     }
@@ -135,7 +133,7 @@ public final class FastImageLoader {
                 INST.mHttpClient.setReadTimeout(15, TimeUnit.SECONDS);
             }
             if (INST.mUriEnhancer == null) {
-                INST.mUriEnhancer = new NoOpUriEnhancer();
+                INST.mUriEnhancer = new UriEnhancerIdentity();
             }
             INST.mImageLoaderHandler = new ImageLoaderHandler(INST.mApplication, INST.mHttpClient, INST.mUriEnhancer);
         } else {

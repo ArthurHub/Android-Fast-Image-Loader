@@ -152,7 +152,7 @@ public class TargetImageViewHandler implements Target, View.OnAttachStateChangeL
         mImageView.setImageDrawable(drawable);
 
         if (from != LoadedFrom.MEMORY) {
-            ULogger.info("LoadImage successful [{}] [{}]", from, System.currentTimeMillis() - mStartImageLoadTime);
+            Logger.info("LoadImage successful [{}] [{}]", from, System.currentTimeMillis() - mStartImageLoadTime);
         }
     }
 
@@ -164,7 +164,7 @@ public class TargetImageViewHandler implements Target, View.OnAttachStateChangeL
             mImageView.invalidate();
         }
 
-        ULogger.warn("LoadImage failed [{}]", System.currentTimeMillis() - mStartImageLoadTime);
+        Logger.warn("LoadImage failed [{}]", System.currentTimeMillis() - mStartImageLoadTime);
     }
 
     /**
@@ -180,7 +180,7 @@ public class TargetImageViewHandler implements Target, View.OnAttachStateChangeL
                 mInUse = true;
                 mReusableBitmap.incrementInUse();
             } else {
-                ULogger.info("ImageView attachToWindow uses recycled bitmap, reload... [{}]", mReusableBitmap);
+                Logger.info("ImageView attachToWindow uses recycled bitmap, reload... [{}]", mReusableBitmap);
                 loadImage(mUrl, mSpec, null, true);
             }
         }

@@ -10,14 +10,12 @@
 // - Sun Tsu,
 // "The Art of War"
 
-package com.theartofdev.fastimageloader.enhancer;
-
-import com.theartofdev.fastimageloader.ImageLoadSpec;
+package com.theartofdev.fastimageloader;
 
 /**
- * URL enhancer stub that doesn't change the URI.
+ * URL enhancer that doesn't change the URI.
  */
-public class NoOpUriEnhancer implements ImageServiceUriEnhancer {
+public class UriEnhancerIdentity implements UriEnhancer {
 
     @Override
     public String enhance(String url, ImageLoadSpec spec) {

@@ -112,12 +112,12 @@ final class ImageDownloader {
                             }
                         } else {
                             error = new ConnectException(response.code() + ": " + response.message());
-                            ULogger.error("Failed to download image... [{}] [{}] [{}]", response.code(), response.message(), imageRequest);
+                            Logger.error("Failed to download image... [{}] [{}] [{}]", response.code(), response.message(), imageRequest);
                         }
                     }
                 } catch (Exception e) {
                     error = e;
-                    ULogger.error("Failed to download image [{}]", e, imageRequest);
+                    Logger.error("Failed to download image [{}]", e, imageRequest);
                 }
 
                 // TODO:a. send HTTP data
@@ -184,7 +184,7 @@ final class ImageDownloader {
                     imageRequest.setFileSize(size);
                     return true;
                 } else {
-                    ULogger.warn("Failed to rename temp download file to target file");
+                    Logger.warn("Failed to rename temp download file to target file");
                 }
             }
         } finally {

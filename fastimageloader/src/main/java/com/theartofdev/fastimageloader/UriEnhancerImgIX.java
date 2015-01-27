@@ -10,15 +10,13 @@
 // - Sun Tsu,
 // "The Art of War"
 
-package com.theartofdev.fastimageloader.enhancer;
-
-import com.theartofdev.fastimageloader.ImageLoadSpec;
+package com.theartofdev.fastimageloader;
 
 /**
  * URL enhancer for imgIX (http://www.imgix.com) service.<br/>
  * Add image load specification as query params to the image URL.
  */
-public class ImgIXUriEnhancer implements ImageServiceUriEnhancer {
+public class UriEnhancerImgIX implements UriEnhancer {
 
     @Override
     public String enhance(String url, ImageLoadSpec spec) {

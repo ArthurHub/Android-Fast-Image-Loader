@@ -21,7 +21,7 @@ import android.view.WindowManager;
 
 import com.theartofdev.fastimageloader.FastImageLoader;
 import com.theartofdev.fastimageloader.ImageLoadSpecBuilder;
-import com.theartofdev.fastimageloader.enhancer.ImgIXUriEnhancer;
+import com.theartofdev.fastimageloader.UriEnhancerImgIX;
 
 /**
  * TODO:a add doc
@@ -33,7 +33,7 @@ public class AppApplication extends Application {
         super.onCreate();
         FastImageLoader
                 .init(this)
-                .setUriEnhancer(new ImgIXUriEnhancer())
+                .setUriEnhancer(new UriEnhancerImgIX())
                 .setDebugIndicator(true);
 
         Point p = new Point();

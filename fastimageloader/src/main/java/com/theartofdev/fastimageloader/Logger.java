@@ -17,7 +17,7 @@ import android.util.Log;
 /**
  * Logger.
  */
-final class ULogger {
+final class Logger {
 
     private static final String TAG = "FastImgLoad";
 
