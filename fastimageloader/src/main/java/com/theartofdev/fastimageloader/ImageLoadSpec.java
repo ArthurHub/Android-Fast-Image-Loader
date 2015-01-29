@@ -43,6 +43,11 @@ public final class ImageLoadSpec {
      * the pixel configuration to load the image in (4 bytes per image pixel, 2 bytes, etc.)
      */
     private final Bitmap.Config mPixelConfig;
+
+    /**
+     * The URI enhancer to use for this spec image loading
+     */
+    private final UriEnhancer mUriEnhancer;
     //endregion
 
     /**
@@ -52,12 +57,14 @@ public final class ImageLoadSpec {
      * @param height the height of the image in pixels
      * @param format The format of the image.
      * @param pixelConfig the pixel configuration to load the image in (4 bytes per image pixel, 2 bytes, etc.)
+     * @param uriEnhancer The URI enhancer to use for this spec image loading
      */
-    ImageLoadSpec(int width, int height, Format format, Bitmap.Config pixelConfig) {
+    ImageLoadSpec(int width, int height, Format format, Bitmap.Config pixelConfig, UriEnhancer uriEnhancer) {
         mWidth = width;
         mHeight = height;
         mFormat = format;
         mPixelConfig = pixelConfig;
+        mUriEnhancer = uriEnhancer;
     }
 
     /**
@@ -86,6 +93,13 @@ public final class ImageLoadSpec {
      */
     public Bitmap.Config getPixelConfig() {
         return mPixelConfig;
+    }
+
+    /**
+     * The URI enhancer to use for this spec image loading
+     */
+    public UriEnhancer getUriEnhancer() {
+        return mUriEnhancer;
     }
 
     /**

@@ -64,7 +64,7 @@ public final class FastImageLoader {
      * Initialize the image loader with given android application context.<br/>
      * Image loader can be initialized only once where you can set all the configuration
      * properties:
-     * {@link #setUriEnhancer(UriEnhancer)},
+     * {@link #setDefaultUriEnhancer(UriEnhancer)},
      * {@link #setHttpClient(com.squareup.okhttp.OkHttpClient)},
      * {@link #setDebugIndicator(boolean)}.
      *
@@ -76,8 +76,6 @@ public final class FastImageLoader {
 
         if (INST.mImageLoadHandler == null) {
             INST.mApplication = application;
-
-            Utils.application = application;
 
             Utils.density = application.getResources().getDisplayMetrics().density;
 
@@ -93,7 +91,7 @@ public final class FastImageLoader {
     /**
      * used to enhance image URI by spec for image service (Thumbor\imgIX\etc.)
      */
-    public FastImageLoader setUriEnhancer(UriEnhancer uriEnhancer) {
+    public FastImageLoader setDefaultUriEnhancer(UriEnhancer uriEnhancer) {
         mUriEnhancer = uriEnhancer;
         return INST;
     }
@@ -115,10 +113,27 @@ public final class FastImageLoader {
     }
 
     /**
+     * Create {@link com.theartofdev.fastimageloader.ImageLoadSpec} using
+     * {@link com.theartofdev.fastimageloader.ImageLoadSpecBuilder}.<br/>
+     * <p/>
+     * Must be initialized first using {@link #init(android.app.Application)}.
+     *
+     * @throws IllegalStateException NOT initialized
+     */
+    public static ImageLoadSpecBuilder createSpec() {
+        if (INST.mImageLoadHandler == null) {
+            finishInit();
+        }
+        return new ImageLoadSpecBuilder(INST.mApplication, INST.mUriEnhancer);
+    }
+
+    /**
      * Load image by and to the given target.<br/>
      * Handle transformation on the image, image dimension specification and dimension fallback.<br/>
      * If the image of the requested dimensions is not found in memory cache we try to find the fallback dimension, if
-     * found it will be set to the target, and the requested dimension image will be loaded async.
+     * found it will be set to the target, and the requested dimension image will be loaded async.<br/>
+     * <p/>
+     * Must be initialized first using {@link #init(android.app.Application)}.
      *
      * @param target the target to load the image to, use it's URL and Spec
      * @param altSpec optional: alternative specification to load image from cache if primary is no available in cache.
@@ -134,6 +149,10 @@ public final class FastImageLoader {
 
     /**
      * Clear the disk image cache, deleting all cached images.
+     * <p/>
+     * Must be initialized first using {@link #init(android.app.Application)}.
+     *
+     * @throws IllegalStateException NOT initialized.
      */
     public static void clearDiskCache() {
         if (INST.mImageLoadHandler == null) {
@@ -142,8 +161,12 @@ public final class FastImageLoader {
         INST.mImageLoadHandler.clearDiskCache();
     }
 
+    //region: Private methods
+
     /**
      * Finish the initialization process.
+     *
+     * @throws IllegalStateException NOT initialized.
      */
     private static void finishInit() {
         if (INST.mApplication != null) {
@@ -155,9 +178,10 @@ public final class FastImageLoader {
             if (INST.mUriEnhancer == null) {
                 INST.mUriEnhancer = new UriEnhancerIdentity();
             }
-            INST.mImageLoadHandler = new ImageLoadHandler(INST.mApplication, INST.mHttpClient, INST.mUriEnhancer);
+            INST.mImageLoadHandler = new ImageLoadHandler(INST.mApplication, INST.mHttpClient);
         } else {
             throw new IllegalStateException("Fast Image Loader is NOT initialized, call init(...)");
         }
     }
+    //endregion
 }

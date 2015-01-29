@@ -37,11 +37,6 @@ final class ImageLoadHandler implements DiskCache.GetCallback, Downloader.Callba
     private final Map<String, ImageRequest> mLoadingRequests = new HashMap<>();
 
     /**
-     * Enhance image loading URL with format/size/etc. parameters by image loading specification.
-     */
-    private UriEnhancer mUrlEnhancer;
-
-    /**
      * The folder to save the cached images in
      */
     private final File mCacheFolder;
@@ -92,9 +87,7 @@ final class ImageLoadHandler implements DiskCache.GetCallback, Downloader.Callba
      *
      * @param client the OkHttp client to use to download the images.
      */
-    public ImageLoadHandler(Application application, OkHttpClient client, UriEnhancer urlEnhancer) {
-
-        mUrlEnhancer = urlEnhancer;
+    public ImageLoadHandler(Application application, OkHttpClient client) {
 
         mCacheFolder = new File(Utils.pathCombine(application.getCacheDir().getPath(), "ImageCache"));
 
@@ -143,7 +136,7 @@ final class ImageLoadHandler implements DiskCache.GetCallback, Downloader.Callba
             ImageLoadSpec spec = target.getSpec();
             if (!TextUtils.isEmpty(url)) {
 
-                String enhancedUrl = mUrlEnhancer.enhance(url, spec);
+                String enhancedUrl = spec.getUriEnhancer().enhance(url, spec);
 
                 ReusableBitmapImpl image = mMemoryCache.get(url, spec);
                 if (image != null) {

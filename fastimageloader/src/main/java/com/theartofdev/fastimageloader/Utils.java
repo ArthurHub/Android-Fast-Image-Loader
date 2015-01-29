@@ -12,7 +12,6 @@
 
 package com.theartofdev.fastimageloader;
 
-import android.app.Application;
 import android.graphics.Point;
 import android.graphics.RectF;
 import android.text.TextUtils;
@@ -31,11 +30,6 @@ final class Utils {
      * Rect to draw circle
      */
     static final RectF mRect = new RectF();
-
-    /**
-     * The android application object
-     */
-    public static Application application;
 
     /**
      * the logical density of the display.

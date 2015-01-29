@@ -12,7 +12,9 @@
 
 package com.theartofdev.fastimageloader;
 
+import android.app.Application;
 import android.graphics.Bitmap;
+import android.graphics.Point;
 
 /**
  * Builder for creating {@link com.theartofdev.fastimageloader.ImageLoadSpec} instances.
@@ -25,6 +27,11 @@ import android.graphics.Bitmap;
 public final class ImageLoadSpecBuilder {
 
     //region: Fields and Consts
+
+    /**
+     * The application object
+     */
+    private Application mApplication;
 
     /**
      * the width of the image in pixels
@@ -50,7 +57,28 @@ public final class ImageLoadSpecBuilder {
      * the pixel configuration to load the image in (4 bytes per image pixel, 2 bytes, etc.)
      */
     private Bitmap.Config mPixelConfig = Bitmap.Config.ARGB_8888;
+
+    /**
+     * The URI enhancer to use for this spec image loading
+     */
+    private UriEnhancer mUriEnhancer;
     //endregion
+
+    /**
+     * @param application The application object
+     * @param uriEnhancer default URI enhancer to use for this spec image loading
+     */
+    ImageLoadSpecBuilder(Application application, UriEnhancer uriEnhancer) {
+        mApplication = application;
+        mUriEnhancer = uriEnhancer;
+    }
+
+    /**
+     * Get the display size of the device.
+     */
+    public Point getDisplaySize() {
+        return Utils.displaySize;
+    }
 
     /**
      * The format of the image to download.
@@ -124,7 +152,7 @@ public final class ImageLoadSpecBuilder {
      * the width and height of the image in pixels to the same value (square).
      */
     public ImageLoadSpecBuilder setDimensionByResource(int resId) {
-        mWidth = mHeight = Utils.application.getResources().getDimensionPixelSize(resId);
+        mWidth = mHeight = mApplication.getResources().getDimensionPixelSize(resId);
         return this;
     }
 
@@ -132,8 +160,8 @@ public final class ImageLoadSpecBuilder {
      * the width and height of the image in pixels.
      */
     public ImageLoadSpecBuilder setDimensionByResource(int widthResId, int heightResId) {
-        mWidth = Utils.application.getResources().getDimensionPixelSize(widthResId);
-        mHeight = Utils.application.getResources().getDimensionPixelSize(heightResId);
+        mWidth = mApplication.getResources().getDimensionPixelSize(widthResId);
+        mHeight = mApplication.getResources().getDimensionPixelSize(heightResId);
         return this;
     }
 
@@ -141,7 +169,7 @@ public final class ImageLoadSpecBuilder {
      * the width of the image by reading dimension resource by the given key.
      */
     public ImageLoadSpecBuilder setWidthByResource(int resId) {
-        mWidth = Utils.application.getResources().getDimensionPixelSize(resId);
+        mWidth = mApplication.getResources().getDimensionPixelSize(resId);
         return this;
     }
 
@@ -149,12 +177,14 @@ public final class ImageLoadSpecBuilder {
      * the height of the image by reading dimension resource by the given key.
      */
     public ImageLoadSpecBuilder setHeightByResource(int resId) {
-        mHeight = Utils.application.getResources().getDimensionPixelSize(resId);
+        mHeight = mApplication.getResources().getDimensionPixelSize(resId);
         return this;
     }
 
     /**
      * the max pixel per inch density to load the image in
+     *
+     * @throws IllegalArgumentException if value if < 0.5
      */
     public ImageLoadSpecBuilder setMaxDensity(float maxDensity) {
         if (maxDensity <= 0.5)
@@ -164,7 +194,17 @@ public final class ImageLoadSpecBuilder {
     }
 
     /**
+     * The URI enhancer to use for this spec image loading
+     */
+    public ImageLoadSpecBuilder setUriEnhancer(UriEnhancer uriEnhancer) {
+        mUriEnhancer = uriEnhancer;
+        return this;
+    }
+
+    /**
      * Create spec by set parameters.
+     *
+     * @throws IllegalArgumentException width or height not set correctly.
      */
     public ImageLoadSpec build() {
         if (mWidth < 0 || mHeight < 0)
@@ -173,6 +213,6 @@ public final class ImageLoadSpecBuilder {
             throw new IllegalArgumentException("width and height must be either unbound or both positive");
 
         float densityAdj = Utils.density > mMaxDensity ? mMaxDensity / Utils.density : 1f;
-        return new ImageLoadSpec((int) (mWidth * densityAdj), (int) (mHeight * densityAdj), mFormat, mPixelConfig);
+        return new ImageLoadSpec((int) (mWidth * densityAdj), (int) (mHeight * densityAdj), mFormat, mPixelConfig, mUriEnhancer);
     }
 }

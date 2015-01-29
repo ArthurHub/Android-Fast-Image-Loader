@@ -16,12 +16,14 @@ import android.app.Application;
 import android.graphics.Bitmap;
 
 import com.theartofdev.fastimageloader.FastImageLoader;
-import com.theartofdev.fastimageloader.ImageLoadSpecBuilder;
+import com.theartofdev.fastimageloader.UriEnhancerIdentity;
 import com.theartofdev.fastimageloader.UriEnhancerImgIX;
 
 public class AppApplication extends Application {
 
     public static final int INSTAGRAM_IMAGE_SIZE = 640;
+
+    public static final int INSTAGRAM_AVATAR_SIZE = 150;
 
     @Override
     public void onCreate() {
@@ -29,28 +31,30 @@ public class AppApplication extends Application {
 
         FastImageLoader
                 .init(this)
-                .setUriEnhancer(new UriEnhancerImgIX())
+                .setDefaultUriEnhancer(new UriEnhancerImgIX())
                 .setDebugIndicator(true);
 
-        Specs.UNBOUNDED = new ImageLoadSpecBuilder()
+        Specs.UNBOUNDED = FastImageLoader.createSpec()
                 .setUnboundDimension()
                 .setPixelConfig(Bitmap.Config.RGB_565)
                 .build();
 
-        Specs.IMAGE = new ImageLoadSpecBuilder()
+        Specs.IMAGE = FastImageLoader.createSpec()
                 .setDimensionByDisplay()
                 .setHeightByResource(R.dimen.image_height)
                 .setPixelConfig(Bitmap.Config.RGB_565)
                 .build();
 
-        Specs.INSTA_AVATAR = new ImageLoadSpecBuilder()
-                .setDimensionByResource(R.dimen.avatar_size)
-                .setMaxDensity(2)
+        UriEnhancerIdentity uriEnhancerIdentity = new UriEnhancerIdentity();
+        Specs.INSTA_AVATAR = FastImageLoader.createSpec()
+                .setDimension(INSTAGRAM_AVATAR_SIZE)
+                .setUriEnhancer(uriEnhancerIdentity)
                 .build();
 
-        Specs.INSTA_IMAGE = new ImageLoadSpecBuilder()
-                .setDimension(INSTAGRAM_IMAGE_SIZE, INSTAGRAM_IMAGE_SIZE)
+        Specs.INSTA_IMAGE = FastImageLoader.createSpec()
+                .setDimension(INSTAGRAM_IMAGE_SIZE)
                 .setPixelConfig(Bitmap.Config.RGB_565)
+                .setUriEnhancer(uriEnhancerIdentity)
                 .build();
     }
 }
