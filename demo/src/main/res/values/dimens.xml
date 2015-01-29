@@ -1,3 +1,5 @@
 <resources>
     <dimen name="image_height">340dp</dimen>
+    <dimen name="avatar_size">40dp</dimen>
+    <dimen name="margin">4dp</dimen>
 </resources>

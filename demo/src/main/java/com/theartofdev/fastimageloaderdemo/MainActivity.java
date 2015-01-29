@@ -23,6 +23,7 @@ import android.view.MenuItem;
 
 import com.astuetz.PagerSlidingTabStrip;
 import com.theartofdev.fastimageloader.FastImageLoader;
+import com.theartofdev.fastimageloaderdemo.instagram.InstagramFragment;
 
 public class MainActivity extends ActionBarActivity {
 

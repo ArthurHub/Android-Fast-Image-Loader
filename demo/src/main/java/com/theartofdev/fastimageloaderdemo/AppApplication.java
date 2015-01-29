@@ -21,9 +21,12 @@ import com.theartofdev.fastimageloader.UriEnhancerImgIX;
 
 public class AppApplication extends Application {
 
+    public static final int INSTAGRAM_IMAGE_SIZE = 640;
+
     @Override
     public void onCreate() {
         super.onCreate();
+
         FastImageLoader
                 .init(this)
                 .setUriEnhancer(new UriEnhancerImgIX())
@@ -37,6 +40,16 @@ public class AppApplication extends Application {
         Specs.IMAGE = new ImageLoadSpecBuilder()
                 .setDimensionByDisplay()
                 .setHeightByResource(R.dimen.image_height)
+                .setPixelConfig(Bitmap.Config.RGB_565)
+                .build();
+
+        Specs.INSTA_AVATAR = new ImageLoadSpecBuilder()
+                .setDimensionByResource(R.dimen.avatar_size)
+                .setMaxDensity(2)
+                .build();
+
+        Specs.INSTA_IMAGE = new ImageLoadSpecBuilder()
+                .setDimension(INSTAGRAM_IMAGE_SIZE, INSTAGRAM_IMAGE_SIZE)
                 .setPixelConfig(Bitmap.Config.RGB_565)
                 .build();
     }

@@ -22,5 +22,9 @@ public class Specs {
     public static ImageLoadSpec UNBOUNDED;
 
     public static ImageLoadSpec IMAGE;
+
+    public static ImageLoadSpec INSTA_AVATAR;
+
+    public static ImageLoadSpec INSTA_IMAGE;
 }
 

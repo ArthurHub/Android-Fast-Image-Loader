@@ -10,7 +10,7 @@
 // - Sun Tsu,
 // "The Art of War"
 
-package com.theartofdev.fastimageloaderdemo;
+package com.theartofdev.fastimageloaderdemo.instagram;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -19,6 +19,14 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
+import com.theartofdev.fastimageloaderdemo.R;
+import com.theartofdev.fastimageloaderdemo.instagram.service.Feed;
+
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 public class InstagramFragment extends Fragment {
 
@@ -34,9 +42,25 @@ public class InstagramFragment extends Fragment {
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(container.getContext()));
 
-        //        mAdapter = new Adapter();
-        //        recyclerView.setAdapter(mAdapter);
+        mAdapter = new Adapter();
+        recyclerView.setAdapter(mAdapter);
+
+        loadData();
 
         return view;
+    }
+
+    private void loadData() {
+        mAdapter.loadData(new Callback<Feed>() {
+            @Override
+            public void success(Feed feed, Response response) {
+                Toast.makeText(InstagramFragment.this.getActivity(), "Loaded " + feed.data.length + " items", Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                Toast.makeText(InstagramFragment.this.getActivity(), "Failed to load data: " + error.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
     }
 }
