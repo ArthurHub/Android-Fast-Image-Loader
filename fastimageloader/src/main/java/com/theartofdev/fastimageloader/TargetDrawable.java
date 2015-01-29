@@ -91,6 +91,13 @@ public class TargetDrawable extends Drawable {
         mStartTimeMillis = showFade ? SystemClock.uptimeMillis() : 0;
     }
 
+    /**
+     * Is the drawable is currently animating fade-in of the image
+     */
+    public boolean isAnimating() {
+        return mStartTimeMillis > 0;
+    }
+
     @Override
     public void setAlpha(int alpha) {
 

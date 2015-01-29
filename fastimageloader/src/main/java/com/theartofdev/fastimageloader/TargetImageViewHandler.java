@@ -12,6 +12,7 @@
 
 package com.theartofdev.fastimageloader;
 
+import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
@@ -88,6 +89,14 @@ public class TargetImageViewHandler implements Target, View.OnAttachStateChangeL
         Utils.notNull(imageView, "imageView");
         mImageView = imageView;
         mImageView.addOnAttachStateChangeListener(this);
+    }
+
+    /**
+     * Is the drawable is currently animating fade-in of the image
+     */
+    public boolean isAnimating() {
+        Drawable drawable = mImageView.getDrawable();
+        return drawable != null && drawable instanceof TargetDrawable && ((TargetDrawable) drawable).isAnimating();
     }
 
     /**

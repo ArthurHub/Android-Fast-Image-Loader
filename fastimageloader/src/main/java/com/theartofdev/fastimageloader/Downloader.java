@@ -65,7 +65,7 @@ final class Downloader {
     /**
      * @param client the OkHttp client to use to download the images.
      * @param handler Used to post execution to main thread.
-     * @param diskLoader
+     * @param diskLoader Handler for loading image bitmap object from file on disk.
      */
     public Downloader(OkHttpClient client, Handler handler, DiskLoader diskLoader) {
         Utils.notNull(handler, "handler");

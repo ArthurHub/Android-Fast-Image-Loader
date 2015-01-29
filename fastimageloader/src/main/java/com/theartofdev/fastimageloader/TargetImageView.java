@@ -46,6 +46,13 @@ public class TargetImageView extends ImageView {
     }
 
     /**
+     * Is the drawable is currently animating fade-in of the image
+     */
+    public boolean isAnimating() {
+        return mHandler.isAnimating();
+    }
+
+    /**
      * Is the image should be rendered rounded
      */
     public boolean isRounded() {
