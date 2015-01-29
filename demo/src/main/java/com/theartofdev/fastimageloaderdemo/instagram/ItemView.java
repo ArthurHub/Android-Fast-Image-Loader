@@ -40,6 +40,7 @@ public final class ItemView extends ViewGroup {
         mAvatar = new TargetImageView(context);
         int size = getResources().getDimensionPixelSize(R.dimen.avatar_size);
         mAvatar.setLayoutParams(new LayoutParams(size, size));
+        mAvatar.setRounded(true);
         addView(mAvatar);
 
         Point p = new Point();
@@ -73,12 +74,14 @@ public final class ItemView extends ViewGroup {
         measureChild(mImage, widthMeasureSpec, heightMeasureSpec);
         measureChild(mAuthor, widthMeasureSpec, heightMeasureSpec);
 
-        mAvatar.layout(m, m, m + mAvatar.getMeasuredWidth(), m + mAvatar.getMeasuredHeight());
-        mImage.layout(0, m + mAvatar.getBottom(), getMeasuredWidth(), m + mAvatar.getBottom() + mImage.getMeasuredHeight());
+        mAvatar.layout(2 * m, 2 * m, 2 * m + mAvatar.getMeasuredWidth(), 2 * m + mAvatar.getMeasuredHeight());
+        mImage.layout(0, 2 * m + mAvatar.getBottom(), getMeasuredWidth(), 2 * m + mAvatar.getBottom() + mImage.getMeasuredHeight());
 
-        mAuthor.layout(mAvatar.getRight() + m, mAvatar.getTop(), mAvatar.getRight() + m + mAuthor.getMeasuredWidth(), m + mAuthor.getMeasuredHeight());
+        int left = mAvatar.getRight() + 2 * m;
+        int top = mAvatar.getTop() + (mAvatar.getHeight() - mAuthor.getMeasuredHeight()) / 2 - m;
+        mAuthor.layout(left, top, left + mAuthor.getMeasuredWidth(), top + mAuthor.getMeasuredHeight());
 
-        setMeasuredDimension(getMeasuredWidth(), mImage.getBottom() + m);
+        setMeasuredDimension(getMeasuredWidth(), mImage.getBottom() + 2 * m);
     }
 
     @Override

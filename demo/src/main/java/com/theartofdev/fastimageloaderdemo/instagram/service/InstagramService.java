@@ -23,7 +23,7 @@ public interface InstagramService {
     /**
      * http://instagram.com/developer/endpoints/users/#get_users_feed
      */
-    @GET("/users/self/feed?access_token=")
+    @GET("/users/self/feed?access_token=1670815861.1fb234f.b9690c21d125435a8f722856f8043ea2")
     public void getFeed(Callback<Feed> callback);
 
 }
