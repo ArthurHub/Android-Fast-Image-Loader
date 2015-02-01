@@ -31,10 +31,10 @@ public interface LogAppender {
      * Image load operation complete.
      *
      * @param url the url of the image
-     * @param spec the spec of the image load request
+     * @param specKey the spec of the image load request
      * @param from from where the image was loaded (MEMORY/DISK/NETWORK)
      * @param successful was the image load successful
      * @param time the time in milliseconds it took from request to finish
      */
-    void imageLoadOperation(String url, ImageLoadSpec spec, LoadedFrom from, boolean successful, long time);
+    void imageLoadOperation(String url, String specKey, LoadedFrom from, boolean successful, long time);
 }

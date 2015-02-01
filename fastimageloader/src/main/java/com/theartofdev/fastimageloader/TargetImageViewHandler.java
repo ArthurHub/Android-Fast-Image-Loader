@@ -188,9 +188,7 @@ public class TargetImageViewHandler implements Target, View.OnAttachStateChangeL
         TargetDrawable drawable = new TargetDrawable(bitmap.getBitmap(), from, mRounded, from == LoadedFrom.NETWORK && mImageView.getDrawable() == null);
         mImageView.setImageDrawable(drawable);
 
-        if (from != LoadedFrom.MEMORY) {
-            Logger.info("LoadImage successful [{}] [{}]", from, System.currentTimeMillis() - mStartImageLoadTime);
-        }
+        Logger.operation(mUrl, mSpecKey, from, true, System.currentTimeMillis() - mStartImageLoadTime);
     }
 
     @Override
@@ -200,7 +198,7 @@ public class TargetImageViewHandler implements Target, View.OnAttachStateChangeL
             mImageView.setImageDrawable(null);
             mImageView.invalidate();
         }
-        Logger.warn("LoadImage failed [{}]", System.currentTimeMillis() - mStartImageLoadTime);
+        Logger.operation(mUrl, mSpecKey, null, false, System.currentTimeMillis() - mStartImageLoadTime);
     }
 
     /**

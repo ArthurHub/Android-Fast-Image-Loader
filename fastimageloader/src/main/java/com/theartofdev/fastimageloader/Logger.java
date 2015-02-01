@@ -39,6 +39,25 @@ final class Logger {
      */
     static int mLogLevel = Log.INFO;
 
+    /**
+     * Image load operation complete.
+     *
+     * @param url the url of the image
+     * @param specKey the spec of the image load request
+     * @param from from where the image was loaded (MEMORY/DISK/NETWORK)
+     * @param successful was the image load successful
+     * @param time the time in milliseconds it took from request to finish
+     */
+    public static void operation(String url, String specKey, LoadedFrom from, boolean successful, long time) {
+        if (from == LoadedFrom.MEMORY) {
+            debug("Operation: LoadImage [{}] [{}] [{}] [{}]", specKey, from, successful, time);
+        } else {
+            info("Operation: LoadImage [{}] [{}] [{}] [{}]", specKey, from, successful, time);
+        }
+        if (mAppender != null)
+            mAppender.imageLoadOperation(url, specKey, from, successful, time);
+    }
+
     public static void debug(String msg) {
         if (mLogLevel <= Log.DEBUG) {
             if (mLogcatEnabled)
@@ -53,7 +72,7 @@ final class Logger {
             if (mLogcatEnabled)
                 Log.d(TAG, Utils.format(msg, arg1));
             if (mAppender != null)
-                mAppender.log(Log.DEBUG, TAG, msg, null);
+                mAppender.log(Log.DEBUG, TAG, Utils.format(msg, arg1), null);
         }
     }
 
