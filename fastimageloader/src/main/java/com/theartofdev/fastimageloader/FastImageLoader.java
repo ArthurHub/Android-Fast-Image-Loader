@@ -113,7 +113,7 @@ public final class FastImageLoader {
     }
 
     /**
-     * If to write logs to logcat.
+     * If to write logs to logcat (Default: false).
      */
     public FastImageLoader setWriteLogsToLogcat(boolean enable) {
         Logger.mLogcatEnabled = enable;
@@ -121,7 +121,7 @@ public final class FastImageLoader {
     }
 
     /**
-     * The min log level to write logs at, logs below this level are ignored.<br/>
+     * The min log level to write logs at, logs below this level are ignored (Default: INFO).<br/>
      * Use: {@link Log#DEBUG}, {@link Log#INFO}, {@link Log#WARN}, {@link Log#ERROR}, {@link Log#ASSERT}.
      */
     public FastImageLoader setLogLevel(int level) {

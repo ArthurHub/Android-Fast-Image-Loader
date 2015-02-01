@@ -49,10 +49,9 @@ final class Logger {
      * @param time the time in milliseconds it took from request to finish
      */
     public static void operation(String url, String specKey, LoadedFrom from, boolean successful, long time) {
-        if (from == LoadedFrom.MEMORY) {
-            debug("Operation: LoadImage [{}] [{}] [{}] [{}]", specKey, from, successful, time);
-        } else {
-            info("Operation: LoadImage [{}] [{}] [{}] [{}]", specKey, from, successful, time);
+        if (mLogcatEnabled) {
+            String msg = Utils.format("Operation: LoadImage [{}] [{}] [{}] [{}]", from, specKey, successful, time);
+            Log.println(from == LoadedFrom.MEMORY ? Log.DEBUG : Log.INFO, TAG, msg);
         }
         if (mAppender != null)
             mAppender.imageLoadOperation(url, specKey, from, successful, time);
@@ -69,10 +68,13 @@ final class Logger {
      * @param error optional: if download failed will contain the error
      */
     public static void operation(String url, String specKey, int responseCode, long time, long bytes, Throwable error) {
-        if (error == null) {
-            info("Operation: DownloadImage [{}] [{}] [{}] [{}]", url, specKey, responseCode, bytes, time);
-        } else {
-            error("Operation: DownloadImage [{}] [{}] [{}] [{}]", error, url, specKey, responseCode, time);
+        if (mLogcatEnabled) {
+            String msg = Utils.format("Operation: DownloadImage [{}] [{}] [{}] [{}]", url, specKey, responseCode, bytes, time);
+            if (error == null) {
+                Log.i(TAG, msg);
+            } else {
+                Log.e(TAG, msg, error);
+            }
         }
         if (mAppender != null)
             mAppender.imageDownloadOperation(url, specKey, responseCode, time, bytes, error);
@@ -156,15 +158,6 @@ final class Logger {
                 Log.i(TAG, Utils.format(msg, arg1, arg2, arg3));
             if (mAppender != null)
                 mAppender.log(Log.INFO, TAG, Utils.format(msg, arg1, arg2, arg3), null);
-        }
-    }
-
-    public static void info(String msg, Object arg1, Object arg2, Object arg3, Object arg4) {
-        if (mLogLevel <= Log.INFO) {
-            if (mLogcatEnabled)
-                Log.i(TAG, Utils.format(msg, arg1, arg2, arg3, arg4));
-            if (mAppender != null)
-                mAppender.log(Log.INFO, TAG, Utils.format(msg, arg1, arg2, arg3, arg4), null);
         }
     }
 
