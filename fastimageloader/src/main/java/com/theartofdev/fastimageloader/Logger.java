@@ -58,6 +58,26 @@ final class Logger {
             mAppender.imageLoadOperation(url, specKey, from, successful, time);
     }
 
+    /**
+     * Image download operation complete.
+     *
+     * @param url the url of the image
+     * @param specKey the spec of the image load request
+     * @param responseCode the response code of the download web request
+     * @param time the time in milliseconds it took to download the image
+     * @param bytes the number of bytes received if download was successful
+     * @param error optional: if download failed will contain the error
+     */
+    public static void operation(String url, String specKey, int responseCode, long time, long bytes, Throwable error) {
+        if (error == null) {
+            info("Operation: DownloadImage [{}] [{}] [{}] [{}]", url, specKey, responseCode, bytes, time);
+        } else {
+            error("Operation: DownloadImage [{}] [{}] [{}] [{}]", error, url, specKey, responseCode, time);
+        }
+        if (mAppender != null)
+            mAppender.imageDownloadOperation(url, specKey, responseCode, time, bytes, error);
+    }
+
     public static void debug(String msg) {
         if (mLogLevel <= Log.DEBUG) {
             if (mLogcatEnabled)

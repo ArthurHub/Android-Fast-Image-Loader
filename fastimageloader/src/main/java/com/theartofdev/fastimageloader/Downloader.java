@@ -120,12 +120,9 @@ final class Downloader {
                     Logger.error("Failed to download image [{}]", e, imageRequest);
                 }
 
-                // TODO:a. send HTTP data
-                //                if (downloaded) {
-                //                    AppContext.getContext().getAnalytics().sendHttpTransaction(HttpMethod.GET, imageRequest.getThumborUrl(), responseCode, start, imageRequest.getFileSize());
-                //                } else if (error != null) {
-                //                    AppContext.getContext().getAnalytics().sendHttpTransaction(HttpMethod.GET, imageRequest.getThumborUrl(), start, error);
-                //                }
+                if (downloaded || error != null) {
+                    Logger.operation(imageRequest.getThumborUrl(), imageRequest.getSpec().getKey(), responseCode, System.currentTimeMillis() - start, imageRequest.getFileSize(), error);
+                }
 
                 // if downloaded and request is still valid - load the image object
                 if (downloaded) {

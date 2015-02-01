@@ -37,4 +37,16 @@ public interface LogAppender {
      * @param time the time in milliseconds it took from request to finish
      */
     void imageLoadOperation(String url, String specKey, LoadedFrom from, boolean successful, long time);
+
+    /**
+     * Image download operation complete.
+     *
+     * @param url the url of the image
+     * @param specKey the spec of the image load request
+     * @param responseCode the response code of the download web request
+     * @param time the time in milliseconds it took to download the image
+     * @param bytes the number of bytes received if download was successful
+     * @param error optional: if download failed will contain the error
+     */
+    void imageDownloadOperation(String url, String specKey, int responseCode, long time, long bytes, Throwable error);
 }
