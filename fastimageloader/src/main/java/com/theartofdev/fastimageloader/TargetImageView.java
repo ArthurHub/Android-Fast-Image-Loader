@@ -27,7 +27,7 @@ public class TargetImageView extends ImageView {
     /**
      * The target image handler to load the image and control its lifecycle.
      */
-    private TargetImageViewHandler mHandler;
+    protected TargetImageViewHandler mHandler;
     //endregion
 
     public TargetImageView(Context context) {
@@ -43,13 +43,6 @@ public class TargetImageView extends ImageView {
     public TargetImageView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         mHandler = new TargetImageViewHandler(this);
-    }
-
-    /**
-     * Is the drawable is currently animating fade-in of the image
-     */
-    public boolean isAnimating() {
-        return mHandler.isAnimating();
     }
 
     /**

@@ -77,6 +77,11 @@ public class TargetImageViewHandler implements Target, View.OnAttachStateChangeL
     protected boolean mRounded;
 
     /**
+     * The current loading states of the image in the handler.
+     */
+    protected LoadState mLoadState = LoadState.UNSET;
+
+    /**
      * when the image load request started, measure image load request time
      */
     protected long mStartImageLoadTime;
@@ -89,6 +94,13 @@ public class TargetImageViewHandler implements Target, View.OnAttachStateChangeL
         Utils.notNull(imageView, "imageView");
         mImageView = imageView;
         mImageView.addOnAttachStateChangeListener(this);
+    }
+
+    /**
+     * The current loading states of the image in the handler.
+     */
+    public LoadState getLoadState() {
+        return mLoadState;
     }
 
     /**
@@ -150,6 +162,7 @@ public class TargetImageViewHandler implements Target, View.OnAttachStateChangeL
             mSpec = spec;
 
             if (!TextUtils.isEmpty(url)) {
+                mLoadState = LoadState.LOADING;
                 FastImageLoader.loadImage(this, altSpec);
             } else {
                 clearUsedBitmap();
@@ -166,6 +179,7 @@ public class TargetImageViewHandler implements Target, View.OnAttachStateChangeL
 
         mUrl = bitmap.getUrl();
         mSpec = bitmap.getSpec();
+        mLoadState = LoadState.LOADED;
 
         mInUse = true;
         mReusableBitmap = bitmap;
@@ -181,12 +195,11 @@ public class TargetImageViewHandler implements Target, View.OnAttachStateChangeL
 
     @Override
     public void onBitmapFailed() {
-
+        mLoadState = LoadState.FAILED;
         if (mImageView.getDrawable() == null) {
             mImageView.setImageDrawable(null);
             mImageView.invalidate();
         }
-
         Logger.warn("LoadImage failed [{}]", System.currentTimeMillis() - mStartImageLoadTime);
     }
 
@@ -247,6 +260,7 @@ public class TargetImageViewHandler implements Target, View.OnAttachStateChangeL
     void clearUsedBitmap() {
         mUrl = null;
         mSpec = null;
+        mLoadState = LoadState.UNSET;
         if (mReusableBitmap != null) {
             if (mInUse) {
                 mInUse = false;
