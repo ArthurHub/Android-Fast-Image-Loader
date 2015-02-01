@@ -130,6 +130,14 @@ public final class FastImageLoader {
     }
 
     /**
+     * Set appender to use to send logs to, allow client to log this library inner logs into custom framework.
+     */
+    public FastImageLoader setLogAppender(LogAppender appender) {
+        Logger.mAppender = appender;
+        return INST;
+    }
+
+    /**
      * Is to show indicator if the image was loaded from MEMORY/DISK/NETWORK.
      */
     public FastImageLoader setDebugIndicator(boolean enable) {
