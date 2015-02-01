@@ -199,6 +199,14 @@ public final class ImageLoadSpecBuilder {
     }
 
     /**
+     * set the max pixel per inch density to the device density
+     */
+    public ImageLoadSpecBuilder setMaxDensity() {
+        mMaxDensity = 9999;
+        return this;
+    }
+
+    /**
      * the max pixel per inch density to load the image in
      *
      * @throws IllegalArgumentException if value if < 0.5
@@ -227,7 +235,7 @@ public final class ImageLoadSpecBuilder {
         if (mWidth < 0 || mHeight < 0)
             throw new IllegalArgumentException("width and height must be set");
 
-        float densityAdj = Utils.density > mMaxDensity ? mMaxDensity / Utils.density : 1f;
+        float densityAdj = Utils.density >= mMaxDensity ? mMaxDensity / Utils.density : 1f;
 
         ImageLoadSpec spec = new ImageLoadSpec(mKey, (int) (mWidth * densityAdj), (int) (mHeight * densityAdj), mFormat, mPixelConfig, mUriEnhancer);
 
