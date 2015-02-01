@@ -19,127 +19,131 @@ import android.util.Log;
  */
 final class Logger {
 
-    private static final String TAG = "FastImgLoad";
+    /**
+     * The tag to use for all logs
+     */
+    private static final String TAG = "FastImageLoader";
 
-    public static boolean isLogCatEnabled() {
-        return true;
-    }
+    /**
+     * If to write logs to logcat.
+     */
+    static boolean mLogcatEnabled = false;
 
     public static void debug(String msg) {
-        if (isLogCatEnabled())
+        if (mLogcatEnabled)
             Log.d(TAG, msg);
     }
 
     public static void debug(String msg, Object arg1) {
-        if (isLogCatEnabled())
+        if (mLogcatEnabled)
             Log.d(TAG, Utils.format(msg, arg1));
     }
 
     public static void debug(String msg, Object arg1, Object arg2) {
-        if (isLogCatEnabled())
+        if (mLogcatEnabled)
             Log.d(TAG, Utils.format(msg, arg1, arg2));
     }
 
     public static void debug(String msg, Object arg1, Object arg2, Object arg3) {
-        if (isLogCatEnabled())
+        if (mLogcatEnabled)
             Log.d(TAG, Utils.format(msg, arg1, arg2, arg3));
     }
 
     public static void debug(String msg, Object arg1, Object arg2, Object arg3, Object arg4) {
-        if (isLogCatEnabled())
+        if (mLogcatEnabled)
             Log.d(TAG, Utils.format(msg, arg1, arg2, arg3, arg4));
     }
 
     public static void debug(String msg, Object... args) {
-        if (isLogCatEnabled())
+        if (mLogcatEnabled)
             Log.d(TAG, Utils.format(msg, args));
     }
 
     public static void info(String msg) {
-        if (isLogCatEnabled())
+        if (mLogcatEnabled)
             Log.i(TAG, msg);
     }
 
     public static void info(String msg, Object arg1) {
-        if (isLogCatEnabled())
+        if (mLogcatEnabled)
             Log.i(TAG, Utils.format(msg, arg1));
     }
 
     public static void info(String msg, Object arg1, Object arg2) {
-        if (isLogCatEnabled())
+        if (mLogcatEnabled)
             Log.i(TAG, Utils.format(msg, arg1, arg2));
     }
 
     public static void info(String msg, Object arg1, Object arg2, Object arg3) {
-        if (isLogCatEnabled())
+        if (mLogcatEnabled)
             Log.i(TAG, Utils.format(msg, arg1, arg2, arg3));
     }
 
     public static void info(String msg, Object arg1, Object arg2, Object arg3, Object arg4) {
-        if (isLogCatEnabled())
+        if (mLogcatEnabled)
             Log.i(TAG, Utils.format(msg, arg1, arg2, arg3, arg4));
     }
 
     public static void info(String msg, Object... args) {
-        if (isLogCatEnabled())
+        if (mLogcatEnabled)
             Log.i(TAG, Utils.format(msg, args));
     }
 
     public static void warn(String msg) {
-        if (isLogCatEnabled())
+        if (mLogcatEnabled)
             Log.w(TAG, msg);
     }
 
     public static void warn(String msg, Object arg1) {
-        if (isLogCatEnabled())
+        if (mLogcatEnabled)
             Log.w(TAG, Utils.format(msg, arg1));
     }
 
     public static void warn(String msg, Object arg1, Object arg2) {
-        if (isLogCatEnabled())
+        if (mLogcatEnabled)
             Log.w(TAG, Utils.format(msg, arg1, arg2));
     }
 
     public static void warn(String msg, Object... args) {
-        if (isLogCatEnabled())
+        if (mLogcatEnabled)
             Log.w(TAG, Utils.format(msg, args));
     }
 
     public static void warn(String msg, Throwable e, Object arg1) {
-        if (isLogCatEnabled())
+        if (mLogcatEnabled)
             Log.w(TAG, Utils.format(msg, arg1), e);
     }
 
     public static void warn(String msg, Throwable e, Object... args) {
-        if (isLogCatEnabled())
+        if (mLogcatEnabled)
             Log.w(TAG, Utils.format(msg, args), e);
     }
 
     public static void error(String msg) {
-        if (isLogCatEnabled())
+        if (mLogcatEnabled)
             Log.e(TAG, msg);
     }
 
     public static void error(String msg, Object... args) {
-        if (isLogCatEnabled())
+        if (mLogcatEnabled)
             Log.e(TAG, Utils.format(msg, args));
     }
 
     public static void error(String msg, Throwable e, Object... args) {
-        if (isLogCatEnabled())
+        if (mLogcatEnabled)
             Log.e(TAG, Utils.format(msg, args), e);
     }
 
     public static void critical(String msg, Object... args) {
         String format = Utils.format(msg, args);
         Exception e = new Exception(format);
-        if (isLogCatEnabled())
+        if (mLogcatEnabled)
             Log.e(TAG, Utils.format(msg, args), e);
     }
 
     public static void critical(String msg, Throwable e, Object... args) {
         String format = Utils.format(msg, args);
-        if (isLogCatEnabled())
+        if (mLogcatEnabled)
             Log.e(TAG, Utils.format(msg, args), e);
     }
 }

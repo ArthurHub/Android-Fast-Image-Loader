@@ -112,6 +112,14 @@ public final class FastImageLoader {
     }
 
     /**
+     * If to write logs to logcat.
+     */
+    public FastImageLoader setWriteLogsToLogcat(boolean enable) {
+        Logger.mLogcatEnabled = enable;
+        return INST;
+    }
+
+    /**
      * Is to show indicator if the image was loaded from MEMORY/DISK/NETWORK.
      */
     public FastImageLoader setDebugIndicator(boolean enable) {

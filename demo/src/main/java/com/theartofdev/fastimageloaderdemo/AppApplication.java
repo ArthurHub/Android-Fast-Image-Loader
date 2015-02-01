@@ -32,6 +32,7 @@ public class AppApplication extends Application {
         FastImageLoader
                 .init(this)
                 .setDefaultUriEnhancer(new UriEnhancerImgIX())
+                .setWriteLogsToLogcat(true)
                 .setDebugIndicator(true);
 
         FastImageLoader.buildSpec(Specs.UNBOUNDED)
