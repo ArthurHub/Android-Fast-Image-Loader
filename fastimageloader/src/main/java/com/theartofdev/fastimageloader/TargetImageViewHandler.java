@@ -21,7 +21,7 @@ import android.widget.ImageView;
  * Handler for loading image as {@link ReusableBitmap} and managing its lifecycle.<br/>
  * A single instance of the handler should be used for each ImageView.<br/>
  * <p/>
- * Use {@link #loadImage(String, ImageLoadSpec, ImageLoadSpec, boolean)} to load of image into the
+ * Use {@link #loadImage(String, String, String, boolean)} to load of image into the
  * handler, it will handle cancellation of unfinished requests if a new loading request is given.
  * <p/>
  * The handler attaches itself to ImageView StateChange to update the in-use of the loaded
@@ -59,7 +59,7 @@ public class TargetImageViewHandler implements Target, View.OnAttachStateChangeL
     /**
      * the spec to load the image by
      */
-    protected ImageLoadSpec mSpec;
+    protected String mSpecKey;
 
     /**
      * The loaded image
@@ -131,15 +131,15 @@ public class TargetImageViewHandler implements Target, View.OnAttachStateChangeL
     }
 
     @Override
-    public ImageLoadSpec getSpec() {
-        return mSpec;
+    public String getSpecKey() {
+        return mSpecKey;
     }
 
     /**
-     * See {@link #loadImage(String, ImageLoadSpec, ImageLoadSpec, boolean)}.
+     * See {@link #loadImage(String, String, String, boolean)}.
      */
-    public void loadImage(String url, ImageLoadSpec spec) {
-        loadImage(url, spec, null, false);
+    public void loadImage(String url, String specKey) {
+        loadImage(url, specKey, null, false);
     }
 
     /**
@@ -147,23 +147,23 @@ public class TargetImageViewHandler implements Target, View.OnAttachStateChangeL
      * If image of the same source is already requested/loaded the request is ignored unless force is true.
      *
      * @param url the avatar source URL to load from
-     * @param spec the spec to load the image by
-     * @param altSpec optional: the spec to use for memory cached image in case the primary is not found.
+     * @param specKey the spec to load the image by
+     * @param altSpecKey optional: the spec to use for memory cached image in case the primary is not found.
      * @param force true - force image load even if it is the same source
      */
-    public void loadImage(String url, ImageLoadSpec spec, ImageLoadSpec altSpec, boolean force) {
-        Utils.notNull(spec, "spec");
+    public void loadImage(String url, String specKey, String altSpecKey, boolean force) {
+        Utils.notNull(specKey, "spec");
 
         if (!TextUtils.equals(mUrl, url) || TextUtils.isEmpty(url) || force) {
             mStartImageLoadTime = System.currentTimeMillis();
             mImageView.setImageDrawable(null);
 
             mUrl = url;
-            mSpec = spec;
+            mSpecKey = specKey;
 
             if (!TextUtils.isEmpty(url)) {
                 mLoadState = LoadState.LOADING;
-                FastImageLoader.loadImage(this, altSpec);
+                FastImageLoader.loadImage(this, altSpecKey);
             } else {
                 clearUsedBitmap();
                 mImageView.setImageDrawable(null);
@@ -178,7 +178,7 @@ public class TargetImageViewHandler implements Target, View.OnAttachStateChangeL
         clearUsedBitmap();
 
         mUrl = bitmap.getUrl();
-        mSpec = bitmap.getSpec();
+        mSpecKey = bitmap.getSpec().getKey();
         mLoadState = LoadState.LOADED;
 
         mInUse = true;
@@ -215,7 +215,7 @@ public class TargetImageViewHandler implements Target, View.OnAttachStateChangeL
                 mReusableBitmap.incrementInUse();
             } else {
                 Logger.info("ImageView attachToWindow uses recycled bitmap, reload... [{}]", mReusableBitmap);
-                loadImage(mUrl, mSpec, null, true);
+                loadImage(mUrl, mSpecKey, null, true);
             }
         }
     }
@@ -259,7 +259,7 @@ public class TargetImageViewHandler implements Target, View.OnAttachStateChangeL
      */
     void clearUsedBitmap() {
         mUrl = null;
-        mSpec = null;
+        mSpecKey = null;
         mLoadState = LoadState.UNSET;
         if (mReusableBitmap != null) {
             if (mInUse) {

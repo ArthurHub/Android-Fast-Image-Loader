@@ -145,7 +145,7 @@ final class ReusableBitmapImpl implements ReusableBitmap {
     public String toString() {
         return "RecycleBitmap{" +
                 "hash=" + hashCode() +
-                ", mSpec='" + mSpec + '\'' +
+                ", mSpecKey='" + mSpec + '\'' +
                 ", mInUse=" + mInUse.get() +
                 ", mInLoadUse=" + mInLoadUse +
                 ", mRecycleCount=" + mRecycleCount +

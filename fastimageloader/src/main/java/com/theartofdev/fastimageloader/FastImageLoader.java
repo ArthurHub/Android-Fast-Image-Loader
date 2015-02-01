@@ -19,6 +19,8 @@ import android.view.WindowManager;
 
 import com.squareup.okhttp.OkHttpClient;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -32,6 +34,11 @@ public final class FastImageLoader {
      * Single instance of the class
      */
     private static final FastImageLoader INST = new FastImageLoader();
+
+    /**
+     * The defined image loading specs
+     */
+    private final Map<String, ImageLoadSpec> mSpecs = new HashMap<>();
 
     /**
      * Handler for image loading logic
@@ -118,13 +125,30 @@ public final class FastImageLoader {
      * <p/>
      * Must be initialized first using {@link #init(android.app.Application)}.
      *
+     * @param key the unique key of the spec used for identification
      * @throws IllegalStateException NOT initialized
+     * @throws IllegalArgumentException spec with the given key already defined
      */
-    public static ImageLoadSpecBuilder createSpec() {
+    public static ImageLoadSpecBuilder buildSpec(String key) {
+        Utils.notNullOrEmpty(key, "key");
         if (INST.mImageLoadHandler == null) {
             finishInit();
         }
-        return new ImageLoadSpecBuilder(INST.mApplication, INST.mUriEnhancer);
+        if (INST.mSpecs.containsKey(key)) {
+            throw new IllegalArgumentException("Spec with the same key already exists");
+        }
+        return new ImageLoadSpecBuilder(key, INST.mApplication, INST.mUriEnhancer);
+    }
+
+    /**
+     * Get {@link com.theartofdev.fastimageloader.ImageLoadSpec} for the given key if exists.
+     *
+     * @param key the unique key of the spec used for identification
+     * @return spec instance or null if no matching spec found
+     */
+    public static ImageLoadSpec getSpec(String key) {
+        Utils.notNullOrEmpty(key, "key");
+        return INST.mSpecs.get(key);
     }
 
     /**
@@ -136,15 +160,24 @@ public final class FastImageLoader {
      * Must be initialized first using {@link #init(android.app.Application)}.
      *
      * @param target the target to load the image to, use it's URL and Spec
-     * @param altSpec optional: alternative specification to load image from cache if primary is no available in cache.
+     * @param altSpecKey optional: alternative specification to load image from cache if primary is no available in
+     * cache.
      * @throws IllegalStateException NOT initialized
      */
-    public static void loadImage(Target target, ImageLoadSpec altSpec) {
+    public static void loadImage(Target target, String altSpecKey) {
         Utils.notNull(target, "target");
         if (INST.mImageLoadHandler == null) {
             finishInit();
         }
-        INST.mImageLoadHandler.loadImage(target, altSpec);
+        ImageLoadSpec spec = INST.mSpecs.get(target.getSpecKey());
+        ImageLoadSpec altSpec = altSpecKey != null ? INST.mSpecs.get(altSpecKey) : null;
+        if (spec == null) {
+            throw new IllegalArgumentException("Invalid spec key, no spec defined for the given key: " + target.getSpecKey());
+        }
+        if (altSpecKey != null && altSpec == null) {
+            throw new IllegalArgumentException("Invalid alternative spec key, no spec defined for the given key: " + altSpecKey);
+        }
+        INST.mImageLoadHandler.loadImage(target, spec, altSpec);
     }
 
     /**
@@ -159,6 +192,13 @@ public final class FastImageLoader {
             finishInit();
         }
         INST.mImageLoadHandler.clearDiskCache();
+    }
+
+    /**
+     * Add the given image load spec to the defined specs.
+     */
+    static void addSpec(ImageLoadSpec spec) {
+        INST.mSpecs.put(spec.getKey(), spec);
     }
 
     //region: Private methods

@@ -25,6 +25,11 @@ public final class ImageLoadSpec {
     //region: Fields and Consts
 
     /**
+     * the unique key of the spec used for identification and debug
+     */
+    private final String mKey;
+
+    /**
      * the width of the image in pixels
      */
     private final int mWidth;
@@ -53,18 +58,27 @@ public final class ImageLoadSpec {
     /**
      * Init image loading spec.
      *
+     * @param key the unique key of the spec used for identification and debug
      * @param width the width of the image in pixels
      * @param height the height of the image in pixels
      * @param format The format of the image.
      * @param pixelConfig the pixel configuration to load the image in (4 bytes per image pixel, 2 bytes, etc.)
      * @param uriEnhancer The URI enhancer to use for this spec image loading
      */
-    ImageLoadSpec(int width, int height, Format format, Bitmap.Config pixelConfig, UriEnhancer uriEnhancer) {
+    ImageLoadSpec(String key, int width, int height, Format format, Bitmap.Config pixelConfig, UriEnhancer uriEnhancer) {
+        mKey = key;
         mWidth = width;
         mHeight = height;
         mFormat = format;
         mPixelConfig = pixelConfig;
         mUriEnhancer = uriEnhancer;
+    }
+
+    /**
+     * the unique key of the spec used for identification and debug
+     */
+    public String getKey() {
+        return mKey;
     }
 
     /**
@@ -120,30 +134,23 @@ public final class ImageLoadSpec {
 
         ImageLoadSpec that = (ImageLoadSpec) o;
 
-        if (mHeight != that.mHeight) {
-            return false;
-        }
-        if (mWidth != that.mWidth) {
-            return false;
-        }
-        return mPixelConfig == that.mPixelConfig;
+        return mKey.equals(that.mKey);
     }
 
     @Override
     public int hashCode() {
-        int result = mWidth;
-        result = 31 * result + mHeight;
-        result = 31 * result + mPixelConfig.hashCode();
-        return result;
+        return mKey.hashCode();
     }
 
     @Override
     public String toString() {
         return "ImageLoadSpec{" +
-                "mWidth=" + mWidth +
+                "mKey='" + mKey + '\'' +
+                ", mWidth=" + mWidth +
                 ", mHeight=" + mHeight +
                 ", mFormat=" + mFormat +
                 ", mPixelConfig=" + mPixelConfig +
+                ", mUriEnhancer=" + mUriEnhancer +
                 '}';
     }
 

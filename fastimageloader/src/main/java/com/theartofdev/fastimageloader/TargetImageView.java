@@ -68,29 +68,29 @@ public class TargetImageView extends ImageView {
     }
 
     /**
-     * See: {@link #loadImage(String, ImageLoadSpec, ImageLoadSpec, boolean)}.
+     * See: {@link #loadImage(String, String, String, boolean)}.
      */
-    public void loadImage(String url, ImageLoadSpec spec) {
-        mHandler.loadImage(url, spec, null, false);
+    public void loadImage(String url, String specKey) {
+        mHandler.loadImage(url, specKey, null, false);
     }
 
     /**
-     * See: {@link #loadImage(String, ImageLoadSpec, ImageLoadSpec, boolean)}.
+     * See: {@link #loadImage(String, String, String, boolean)}.
      */
-    public void loadImage(String url, ImageLoadSpec spec, ImageLoadSpec altSpec) {
-        mHandler.loadImage(url, spec, altSpec, false);
+    public void loadImage(String url, String specKey, String altSpecKey) {
+        mHandler.loadImage(url, specKey, altSpecKey, false);
     }
 
     /**
      * Load image from the given source.
      *
      * @param url the avatar source URL to load from
-     * @param spec the spec to load the image by
-     * @param altSpec optional: the spec to use for memory cached image in case the primary is not found.
+     * @param specKey the spec to load the image by
+     * @param altSpecKey optional: the spec to use for memory cached image in case the primary is not found.
      * @param force true - force image load even if it is the same source
      */
-    public void loadImage(String url, ImageLoadSpec spec, ImageLoadSpec altSpec, boolean force) {
-        mHandler.loadImage(url, spec, altSpec, force);
+    public void loadImage(String url, String specKey, String altSpecKey, boolean force) {
+        mHandler.loadImage(url, specKey, altSpecKey, force);
     }
 
     /**

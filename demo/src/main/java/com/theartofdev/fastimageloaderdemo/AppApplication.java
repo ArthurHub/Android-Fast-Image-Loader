@@ -34,24 +34,24 @@ public class AppApplication extends Application {
                 .setDefaultUriEnhancer(new UriEnhancerImgIX())
                 .setDebugIndicator(true);
 
-        Specs.UNBOUNDED = FastImageLoader.createSpec()
+        FastImageLoader.buildSpec(Specs.UNBOUNDED)
                 .setUnboundDimension()
                 .setPixelConfig(Bitmap.Config.RGB_565)
                 .build();
 
-        Specs.IMAGE = FastImageLoader.createSpec()
+        FastImageLoader.buildSpec(Specs.IMAGE)
                 .setDimensionByDisplay()
                 .setHeightByResource(R.dimen.image_height)
                 .setPixelConfig(Bitmap.Config.RGB_565)
                 .build();
 
         UriEnhancerIdentity uriEnhancerIdentity = new UriEnhancerIdentity();
-        Specs.INSTA_AVATAR = FastImageLoader.createSpec()
+        FastImageLoader.buildSpec(Specs.INSTA_AVATAR)
                 .setDimension(INSTAGRAM_AVATAR_SIZE)
                 .setUriEnhancer(uriEnhancerIdentity)
                 .build();
 
-        Specs.INSTA_IMAGE = FastImageLoader.createSpec()
+        FastImageLoader.buildSpec(Specs.INSTA_IMAGE)
                 .setDimension(INSTAGRAM_IMAGE_SIZE)
                 .setPixelConfig(Bitmap.Config.RGB_565)
                 .setUriEnhancer(uriEnhancerIdentity)

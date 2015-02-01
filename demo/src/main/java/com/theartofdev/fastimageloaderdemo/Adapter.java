@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.theartofdev.fastimageloader.FastImageLoader;
 import com.theartofdev.fastimageloader.ImageLoadSpec;
 import com.theartofdev.fastimageloader.TargetImageView;
 
@@ -49,10 +50,10 @@ public final class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        ImageLoadSpec spec = Specs.IMAGE;
+        ImageLoadSpec spec = FastImageLoader.getSpec(Specs.IMAGE);
         holder.mUrlTextView.setText(mItems[position]);
         holder.mSpecTextView.setText(spec.getFormat() + ": (" + spec.getWidth() + "," + spec.getHeight() + ") Config: " + spec.getPixelConfig());
-        holder.mTargetImageView.loadImage(mItems[position], spec);
+        holder.mTargetImageView.loadImage(mItems[position], spec.getKey());
     }
 
     //region: Inner class: ViewHolder

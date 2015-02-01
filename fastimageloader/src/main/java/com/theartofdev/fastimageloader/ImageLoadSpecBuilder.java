@@ -29,6 +29,11 @@ public final class ImageLoadSpecBuilder {
     //region: Fields and Consts
 
     /**
+     * the unique key of the spec used for identification and debug
+     */
+    private String mKey;
+
+    /**
      * The application object
      */
     private Application mApplication;
@@ -65,10 +70,16 @@ public final class ImageLoadSpecBuilder {
     //endregion
 
     /**
+     * @param key the unique key of the spec used for identification and debug
      * @param application The application object
      * @param uriEnhancer default URI enhancer to use for this spec image loading
      */
-    ImageLoadSpecBuilder(Application application, UriEnhancer uriEnhancer) {
+    ImageLoadSpecBuilder(String key, Application application, UriEnhancer uriEnhancer) {
+        Utils.notNullOrEmpty(key, "key");
+        Utils.notNull(application, "application");
+        Utils.notNull(uriEnhancer, "uriEnhancer");
+
+        mKey = key;
         mApplication = application;
         mUriEnhancer = uriEnhancer;
     }
@@ -213,6 +224,11 @@ public final class ImageLoadSpecBuilder {
             throw new IllegalArgumentException("width and height must be either unbound or both positive");
 
         float densityAdj = Utils.density > mMaxDensity ? mMaxDensity / Utils.density : 1f;
-        return new ImageLoadSpec((int) (mWidth * densityAdj), (int) (mHeight * densityAdj), mFormat, mPixelConfig, mUriEnhancer);
+
+        ImageLoadSpec spec = new ImageLoadSpec(mKey, (int) (mWidth * densityAdj), (int) (mHeight * densityAdj), mFormat, mPixelConfig, mUriEnhancer);
+
+        FastImageLoader.addSpec(spec);
+
+        return spec;
     }
 }

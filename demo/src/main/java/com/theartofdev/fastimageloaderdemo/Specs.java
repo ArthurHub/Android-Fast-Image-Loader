@@ -12,19 +12,20 @@
 
 package com.theartofdev.fastimageloaderdemo;
 
-import com.theartofdev.fastimageloader.ImageLoadSpec;
-
 /**
- * TODO:a add doc
+ * Consts of image loading spec keys.
  */
-public class Specs {
+public final class Specs {
 
-    public static ImageLoadSpec UNBOUNDED;
+    private Specs() {
+    }
 
-    public static ImageLoadSpec IMAGE;
+    public static final String UNBOUNDED = "Unbounded";
 
-    public static ImageLoadSpec INSTA_AVATAR;
+    public static final String IMAGE = "Image";
 
-    public static ImageLoadSpec INSTA_IMAGE;
+    public static final String INSTA_AVATAR = "InstagramAvatar";
+
+    public static final String INSTA_IMAGE = "InstagramImage";
 }
 

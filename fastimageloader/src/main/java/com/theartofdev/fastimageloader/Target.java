@@ -19,7 +19,7 @@ package com.theartofdev.fastimageloader;
  * {@link ReusableBitmap#decrementInUse()} state correctly.
  * <p/>
  * Instances of this interface will used to determine the image to load by {@link #getUrl()} and the
- * specification to load the image by {@link #getSpec()}.<br/>
+ * specification to load the image by {@link #getSpecKey()}.<br/>
  * Those methods will also be used to cancel image load request it the returned value have been changed or nullified.
  * <p/>
  * It is recommended that you add this interface directly on to a custom view type when using in an
@@ -35,7 +35,7 @@ public interface Target {
     /**
      * the spec to load the image by
      */
-    ImageLoadSpec getSpec();
+    String getSpecKey();
 
     /**
      * Callback when an image has been successfully loaded.<br/>

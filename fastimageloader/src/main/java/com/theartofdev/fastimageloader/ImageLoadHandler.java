@@ -130,10 +130,9 @@ final class ImageLoadHandler implements DiskCache.GetCallback, Downloader.Callba
      * If the image of the requested dimensions is not found in memory cache we try to find the fallback dimension, if
      * found it will be set to the target, and the requested dimension image will be loaded async.
      */
-    public void loadImage(Target target, ImageLoadSpec altSpec) {
+    public void loadImage(Target target, ImageLoadSpec spec, ImageLoadSpec altSpec) {
         try {
             String url = target.getUrl();
-            ImageLoadSpec spec = target.getSpec();
             if (!TextUtils.isEmpty(url)) {
 
                 String enhancedUrl = spec.getUriEnhancer().enhance(url, spec);
