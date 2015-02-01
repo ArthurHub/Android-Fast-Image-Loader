@@ -14,6 +14,7 @@ package com.theartofdev.fastimageloader;
 
 import android.app.Application;
 import android.content.Context;
+import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 
@@ -116,6 +117,15 @@ public final class FastImageLoader {
      */
     public FastImageLoader setWriteLogsToLogcat(boolean enable) {
         Logger.mLogcatEnabled = enable;
+        return INST;
+    }
+
+    /**
+     * The min log level to write logs at, logs below this level are ignored.<br/>
+     * Use: {@link Log#DEBUG}, {@link Log#INFO}, {@link Log#WARN}, {@link Log#ERROR}, {@link Log#ASSERT}.
+     */
+    public FastImageLoader setLogLevel(int level) {
+        Logger.mLogLevel = level;
         return INST;
     }
 

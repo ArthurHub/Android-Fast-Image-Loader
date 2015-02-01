@@ -14,6 +14,7 @@ package com.theartofdev.fastimageloaderdemo;
 
 import android.app.Application;
 import android.graphics.Bitmap;
+import android.util.Log;
 
 import com.theartofdev.fastimageloader.FastImageLoader;
 import com.theartofdev.fastimageloader.UriEnhancerIdentity;
@@ -33,6 +34,7 @@ public class AppApplication extends Application {
                 .init(this)
                 .setDefaultUriEnhancer(new UriEnhancerImgIX())
                 .setWriteLogsToLogcat(true)
+                .setLogLevel(Log.DEBUG)
                 .setDebugIndicator(true);
 
         FastImageLoader.buildSpec(Specs.UNBOUNDED)
