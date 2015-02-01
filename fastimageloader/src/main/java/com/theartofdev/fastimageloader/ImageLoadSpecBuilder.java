@@ -135,7 +135,8 @@ public final class ImageLoadSpecBuilder {
     }
 
     /**
-     * the width and height of the image in pixels.
+     * the width and height of the image in pixels.<br/>
+     * to set one dimension and the second to scale set the second to 0.
      */
     public ImageLoadSpecBuilder setDimension(int width, int height) {
         mWidth = width;
@@ -144,7 +145,8 @@ public final class ImageLoadSpecBuilder {
     }
 
     /**
-     * the width of the image in pixels.
+     * the width of the image in pixels.<br/>
+     * to set the height to scale set it to 0.
      */
     public ImageLoadSpecBuilder setWidth(int width) {
         mWidth = width;
@@ -152,7 +154,8 @@ public final class ImageLoadSpecBuilder {
     }
 
     /**
-     * the height of the image in pixels.
+     * the height of the image in pixels.<br/>
+     * to set the width to scale set it to 0.
      */
     public ImageLoadSpecBuilder setHeight(int height) {
         mHeight = height;
@@ -168,7 +171,8 @@ public final class ImageLoadSpecBuilder {
     }
 
     /**
-     * the width and height of the image in pixels.
+     * the width and height of the image in pixels.<br/>
+     * to set one dimension and the second to scale set the second to 0.
      */
     public ImageLoadSpecBuilder setDimensionByResource(int widthResId, int heightResId) {
         mWidth = mApplication.getResources().getDimensionPixelSize(widthResId);
@@ -177,7 +181,8 @@ public final class ImageLoadSpecBuilder {
     }
 
     /**
-     * the width of the image by reading dimension resource by the given key.
+     * the width of the image by reading dimension resource by the given key.<br/>
+     * to set the height to scale set it to 0.
      */
     public ImageLoadSpecBuilder setWidthByResource(int resId) {
         mWidth = mApplication.getResources().getDimensionPixelSize(resId);
@@ -185,7 +190,8 @@ public final class ImageLoadSpecBuilder {
     }
 
     /**
-     * the height of the image by reading dimension resource by the given key.
+     * the height of the image by reading dimension resource by the given key.<br/>
+     * to set the width to scale set it to 0.
      */
     public ImageLoadSpecBuilder setHeightByResource(int resId) {
         mHeight = mApplication.getResources().getDimensionPixelSize(resId);
@@ -220,8 +226,6 @@ public final class ImageLoadSpecBuilder {
     public ImageLoadSpec build() {
         if (mWidth < 0 || mHeight < 0)
             throw new IllegalArgumentException("width and height must be set");
-        if ((mWidth == 0 && mHeight > 0) || (mHeight == 0 && mWidth > 0))
-            throw new IllegalArgumentException("width and height must be either unbound or both positive");
 
         float densityAdj = Utils.density > mMaxDensity ? mMaxDensity / Utils.density : 1f;
 

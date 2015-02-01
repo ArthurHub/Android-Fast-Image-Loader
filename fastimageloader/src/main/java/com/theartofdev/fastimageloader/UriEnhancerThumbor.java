@@ -57,7 +57,7 @@ public class UriEnhancerThumbor implements UriEnhancer {
         sb.append(thumborPart);
         sb.append("/unsafe");
 
-        if (spec.isSizeBounded()) {
+        if (spec.getWidth() > 0 || spec.getHeight() > 0) {
             sb.append("/").append(spec.getWidth()).append("x").append(spec.getHeight());
         }
 
