@@ -20,6 +20,7 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.theartofdev.fastimageloader.TargetAvatarImageView;
 import com.theartofdev.fastimageloader.TargetImageView;
 import com.theartofdev.fastimageloaderdemo.R;
 import com.theartofdev.fastimageloaderdemo.Specs;
@@ -28,7 +29,7 @@ import com.theartofdev.fastimageloaderdemo.instagram.service.User;
 
 public final class ItemView extends ViewGroup {
 
-    private final TargetImageView mAvatar;
+    private final TargetAvatarImageView mAvatar;
 
     private final TargetImageView mImage;
 
@@ -37,7 +38,7 @@ public final class ItemView extends ViewGroup {
     public ItemView(Context context) {
         super(context);
 
-        mAvatar = new TargetImageView(context);
+        mAvatar = new TargetAvatarImageView(context);
         int size = getResources().getDimensionPixelSize(R.dimen.avatar_size);
         mAvatar.setLayoutParams(new LayoutParams(size, size));
         mAvatar.setRounded(true);
@@ -60,9 +61,10 @@ public final class ItemView extends ViewGroup {
 
     public void setData(Item item) {
         User user = item.user;
-        mAvatar.loadImage(user.profile_picture, Specs.INSTA_AVATAR);
+        String userName = user.full_name != null ? user.full_name : user.username;
+        mAvatar.loadAvatar(user.profile_picture, userName, Specs.INSTA_AVATAR);
         mImage.loadImage(item.images.standard_resolution.url, Specs.INSTA_IMAGE);
-        mAuthor.setText(user.full_name != null ? user.full_name : user.username);
+        mAuthor.setText(userName);
     }
 
     @Override
