@@ -13,6 +13,7 @@
 package com.theartofdev.fastimageloader;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.widget.ImageView;
@@ -28,6 +29,11 @@ public class TargetImageView extends ImageView {
      * The target image handler to load the image and control its lifecycle.
      */
     protected TargetImageViewHandler mHandler;
+
+    /**
+     * The placeholder drawable to draw while the image is not loaded
+     */
+    protected Drawable mPlaceholder;
     //endregion
 
     public TargetImageView(Context context) {
@@ -57,6 +63,20 @@ public class TargetImageView extends ImageView {
      */
     public void setRounded(boolean isRounded) {
         mHandler.setRounded(isRounded);
+    }
+
+    /**
+     * The placeholder drawable to draw while the image is not loaded
+     */
+    public Drawable getPlaceholder() {
+        return mPlaceholder;
+    }
+
+    /**
+     * The placeholder drawable to draw while the image is not loaded
+     */
+    public void setPlaceholder(Drawable placeholder) {
+        mPlaceholder = placeholder;
     }
 
     @Override
@@ -103,6 +123,30 @@ public class TargetImageView extends ImageView {
             mHandler.onViewShown();
         } else {
             mHandler.onViewHidden();
+        }
+    }
+
+    /**
+     * Override draw to draw placeholder before the image if it is not loaded yet or animating fade-in.
+     */
+    @Override
+    public void onDraw(@SuppressWarnings("NullableProblems") Canvas canvas) {
+        if (getDrawable() == null || mHandler.isAnimating()) {
+            drawPlaceholder(canvas, mHandler.getLoadState());
+        }
+        super.onDraw(canvas);
+    }
+
+    /**
+     * Draw placeholder if the image is loading/animating to show or failed to load.
+     *
+     * @param loadState the current load state of the image to draw specific placeholder
+     */
+    protected void drawPlaceholder(Canvas canvas, LoadState loadState) {
+        if (mPlaceholder != null) {
+            canvas.getClipBounds(Utils.mRect);
+            mPlaceholder.setBounds(Utils.mRect);
+            mPlaceholder.draw(canvas);
         }
     }
 }

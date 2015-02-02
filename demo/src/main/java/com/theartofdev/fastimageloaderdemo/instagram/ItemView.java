@@ -50,6 +50,7 @@ public final class ItemView extends ViewGroup {
         mImage = new TargetImageView(context);
         mImage.setLayoutParams(new LayoutParams(p.x, p.x));
         mImage.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        mImage.setPlaceholder(getResources().getDrawable(R.drawable.pattern_repeat));
         addView(mImage);
 
         mAuthor = new TextView(context);
