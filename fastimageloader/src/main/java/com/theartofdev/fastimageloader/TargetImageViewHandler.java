@@ -193,12 +193,14 @@ public class TargetImageViewHandler implements Target, View.OnAttachStateChangeL
 
     @Override
     public void onBitmapFailed() {
+        String url = mUrl;
+        String specKey = mSpecKey;
         mLoadState = LoadState.FAILED;
         if (mImageView.getDrawable() == null) {
             mImageView.setImageDrawable(null);
             mImageView.invalidate();
         }
-        Logger.operation(mUrl, mSpecKey, null, false, System.currentTimeMillis() - mStartImageLoadTime);
+        Logger.operation(url, specKey, null, false, System.currentTimeMillis() - mStartImageLoadTime);
     }
 
     /**
