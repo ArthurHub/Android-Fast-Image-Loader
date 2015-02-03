@@ -29,12 +29,7 @@ class ImageRequest {
     /**
      * the URL of the requested image as given
      */
-    private final String mUrl;
-
-    /**
-     * the URL of the requested image with thumbor parameters
-     */
-    private final String mThumborUrl;
+    private final String mUri;
 
     /**
      * the spec to load the image by
@@ -68,14 +63,12 @@ class ImageRequest {
     //endregion
 
     /**
-     * @param url the URL of the requested image as given
-     * @param thumborUrl the URL of the requested image with thumbor parameters
+     * @param uri the URL of the requested image as given
      * @param spec the dimension key used to load the image in specific size
      * @param file the path of the image in the disk
      */
-    ImageRequest(String url, String thumborUrl, ImageLoadSpec spec, File file) {
-        mUrl = url;
-        mThumborUrl = thumborUrl;
+    ImageRequest(String uri, ImageLoadSpec spec, File file) {
+        mUri = uri;
         mSpec = spec;
         mFile = file;
         mPrefetch = true;
@@ -83,32 +76,37 @@ class ImageRequest {
 
     /**
      * @param target the target to load the image into
-     * @param url the URL of the requested image as given
-     * @param thumborUrl the URL of the requested image with thumbor parameters
+     * @param uri the URL of the requested image as given
      * @param spec the dimension key used to load the image in specific size
      * @param file the path of the image in the disk
      */
-    ImageRequest(Target target, String url, String thumborUrl, ImageLoadSpec spec, File file) {
+    ImageRequest(Target target, String uri, ImageLoadSpec spec, File file) {
         mTargets.add(target);
-        mUrl = url;
-        mThumborUrl = thumborUrl;
+        mUri = uri;
         mSpec = spec;
         mFile = file;
         mPrefetch = false;
     }
 
     /**
+     * The unique key of the image request.
+     */
+    String getUniqueKey() {
+        return mSpec.getUriUniqueKey(mUri);
+    }
+
+    /**
      * the URL of the requested image as given
      */
-    public String getUrl() {
-        return mUrl;
+    public String getUri() {
+        return mUri;
     }
 
     /**
      * the URL of the requested image with thumbor parameters
      */
-    public String getThumborUrl() {
-        return mThumborUrl;
+    public String getEnhancedUri() {
+        return mSpec.getUriEnhancer().enhance(mUri, mSpec);
     }
 
     /**
@@ -194,7 +192,7 @@ class ImageRequest {
 
     private void filterValidTargets() {
         for (int i = mTargets.size() - 1; i >= 0; i--) {
-            boolean isValid = TextUtils.equals(mTargets.get(i).getUrl(), mUrl);
+            boolean isValid = TextUtils.equals(mTargets.get(i).getUrl(), mUri);
             if (!isValid) {
                 mTargets.remove(i);
             }
@@ -204,8 +202,7 @@ class ImageRequest {
     @Override
     public String toString() {
         return "ImageRequest{" +
-                "mUrl='" + mUrl + '\'' +
-                ", mThumborUrl='" + mThumborUrl + '\'' +
+                "mUri='" + mUri + '\'' +
                 ", mSpec='" + mSpec + '\'' +
                 ", mFile='" + mFile + '\'' +
                 ", mFileSize=" + mFileSize +

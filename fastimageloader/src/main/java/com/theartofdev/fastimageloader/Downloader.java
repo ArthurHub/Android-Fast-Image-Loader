@@ -171,7 +171,7 @@ final class Downloader {
             if (!canceled) {
 
                 // start image download request
-                Request request = new Request.Builder().url(imageRequest.getThumborUrl()).build();
+                Request request = new Request.Builder().url(imageRequest.getEnhancedUri()).build();
                 Response response = mClient.newCall(request).execute();
 
                 // check handshake
@@ -195,7 +195,7 @@ final class Downloader {
         }
 
         if (downloaded || error != null) {
-            Logger.operation(imageRequest.getThumborUrl(), imageRequest.getSpec().getKey(), responseCode, System.currentTimeMillis() - start, imageRequest.getFileSize(), error);
+            Logger.operation(imageRequest.getEnhancedUri(), imageRequest.getSpec().getKey(), responseCode, System.currentTimeMillis() - start, imageRequest.getFileSize(), error);
         }
 
         // if downloaded and request is still valid - load the image object

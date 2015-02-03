@@ -63,12 +63,16 @@ final class DiskHandler {
      * @param uri The online image uri
      * @return The path of the file on the disk
      */
-    public File getCacheFile(String uri) {
+    public File getCacheFile(String uri, ImageLoadSpec spec) {
         int lastSlash = uri.lastIndexOf('/');
         if (lastSlash == -1) {
             return null;
         }
-        String name = Integer.toHexString(uri.substring(0, lastSlash).hashCode()) + "_" + uri.substring(lastSlash + 1).hashCode();
+        String name = Utils.format("{}_{}_{}_{}",
+                Integer.toHexString(uri.substring(0, lastSlash).hashCode()),
+                Integer.toHexString(uri.substring(lastSlash + 1).hashCode()),
+                uri.substring(Math.max(lastSlash + 1, uri.length() - 10)),
+                spec.getKey());
         return new File(Utils.pathCombine(mCacheFolder.getAbsolutePath(), name));
     }
 
@@ -112,7 +116,7 @@ final class DiskHandler {
             }
 
             if (bitmap != null) {
-                bitmap.setUrl(imageRequest.getUrl());
+                bitmap.setUrl(imageRequest.getUri());
             }
         } catch (Throwable e) {
             Logger.warn("Failed to load disk cached image [{}]", e, imageRequest);

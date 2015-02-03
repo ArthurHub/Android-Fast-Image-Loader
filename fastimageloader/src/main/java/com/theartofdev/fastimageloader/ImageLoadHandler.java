@@ -132,13 +132,13 @@ final class ImageLoadHandler implements DiskCache.GetCallback, Downloader.Callba
      */
     public void prefetchImage(String uri, ImageLoadSpec spec) {
         try {
-            String enhancedUrl = spec.getUriEnhancer().enhance(uri, spec);
-            ImageRequest request = mLoadingRequests.get(enhancedUrl);
+            String imageKey = spec.getUriUniqueKey(uri);
+            ImageRequest request = mLoadingRequests.get(imageKey);
             if (request == null) {
-                File file = mDiskHandler.getCacheFile(enhancedUrl);
+                File file = mDiskHandler.getCacheFile(uri, spec);
                 if (!file.exists()) {
-                    request = new ImageRequest(uri, enhancedUrl, spec, file);
-                    mLoadingRequests.put(enhancedUrl, request);
+                    request = new ImageRequest(uri, spec, file);
+                    mLoadingRequests.put(imageKey, request);
                     mDownloader.prefetchAsync(request);
                 }
             }
@@ -158,8 +158,6 @@ final class ImageLoadHandler implements DiskCache.GetCallback, Downloader.Callba
             String uri = target.getUrl();
             if (!TextUtils.isEmpty(uri)) {
 
-                String enhancedUrl = spec.getUriEnhancer().enhance(uri, spec);
-
                 ReusableBitmapImpl image = mMemoryCache.get(uri, spec, altSpec);
                 if (image != null) {
                     mMemoryHits++;
@@ -170,7 +168,8 @@ final class ImageLoadHandler implements DiskCache.GetCallback, Downloader.Callba
 
                 // not found or loaded alternative spec
                 if (image == null || image.getSpec() != spec) {
-                    ImageRequest request = mLoadingRequests.get(enhancedUrl);
+                    String imageKey = spec.getUriUniqueKey(uri);
+                    ImageRequest request = mLoadingRequests.get(imageKey);
                     if (request != null) {
                         Logger.debug("Memory cache miss, image already requested, add target to request... [{}] [{}]", request, target);
                         if (request.addTarget(target)) {
@@ -178,8 +177,8 @@ final class ImageLoadHandler implements DiskCache.GetCallback, Downloader.Callba
                         }
                     } else {
                         // start async process of loading image from disk cache or network
-                        request = new ImageRequest(target, uri, enhancedUrl, spec, mDiskHandler.getCacheFile(enhancedUrl));
-                        mLoadingRequests.put(enhancedUrl, request);
+                        request = new ImageRequest(target, uri, spec, mDiskHandler.getCacheFile(uri, spec));
+                        mLoadingRequests.put(imageKey, request);
 
                         Logger.debug("Memory cache miss, start image request handling... [{}]", request);
                         mDiskCache.getAsync(request);
@@ -219,7 +218,7 @@ final class ImageLoadHandler implements DiskCache.GetCallback, Downloader.Callba
             if (imageRequest.isValid()) {
                 if (imageRequest.getBitmap() != null) {
                     mDiskHits++;
-                    mLoadingRequests.remove(imageRequest.getThumborUrl());
+                    mLoadingRequests.remove(imageRequest.getUniqueKey());
                     for (Target target : imageRequest.getValidTargets()) {
                         target.onBitmapLoaded(imageRequest.getBitmap(), LoadedFrom.DISK);
                     }
@@ -233,10 +232,10 @@ final class ImageLoadHandler implements DiskCache.GetCallback, Downloader.Callba
                     }
                 }
             } else {
-                mLoadingRequests.remove(imageRequest.getThumborUrl());
+                mLoadingRequests.remove(imageRequest.getUniqueKey());
             }
         } catch (Exception e) {
-            mLoadingRequests.remove(imageRequest.getThumborUrl());
+            mLoadingRequests.remove(imageRequest.getUniqueKey());
             Logger.critical("Error in load image disk callback", e);
         }
     }
@@ -264,7 +263,7 @@ final class ImageLoadHandler implements DiskCache.GetCallback, Downloader.Callba
             if (imageRequest.isValid()) {
                 if (imageRequest.getBitmap() != null) {
                     mNetworkLoads++;
-                    mLoadingRequests.remove(imageRequest.getThumborUrl());
+                    mLoadingRequests.remove(imageRequest.getUniqueKey());
                     for (Target target : imageRequest.getValidTargets()) {
                         target.onBitmapLoaded(imageRequest.getBitmap(), LoadedFrom.NETWORK);
                     }
@@ -273,18 +272,18 @@ final class ImageLoadHandler implements DiskCache.GetCallback, Downloader.Callba
                         // race-condition, canceled request that add valid target (run again)
                         mDiskCache.getAsync(imageRequest);
                     } else {
-                        mLoadingRequests.remove(imageRequest.getThumborUrl());
+                        mLoadingRequests.remove(imageRequest.getUniqueKey());
                         for (Target target : imageRequest.getValidTargets()) {
                             target.onBitmapFailed();
                         }
                     }
                 }
             } else {
-                mLoadingRequests.remove(imageRequest.getThumborUrl());
+                mLoadingRequests.remove(imageRequest.getUniqueKey());
                 imageRequest.setBitmap(null);
             }
         } catch (Exception e) {
-            mLoadingRequests.remove(imageRequest.getThumborUrl());
+            mLoadingRequests.remove(imageRequest.getUniqueKey());
             Logger.critical("Error in load image downloader callback", e);
         }
     }

@@ -123,23 +123,11 @@ public final class ImageLoadSpec {
         return mWidth > 0 && mHeight > 0;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        ImageLoadSpec that = (ImageLoadSpec) o;
-
-        return mKey.equals(that.mKey);
-    }
-
-    @Override
-    public int hashCode() {
-        return mKey.hashCode();
+    /**
+     * The unique key of the image URI with the given spec.
+     */
+    String getUriUniqueKey(String uri) {
+        return uri + "$" + mKey;
     }
 
     @Override

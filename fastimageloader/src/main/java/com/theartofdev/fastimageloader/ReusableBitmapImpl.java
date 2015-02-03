@@ -124,13 +124,6 @@ final class ReusableBitmapImpl implements ReusableBitmap {
     }
 
     /**
-     * Is the recycle bitmap can be recycled - not in use or in loading use.
-     */
-    public boolean canBeRecycled() {
-        return !isInUse() && !isInLoadUse();
-    }
-
-    /**
      * Release the inner bitmap.
      */
     public void close() {
@@ -145,7 +138,7 @@ final class ReusableBitmapImpl implements ReusableBitmap {
     public String toString() {
         return "RecycleBitmap{" +
                 "hash=" + hashCode() +
-                ", mSpecKey='" + mSpec + '\'' +
+                ", mSpec='" + mSpec + '\'' +
                 ", mInUse=" + mInUse.get() +
                 ", mInLoadUse=" + mInLoadUse +
                 ", mRecycleCount=" + mRecycleCount +
