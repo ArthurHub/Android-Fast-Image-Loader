@@ -75,7 +75,7 @@ public class TargetDrawable extends Drawable {
      * @param rounded is to render the bitmap rounded or rectangle
      * @param showFade if to show fade effect starting from now
      */
-    TargetDrawable(Bitmap bitmap, LoadedFrom loadedFrom, boolean rounded, boolean showFade) {
+    public TargetDrawable(Bitmap bitmap, LoadedFrom loadedFrom, boolean rounded, boolean showFade) {
         Utils.notNull(bitmap, "bitmap");
 
         mLoadedFrom = loadedFrom;

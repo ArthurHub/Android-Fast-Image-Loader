@@ -18,7 +18,7 @@ import android.view.View;
 import android.widget.ImageView;
 
 /**
- * Handler for loading image as {@link ReusableBitmap} and managing its lifecycle.<br/>
+ * Handler for loading image as {@link com.theartofdev.fastimageloader.ReusableBitmap} and managing its lifecycle.<br/>
  * A single instance of the handler should be used for each ImageView.<br/>
  * <p/>
  * Use {@link #loadImage(String, String, String, boolean)} to load of image into the
@@ -42,7 +42,7 @@ import android.widget.ImageView;
  * }}
  * </pre>
  */
-public class TargetImageViewHandler implements Target, View.OnAttachStateChangeListener {
+public abstract class TargetImageViewHandlerBase<T extends ImageView> implements Target, View.OnAttachStateChangeListener {
 
     //region: Fields and Consts
 
@@ -90,7 +90,7 @@ public class TargetImageViewHandler implements Target, View.OnAttachStateChangeL
     /**
      * @param imageView The image view to handle.
      */
-    public TargetImageViewHandler(ImageView imageView) {
+    public TargetImageViewHandlerBase(ImageView imageView) {
         Utils.notNull(imageView, "imageView");
         mImageView = imageView;
         mImageView.addOnAttachStateChangeListener(this);
@@ -156,7 +156,7 @@ public class TargetImageViewHandler implements Target, View.OnAttachStateChangeL
 
         if (!TextUtils.equals(mUrl, url) || TextUtils.isEmpty(url) || force) {
             mStartImageLoadTime = System.currentTimeMillis();
-            mImageView.setImageDrawable(null);
+            clearImage();
 
             mUrl = url;
             mSpecKey = specKey;
@@ -166,7 +166,7 @@ public class TargetImageViewHandler implements Target, View.OnAttachStateChangeL
                 FastImageLoader.loadImage(this, altSpecKey);
             } else {
                 clearUsedBitmap();
-                mImageView.setImageDrawable(null);
+                clearImage();
             }
             mImageView.invalidate();
         }
@@ -185,8 +185,7 @@ public class TargetImageViewHandler implements Target, View.OnAttachStateChangeL
         mReusableBitmap = bitmap;
         mReusableBitmap.incrementInUse();
 
-        TargetDrawable drawable = new TargetDrawable(bitmap.getBitmap(), from, mRounded, from == LoadedFrom.NETWORK && mImageView.getDrawable() == null);
-        mImageView.setImageDrawable(drawable);
+        setImage(bitmap, from);
 
         Logger.operation(mUrl, mSpecKey, from, true, System.currentTimeMillis() - mStartImageLoadTime);
     }
@@ -197,7 +196,7 @@ public class TargetImageViewHandler implements Target, View.OnAttachStateChangeL
         String specKey = mSpecKey;
         mLoadState = LoadState.FAILED;
         if (mImageView.getDrawable() == null) {
-            mImageView.setImageDrawable(null);
+            clearImage();
             mImageView.invalidate();
         }
         Logger.operation(url, specKey, null, false, System.currentTimeMillis() - mStartImageLoadTime);
@@ -253,6 +252,17 @@ public class TargetImageViewHandler implements Target, View.OnAttachStateChangeL
         clearUsedBitmap();
         mImageView.removeOnAttachStateChangeListener(this);
     }
+
+    /**
+     * Called to clear the existing image in the handled image view.<br/>
+     * Called on loading or failure.
+     */
+    protected abstract void clearImage();
+
+    /**
+     * Called to set the loaded image bitmap in the handled image view.
+     */
+    protected abstract void setImage(ReusableBitmap bitmap, LoadedFrom from);
 
     /**
      * Clear the currently used bitmap and mark it as not in use.

@@ -28,7 +28,7 @@ public class TargetImageView extends ImageView {
     /**
      * The target image handler to load the image and control its lifecycle.
      */
-    protected TargetImageViewHandler mHandler;
+    protected TargetImageViewDrawableHandler mHandler;
 
     /**
      * The placeholder drawable to draw while the image is not loaded
@@ -38,17 +38,31 @@ public class TargetImageView extends ImageView {
 
     public TargetImageView(Context context) {
         super(context);
-        mHandler = new TargetImageViewHandler(this);
+        mHandler = new TargetImageViewDrawableHandler(this);
     }
 
     public TargetImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mHandler = new TargetImageViewHandler(this);
+        mHandler = new TargetImageViewDrawableHandler(this);
     }
 
     public TargetImageView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        mHandler = new TargetImageViewHandler(this);
+        mHandler = new TargetImageViewDrawableHandler(this);
+    }
+
+    /**
+     * The URL source of the image
+     */
+    public String getUrl() {
+        return mHandler.getUrl();
+    }
+
+    /**
+     * the spec to load the image by
+     */
+    public String getSpecKey() {
+        return mHandler.getSpecKey();
     }
 
     /**
