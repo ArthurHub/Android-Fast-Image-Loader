@@ -21,7 +21,7 @@
         </activity>
         <activity
             android:name=".zoom.ZoomActivity"
-            android:label="@string/title_activity_zoom">
+            android:theme="@style/AppThemeZoomImage">
         </activity>
     </application>
 

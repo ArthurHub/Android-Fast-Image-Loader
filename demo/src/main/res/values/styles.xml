@@ -6,4 +6,9 @@
         <item name="colorPrimary">#a07</item>
     </style>
 
+    <style name="AppThemeZoomImage" parent="AppTheme">
+        <item name="windowActionBar">false</item>
+        <item name="android:background">#000</item>
+    </style>
+
 </resources>
