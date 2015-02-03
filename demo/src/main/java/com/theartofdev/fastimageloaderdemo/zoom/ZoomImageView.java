@@ -20,7 +20,6 @@ import android.widget.ProgressBar;
 import com.theartofdev.fastimageloader.LoadedFrom;
 import com.theartofdev.fastimageloader.ReusableBitmap;
 import com.theartofdev.fastimageloader.TargetImageViewBitmapHandler;
-import com.theartofdev.fastimageloaderdemo.Specs;
 
 import it.sephiroth.android.library.imagezoom.ImageViewTouch;
 
@@ -48,10 +47,10 @@ public class ZoomImageView extends ImageViewTouch {
     /**
      * Load the given image into the zoom image view.
      */
-    public void loadImage(String url, ProgressBar progressBar) {
+    public void loadImage(String url, String specKey, String altSpecKey, ProgressBar progressBar) {
         mProgressBar = progressBar;
         mProgressBar.setVisibility(VISIBLE);
-        mHandler.loadImage(url, Specs.ZOOM_IMAGE, Specs.IMAGE, false);
+        mHandler.loadImage(url, specKey, altSpecKey, false);
     }
 
     /**
@@ -79,7 +78,7 @@ public class ZoomImageView extends ImageViewTouch {
         @Override
         protected void setImage(ReusableBitmap bitmap, LoadedFrom from) {
             super.setImage(bitmap, from);
-            if (bitmap.getSpec().getKey().equals(Specs.ZOOM_IMAGE)) {
+            if (bitmap.getSpec().getKey().equals(mSpecKey)) {
                 mProgressBar.setVisibility(GONE);
             }
         }

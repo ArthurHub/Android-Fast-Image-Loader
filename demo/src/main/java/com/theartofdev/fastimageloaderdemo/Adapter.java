@@ -13,7 +13,6 @@
 package com.theartofdev.fastimageloaderdemo;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,7 +40,7 @@ public final class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
 
     public Adapter() {
         for (String item : mItems) {
-            FastImageLoader.prefetchImage(item, Specs.IMAGE);
+            FastImageLoader.prefetchImage(item, Specs.IMG_IX_IMAGE);
         }
     }
 
@@ -59,7 +58,7 @@ public final class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        ImageLoadSpec spec = FastImageLoader.getSpec(Specs.IMAGE);
+        ImageLoadSpec spec = FastImageLoader.getSpec(Specs.IMG_IX_IMAGE);
         holder.mUrlTextView.setText(mItems[position]);
         holder.mSpecTextView.setText(spec.getFormat() + ": (" + spec.getWidth() + "," + spec.getHeight() + ") Config: " + spec.getPixelConfig());
         holder.mTargetImageView.loadImage(mItems[position], spec.getKey());
@@ -92,11 +91,10 @@ public final class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
         public void onClick(View v) {
             Activity activity = (Activity) mTargetImageView.getContext();
             if (activity != null) {
-                Intent intent = new Intent(activity, ZoomActivity.class);
-                intent.putExtra("uri", mTargetImageView.getUrl());
-                activity.startActivity(intent);
+                ZoomActivity.startActivity(activity, mTargetImageView.getUrl(), Specs.UNBOUNDED_MAX, Specs.IMG_IX_IMAGE);
             }
         }
+
     }
     //endregion
 }

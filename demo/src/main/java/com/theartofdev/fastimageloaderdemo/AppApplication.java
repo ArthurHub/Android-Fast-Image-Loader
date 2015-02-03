@@ -37,12 +37,12 @@ public class AppApplication extends Application {
                 .setLogLevel(Log.DEBUG)
                 .setDebugIndicator(true);
 
-        FastImageLoader.buildSpec(Specs.UNBOUNDED)
+        FastImageLoader.buildSpec(Specs.IMG_IX_UNBOUNDED)
                 .setUnboundDimension()
                 .setPixelConfig(Bitmap.Config.RGB_565)
                 .build();
 
-        FastImageLoader.buildSpec(Specs.IMAGE)
+        FastImageLoader.buildSpec(Specs.IMG_IX_IMAGE)
                 .setDimensionByDisplay()
                 .setHeightByResource(R.dimen.image_height)
                 .setPixelConfig(Bitmap.Config.RGB_565)
@@ -60,7 +60,7 @@ public class AppApplication extends Application {
                 .setUriEnhancer(uriEnhancerIdentity)
                 .build();
 
-        FastImageLoader.buildSpec(Specs.ZOOM_IMAGE)
+        FastImageLoader.buildSpec(Specs.UNBOUNDED_MAX)
                 .setUnboundDimension()
                 .setMaxDensity()
                 .build();

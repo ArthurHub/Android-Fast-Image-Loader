@@ -20,14 +20,14 @@ public final class Specs {
     private Specs() {
     }
 
-    public static final String UNBOUNDED = "Unbounded";
+    public static final String UNBOUNDED_MAX = "UnboundedMax";
 
-    public static final String IMAGE = "Image";
+    public static final String IMG_IX_UNBOUNDED = "ImgIXUnbounded";
+
+    public static final String IMG_IX_IMAGE = "ImgIXImage";
 
     public static final String INSTA_AVATAR = "InstagramAvatar";
 
     public static final String INSTA_IMAGE = "InstagramImage";
-
-    public static final String ZOOM_IMAGE = "ZoomImage";
 }
 

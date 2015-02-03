@@ -12,9 +12,11 @@
 
 package com.theartofdev.fastimageloaderdemo.instagram;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Point;
 import android.view.Display;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -26,8 +28,9 @@ import com.theartofdev.fastimageloaderdemo.R;
 import com.theartofdev.fastimageloaderdemo.Specs;
 import com.theartofdev.fastimageloaderdemo.instagram.service.Item;
 import com.theartofdev.fastimageloaderdemo.instagram.service.User;
+import com.theartofdev.fastimageloaderdemo.zoom.ZoomActivity;
 
-public final class ItemView extends ViewGroup {
+public final class ItemView extends ViewGroup implements View.OnClickListener {
 
     private final TargetAvatarImageView mAvatar;
 
@@ -52,6 +55,7 @@ public final class ItemView extends ViewGroup {
         mImage.setLayoutParams(new LayoutParams(p.x, p.x));
         mImage.setScaleType(ImageView.ScaleType.FIT_CENTER);
         mImage.setPlaceholder(getResources().getDrawable(R.drawable.pattern_repeat));
+        mImage.setOnClickListener(this);
         addView(mImage);
 
         mAuthor = new TextView(context);
@@ -65,6 +69,11 @@ public final class ItemView extends ViewGroup {
         mAvatar.loadAvatar(user.profile_picture, userName, Specs.INSTA_AVATAR);
         mImage.loadImage(item.images.standard_resolution.url, Specs.INSTA_IMAGE);
         mAuthor.setText(userName);
+    }
+
+    @Override
+    public void onClick(View v) {
+        ZoomActivity.startActivity((Activity) getContext(), mImage.getUrl(), Specs.INSTA_IMAGE, null);
     }
 
     @Override
