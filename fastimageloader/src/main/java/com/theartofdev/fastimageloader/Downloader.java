@@ -58,6 +58,11 @@ final class Downloader {
     private final DiskHandler mDiskHandler;
 
     /**
+     * The callback to execute on async requests to the downloader
+     */
+    private final Callback mCallback;
+
+    /**
      * Threads service for all read operations.
      */
     private final ThreadPoolExecutor mExecutorService;
@@ -77,14 +82,18 @@ final class Downloader {
      * @param client the OkHttp client to use to download the images.
      * @param handler Used to post execution to main thread.
      * @param diskHandler Handler for loading image bitmap object from file on disk.
+     * @param callback The callback to execute on async requests to the downloader
      */
-    public Downloader(OkHttpClient client, Handler handler, DiskHandler diskHandler) {
+    public Downloader(OkHttpClient client, Handler handler, DiskHandler diskHandler, Callback callback) {
+        Utils.notNull(client, "client");
         Utils.notNull(handler, "handler");
         Utils.notNull(diskHandler, "imageLoader");
+        Utils.notNull(callback, "callback");
 
         mClient = client;
         mHandler = handler;
         mDiskHandler = diskHandler;
+        mCallback = callback;
 
         mExecutorService = new ThreadPoolExecutor(4, 4, 30, TimeUnit.SECONDS,
                 new LinkedBlockingQueue<Runnable>(), Util.threadFactory("ImageDownloader", true));
@@ -111,7 +120,7 @@ final class Downloader {
     /**
      * Download
      */
-    public void downloadAsync(final ImageRequest imageRequest, final Callback callback) {
+    public void downloadAsync(final ImageRequest imageRequest) {
         mExecutorService.execute(new Runnable() {
             @Override
             public void run() {
@@ -120,7 +129,7 @@ final class Downloader {
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        callback.loadImageDownloaderCallback(imageRequest, downloaded, canceled);
+                        mCallback.loadImageDownloaderCallback(imageRequest, downloaded, canceled);
                     }
                 });
             }

@@ -91,6 +91,11 @@ final class DiskCache {
     private final DiskHandler mDiskHandler;
 
     /**
+     * The callback to execute on async requests to the cache
+     */
+    private final GetCallback mCallback;
+
+    /**
      * The time of the last cache check
      */
     private long mLastCacheScanTime = -1;
@@ -115,15 +120,18 @@ final class DiskCache {
      * @param context the application object to read config stuff
      * @param handler Used to post execution to main thread.
      * @param diskHandler Used to load images from the disk.
+     * @param callback The callback to execute on async requests to the cache
      */
-    public DiskCache(Context context, Handler handler, DiskHandler diskHandler) {
-        Utils.notNull(context, "application");
+    public DiskCache(Context context, Handler handler, DiskHandler diskHandler, GetCallback callback) {
+        Utils.notNull(context, "context");
         Utils.notNull(handler, "handler");
-        Utils.notNull(diskHandler, "imageLoader");
+        Utils.notNull(diskHandler, "diskHandler");
+        Utils.notNull(callback, "callback");
 
         mHandler = handler;
         mContext = context;
         mDiskHandler = diskHandler;
+        mCallback = callback;
 
         mReadExecutorService = new ThreadPoolExecutor(0, 1, 60, TimeUnit.SECONDS,
                 new LinkedBlockingQueue<Runnable>(), Util.threadFactory("ImageCacheRead", true));
@@ -137,7 +145,7 @@ final class DiskCache {
      * If the image is NOT in the cache the callback will be executed immediately.<br/>
      * If the image is in cache an async operation will load the image from disk and then execute the callback.
      */
-    public void getAsync(final ImageRequest imageRequest, final GetCallback callback) {
+    public void getAsync(final ImageRequest imageRequest) {
         if (imageRequest.getFile().exists()) {
             mCacheHit++;
             mReadExecutorService.execute(new Runnable() {
@@ -152,14 +160,14 @@ final class DiskCache {
                     mHandler.post(new Runnable() {
                         @Override
                         public void run() {
-                            callback.loadImageGetDiskCacheCallback(imageRequest, finalCanceled);
+                            mCallback.loadImageGetDiskCacheCallback(imageRequest, finalCanceled);
                         }
                     });
                 }
             });
         } else {
             mCacheMiss++;
-            callback.loadImageGetDiskCacheCallback(imageRequest, false);
+            mCallback.loadImageGetDiskCacheCallback(imageRequest, false);
         }
     }
 
