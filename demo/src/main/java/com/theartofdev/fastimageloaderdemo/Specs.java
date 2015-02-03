@@ -27,5 +27,7 @@ public final class Specs {
     public static final String INSTA_AVATAR = "InstagramAvatar";
 
     public static final String INSTA_IMAGE = "InstagramImage";
+
+    public static final String ZOOM_IMAGE = "ZoomImage";
 }
 

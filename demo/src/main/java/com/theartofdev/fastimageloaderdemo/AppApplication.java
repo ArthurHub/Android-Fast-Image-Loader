@@ -59,6 +59,11 @@ public class AppApplication extends Application {
                 .setPixelConfig(Bitmap.Config.RGB_565)
                 .setUriEnhancer(uriEnhancerIdentity)
                 .build();
+
+        FastImageLoader.buildSpec(Specs.ZOOM_IMAGE)
+                .setUnboundDimension()
+                .setMaxDensity()
+                .build();
     }
 }
 

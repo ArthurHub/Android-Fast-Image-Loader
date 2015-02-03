@@ -12,6 +12,8 @@
 
 package com.theartofdev.fastimageloaderdemo;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +23,7 @@ import android.widget.TextView;
 import com.theartofdev.fastimageloader.FastImageLoader;
 import com.theartofdev.fastimageloader.ImageLoadSpec;
 import com.theartofdev.fastimageloader.TargetImageView;
+import com.theartofdev.fastimageloaderdemo.zoom.ZoomActivity;
 
 public final class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
 
@@ -69,7 +72,7 @@ public final class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
      * Complex data items may need more than one view per item, and
      * you provide access to all the views for a data item in a view holder
      */
-    static final class ViewHolder extends RecyclerView.ViewHolder {
+    static final class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         public final TextView mUrlTextView;
 
@@ -82,6 +85,17 @@ public final class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
             mUrlTextView = (TextView) v.findViewById(R.id.image_url);
             mSpecTextView = (TextView) v.findViewById(R.id.image_spec);
             mTargetImageView = (TargetImageView) v.findViewById(R.id.image_view);
+            mTargetImageView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            Activity activity = (Activity) mTargetImageView.getContext();
+            if (activity != null) {
+                Intent intent = new Intent(activity, ZoomActivity.class);
+                intent.putExtra("uri", mTargetImageView.getUrl());
+                activity.startActivity(intent);
+            }
         }
     }
     //endregion
