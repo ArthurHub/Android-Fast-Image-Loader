@@ -61,25 +61,21 @@ final class MemoryCachePool {
     //endregion
 
     /**
-     * Retrieve an image for the specified {@code url} and {@code spec}.
+     * Retrieve an image for the specified {@code url} and {@code spec}.<br/>
+     * If not found for primary spec, use the alternative.
      */
-    public ReusableBitmapImpl get(String url, ImageLoadSpec spec) {
+    public ReusableBitmapImpl get(String url, ImageLoadSpec spec, ImageLoadSpec altSpec) {
         synchronized (mBitmapsCachePool) {
-            LinkedList<ReusableBitmapImpl> list = mBitmapsCachePool.get(spec);
-            if (list != null) {
-                Iterator<ReusableBitmapImpl> iter = list.iterator();
-                while (iter.hasNext()) {
-                    ReusableBitmapImpl bitmap = iter.next();
-                    if (url.equals(bitmap.getUrl())) {
-                        iter.remove();
-                        list.addLast(bitmap);
-                        mCacheHit++;
-                        return bitmap;
-                    }
-                }
+            ReusableBitmapImpl bitmap = getUnusedBitmapBySpec(url, spec);
+            if (bitmap == null && altSpec != null) {
+                bitmap = getUnusedBitmapBySpec(url, altSpec);
             }
-            mCacheMiss++;
-            return null;
+            if (bitmap != null) {
+                mCacheHit++;
+            } else {
+                mCacheMiss++;
+            }
+            return bitmap;
         }
     }
 
@@ -194,14 +190,6 @@ final class MemoryCachePool {
 
     }
 
-    @Override
-    public String toString() {
-        return "ImageMemoryCache{" +
-                "mCacheHit=" + mCacheHit +
-                ", mCacheMiss=" + mCacheMiss +
-                '}';
-    }
-
     /**
      * Handle trim memory event to release image caches on memory pressure.
      */
@@ -221,6 +209,35 @@ final class MemoryCachePool {
                 releaseUnUsedBitmaps(0);
                 break;
         }
+    }
+
+    @Override
+    public String toString() {
+        return "ImageMemoryCache{" +
+                "mCacheHit=" + mCacheHit +
+                ", mCacheMiss=" + mCacheMiss +
+                '}';
+    }
+
+    //region: Private methods
+
+    /**
+     * Get bitmap from cache that is of the given spec and has image loaded of the given URI.
+     */
+    private ReusableBitmapImpl getUnusedBitmapBySpec(String uri, ImageLoadSpec spec) {
+        LinkedList<ReusableBitmapImpl> list = mBitmapsCachePool.get(spec);
+        if (list != null) {
+            Iterator<ReusableBitmapImpl> iter = list.iterator();
+            while (iter.hasNext()) {
+                ReusableBitmapImpl bitmap = iter.next();
+                if (uri.equals(bitmap.getUrl())) {
+                    iter.remove();
+                    list.addLast(bitmap);
+                    return bitmap;
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -243,5 +260,6 @@ final class MemoryCachePool {
             }
         }
     }
+    //endregion
 }
 

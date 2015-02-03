@@ -137,21 +137,16 @@ final class ImageLoadHandler implements DiskCache.GetCallback, Downloader.Callba
 
                 String enhancedUrl = spec.getUriEnhancer().enhance(url, spec);
 
-                ReusableBitmapImpl image = mMemoryCache.get(url, spec);
+                ReusableBitmapImpl image = mMemoryCache.get(url, spec, altSpec);
                 if (image != null) {
                     mMemoryHits++;
+                    if (image.getSpec() != spec)
+                        mMemoryFallbackHits++;
                     target.onBitmapLoaded(image, LoadedFrom.MEMORY);
-                } else {
+                }
 
-                    // try fallback memory cached image
-                    if (altSpec != null) {
-                        image = mMemoryCache.get(url, altSpec);
-                        if (image != null) {
-                            mMemoryFallbackHits++;
-                            target.onBitmapLoaded(image, LoadedFrom.MEMORY);
-                        }
-                    }
-
+                // not found or loaded alternative spec
+                if (image == null || image.getSpec() != spec) {
                     ImageRequest imageRequest = mLoadingRequests.get(enhancedUrl);
                     if (imageRequest != null) {
                         Logger.debug("Memory cache miss, image already requested, add target to request... [{}] [{}]", imageRequest, target);
