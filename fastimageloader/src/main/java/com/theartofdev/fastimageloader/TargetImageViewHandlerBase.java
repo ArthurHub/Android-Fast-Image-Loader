@@ -49,7 +49,7 @@ public abstract class TargetImageViewHandlerBase<T extends ImageView> implements
     /**
      * the image view
      */
-    protected ImageView mImageView;
+    protected T mImageView;
 
     /**
      * The URL source of the image
@@ -90,7 +90,7 @@ public abstract class TargetImageViewHandlerBase<T extends ImageView> implements
     /**
      * @param imageView The image view to handle.
      */
-    public TargetImageViewHandlerBase(ImageView imageView) {
+    public TargetImageViewHandlerBase(T imageView) {
         Utils.notNull(imageView, "imageView");
         mImageView = imageView;
         mImageView.addOnAttachStateChangeListener(this);
