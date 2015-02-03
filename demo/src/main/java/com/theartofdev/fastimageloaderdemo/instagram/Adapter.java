@@ -15,6 +15,8 @@ package com.theartofdev.fastimageloaderdemo.instagram;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
+import com.theartofdev.fastimageloader.FastImageLoader;
+import com.theartofdev.fastimageloaderdemo.Specs;
 import com.theartofdev.fastimageloaderdemo.instagram.service.Feed;
 import com.theartofdev.fastimageloaderdemo.instagram.service.InstagramService;
 import com.theartofdev.fastimageloaderdemo.instagram.service.Item;
@@ -47,6 +49,10 @@ public final class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
             @Override
             public void success(Feed feed, Response response) {
                 mItems = feed.data;
+                for (Item item : mItems) {
+                    FastImageLoader.prefetchImage(item.user.profile_picture, Specs.INSTA_IMAGE);
+                    FastImageLoader.prefetchImage(item.images.standard_resolution.url, Specs.INSTA_IMAGE);
+                }
                 Adapter.this.notifyDataSetChanged();
                 callback.success(feed, response);
             }

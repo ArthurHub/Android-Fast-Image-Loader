@@ -58,7 +58,7 @@ public class MainActivity extends ActionBarActivity {
 
     class PagerAdapter extends FragmentPagerAdapter {
 
-        private final String[] TITLES = {"img IX", "Instagram"};
+        private final String[] TITLES = {"Instagram", "img IX"};
 
         public PagerAdapter(FragmentManager fm) {
             super(fm);
@@ -78,11 +78,10 @@ public class MainActivity extends ActionBarActivity {
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    return new ImgIXFragment();
-                case 1:
                     return new InstagramFragment();
+                case 1:
+                    return new ImgIXFragment();
             }
-
             return null;
         }
     }
