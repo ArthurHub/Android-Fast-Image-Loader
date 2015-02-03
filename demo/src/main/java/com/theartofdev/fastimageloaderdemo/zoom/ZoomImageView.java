@@ -21,9 +21,9 @@ import com.theartofdev.fastimageloader.LoadedFrom;
 import com.theartofdev.fastimageloader.ReusableBitmap;
 import com.theartofdev.fastimageloader.TargetImageViewBitmapHandler;
 
-import it.sephiroth.android.library.imagezoom.ImageViewTouch;
+import uk.co.senab.photoview.PhotoView;
 
-public class ZoomImageView extends ImageViewTouch {
+public class ZoomImageView extends PhotoView {
 
     private ProgressBar mProgressBar;
 
@@ -35,13 +35,11 @@ public class ZoomImageView extends ImageViewTouch {
     public ZoomImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
         mHandler = new ZoomTargetImageViewBitmapHandler(this);
-        setDisplayType(DisplayType.FIT_TO_SCREEN);
     }
 
     public ZoomImageView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         mHandler = new ZoomTargetImageViewBitmapHandler(this);
-        setDisplayType(DisplayType.FIT_TO_SCREEN);
     }
 
     /**
