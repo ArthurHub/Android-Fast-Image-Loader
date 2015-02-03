@@ -36,6 +36,12 @@ public final class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
             "http://assets.imgix.net/examples/octopus.jpg"
     };
 
+    public Adapter() {
+        for (String item : mItems) {
+            FastImageLoader.prefetchImage(item, Specs.IMAGE);
+        }
+    }
+
     @Override
     public int getItemCount() {
         return mItems.length;

@@ -37,11 +37,6 @@ final class ImageLoadHandler implements DiskCache.GetCallback, Downloader.Callba
     private final Map<String, ImageRequest> mLoadingRequests = new HashMap<>();
 
     /**
-     * The folder to save the cached images in
-     */
-    private final File mCacheFolder;
-
-    /**
      * Memory cache for images loaded
      */
     private final MemoryCachePool mMemoryCache;
@@ -55,6 +50,11 @@ final class ImageLoadHandler implements DiskCache.GetCallback, Downloader.Callba
      * Downloader to download images from the web
      */
     private final Downloader mDownloader;
+
+    /**
+     * Handler for loading image from disk
+     */
+    private final DiskHandler mDiskHandler;
 
     /**
      * stats on the number of memory cache hits
@@ -89,18 +89,18 @@ final class ImageLoadHandler implements DiskCache.GetCallback, Downloader.Callba
      */
     public ImageLoadHandler(Application application, OkHttpClient client) {
 
-        mCacheFolder = new File(Utils.pathCombine(application.getCacheDir().getPath(), "ImageCache"));
+        File cacheFolder = new File(Utils.pathCombine(application.getCacheDir().getPath(), "ImageCache"));
 
         //noinspection ResultOfMethodCallIgnored
-        mCacheFolder.mkdirs();
+        cacheFolder.mkdirs();
 
         mMemoryCache = new MemoryCachePool();
 
         Handler handler = new Handler();
-        DiskLoader diskLoader = new DiskLoader(mMemoryCache);
-        mDiskCache = new DiskCache(application, handler, diskLoader, mCacheFolder);
+        mDiskHandler = new DiskHandler(mMemoryCache, cacheFolder);
+        mDiskCache = new DiskCache(application, handler, mDiskHandler);
 
-        mDownloader = new Downloader(client, handler, diskLoader);
+        mDownloader = new Downloader(client, handler, mDiskHandler);
 
         application.registerComponentCallbacks(this);
     }
@@ -125,6 +125,29 @@ final class ImageLoadHandler implements DiskCache.GetCallback, Downloader.Callba
     }
 
     /**
+     * Prefetch image (uri+spec) to be available in disk cache.<br/>
+     *
+     * @param uri the URI of the image to prefetch
+     * @param spec the spec to prefetch the image by
+     */
+    public void prefetchImage(String uri, ImageLoadSpec spec) {
+        try {
+            String enhancedUrl = spec.getUriEnhancer().enhance(uri, spec);
+            ImageRequest request = mLoadingRequests.get(enhancedUrl);
+            if (request == null) {
+                File file = mDiskHandler.getCacheFile(enhancedUrl);
+                if (!file.exists()) {
+                    request = new ImageRequest(uri, enhancedUrl, spec, file);
+                    mLoadingRequests.put(enhancedUrl, request);
+                    mDownloader.prefetchAsync(request);
+                }
+            }
+        } catch (Exception e) {
+            Logger.critical("Error in prefetch image [{}] [{}]", e, uri, spec);
+        }
+    }
+
+    /**
      * Load image by given URL to the given target.<br/>
      * Handle transformation on the image, image dimension specification and dimension fallback.<br/>
      * If the image of the requested dimensions is not found in memory cache we try to find the fallback dimension, if
@@ -132,12 +155,12 @@ final class ImageLoadHandler implements DiskCache.GetCallback, Downloader.Callba
      */
     public void loadImage(Target target, ImageLoadSpec spec, ImageLoadSpec altSpec) {
         try {
-            String url = target.getUrl();
-            if (!TextUtils.isEmpty(url)) {
+            String uri = target.getUrl();
+            if (!TextUtils.isEmpty(uri)) {
 
-                String enhancedUrl = spec.getUriEnhancer().enhance(url, spec);
+                String enhancedUrl = spec.getUriEnhancer().enhance(uri, spec);
 
-                ReusableBitmapImpl image = mMemoryCache.get(url, spec, altSpec);
+                ReusableBitmapImpl image = mMemoryCache.get(uri, spec, altSpec);
                 if (image != null) {
                     mMemoryHits++;
                     if (image.getSpec() != spec)
@@ -147,17 +170,19 @@ final class ImageLoadHandler implements DiskCache.GetCallback, Downloader.Callba
 
                 // not found or loaded alternative spec
                 if (image == null || image.getSpec() != spec) {
-                    ImageRequest imageRequest = mLoadingRequests.get(enhancedUrl);
-                    if (imageRequest != null) {
-                        Logger.debug("Memory cache miss, image already requested, add target to request... [{}] [{}]", imageRequest, target);
-                        imageRequest.addTarget(target);
+                    ImageRequest request = mLoadingRequests.get(enhancedUrl);
+                    if (request != null) {
+                        Logger.debug("Memory cache miss, image already requested, add target to request... [{}] [{}]", request, target);
+                        if (request.addTarget(target)) {
+                            mDiskCache.getAsync(request, this);
+                        }
                     } else {
                         // start async process of loading image from disk cache or network
-                        imageRequest = new ImageRequest(target, url, enhancedUrl, spec, getCacheFile(enhancedUrl));
-                        mLoadingRequests.put(enhancedUrl, imageRequest);
+                        request = new ImageRequest(target, uri, enhancedUrl, spec, mDiskHandler.getCacheFile(enhancedUrl));
+                        mLoadingRequests.put(enhancedUrl, request);
 
-                        Logger.debug("Memory cache miss, start image request handling... [{}]", imageRequest);
-                        mDiskCache.getAsync(imageRequest, this);
+                        Logger.debug("Memory cache miss, start image request handling... [{}]", request);
+                        mDiskCache.getAsync(request, this);
                     }
                 }
             }
@@ -262,21 +287,6 @@ final class ImageLoadHandler implements DiskCache.GetCallback, Downloader.Callba
             mLoadingRequests.remove(imageRequest.getThumborUrl());
             Logger.critical("Error in load image downloader callback", e);
         }
-    }
-
-    /**
-     * Gets the representation of the online uri on the local disk.
-     *
-     * @param uri The online image uri
-     * @return The path of the file on the disk
-     */
-    private File getCacheFile(String uri) {
-        int lastSlash = uri.lastIndexOf('/');
-        if (lastSlash == -1) {
-            return null;
-        }
-        String name = Integer.toHexString(uri.substring(0, lastSlash).hashCode()) + "_" + uri.substring(lastSlash + 1).hashCode();
-        return new File(Utils.pathCombine(mCacheFolder.getAbsolutePath(), name));
     }
 
     @Override

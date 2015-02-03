@@ -76,11 +76,6 @@ final class DiskCache {
     public final Handler mHandler;
 
     /**
-     * The folder to save the cached images in
-     */
-    private final File mCacheFolder;
-
-    /**
      * Threads service for all read operations.
      */
     private final ThreadPoolExecutor mReadExecutorService;
@@ -93,7 +88,7 @@ final class DiskCache {
     /**
      * Used to load images from the disk.
      */
-    private final DiskLoader mDiskLoader;
+    private final DiskHandler mDiskHandler;
 
     /**
      * The time of the last cache check
@@ -119,19 +114,16 @@ final class DiskCache {
     /**
      * @param context the application object to read config stuff
      * @param handler Used to post execution to main thread.
-     * @param diskLoader Used to load images from the disk.
-     * @param cacheFolder The folder to save the cached images in
+     * @param diskHandler Used to load images from the disk.
      */
-    public DiskCache(Context context, Handler handler, DiskLoader diskLoader, File cacheFolder) {
+    public DiskCache(Context context, Handler handler, DiskHandler diskHandler) {
         Utils.notNull(context, "application");
         Utils.notNull(handler, "handler");
-        Utils.notNull(diskLoader, "imageLoader");
-        Utils.notNull(cacheFolder, "cacheFolder");
+        Utils.notNull(diskHandler, "imageLoader");
 
         mHandler = handler;
         mContext = context;
-        mDiskLoader = diskLoader;
-        mCacheFolder = cacheFolder;
+        mDiskHandler = diskHandler;
 
         mReadExecutorService = new ThreadPoolExecutor(0, 1, 60, TimeUnit.SECONDS,
                 new LinkedBlockingQueue<Runnable>(), Util.threadFactory("ImageCacheRead", true));
@@ -154,7 +146,7 @@ final class DiskCache {
                     boolean canceled = true;
                     if (imageRequest.isValid()) {
                         canceled = false;
-                        mDiskLoader.loadImageObject(imageRequest);
+                        mDiskHandler.loadImageObject(imageRequest);
                     }
                     final boolean finalCanceled = canceled;
                     mHandler.post(new Runnable() {
@@ -193,10 +185,10 @@ final class DiskCache {
         mReadExecutorService.execute(new Runnable() {
             @Override
             public void run() {
-                String[] list = mCacheFolder.list();
+                String[] list = mDiskHandler.getCacheFolder().list();
                 for (String filePath : list) {
                     try {
-                        File file = new File(Utils.pathCombine(mCacheFolder.getAbsolutePath(), filePath));
+                        File file = new File(Utils.pathCombine(mDiskHandler.getCacheFolder().getAbsolutePath(), filePath));
                         //noinspection ResultOfMethodCallIgnored
                         file.delete();
                     } catch (Exception e) {
@@ -254,7 +246,7 @@ final class DiskCache {
                     int deleteByMaxSize = 0;
 
                     // iterate over all cached files, delete stale and calculate current cache size
-                    File[] allImages = mCacheFolder.listFiles();
+                    File[] allImages = mDiskHandler.getCacheFolder().listFiles();
                     for (int i = 0; i < allImages.length; i++) {
                         long fileSize = allImages[i].length();
                         totalSizeFull += fileSize;

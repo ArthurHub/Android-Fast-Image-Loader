@@ -47,6 +47,11 @@ class ImageRequest {
     private final File mFile;
 
     /**
+     * Is the request is prefetch request
+     */
+    private boolean mPrefetch;
+
+    /**
      * the size of the file in the disk cache
      */
     private long mFileSize = -1;
@@ -63,6 +68,20 @@ class ImageRequest {
     //endregion
 
     /**
+     * @param url the URL of the requested image as given
+     * @param thumborUrl the URL of the requested image with thumbor parameters
+     * @param spec the dimension key used to load the image in specific size
+     * @param file the path of the image in the disk
+     */
+    ImageRequest(String url, String thumborUrl, ImageLoadSpec spec, File file) {
+        mUrl = url;
+        mThumborUrl = thumborUrl;
+        mSpec = spec;
+        mFile = file;
+        mPrefetch = true;
+    }
+
+    /**
      * @param target the target to load the image into
      * @param url the URL of the requested image as given
      * @param thumborUrl the URL of the requested image with thumbor parameters
@@ -75,6 +94,7 @@ class ImageRequest {
         mThumborUrl = thumborUrl;
         mSpec = spec;
         mFile = file;
+        mPrefetch = false;
     }
 
     /**
@@ -150,14 +170,26 @@ class ImageRequest {
      */
     public boolean isValid() {
         filterValidTargets();
-        return mTargets.size() > 0;
+        return mPrefetch || mTargets.size() > 0;
+    }
+
+    /**
+     * Is the request is for prefetch and not real target
+     */
+    public boolean isPrefetch() {
+        return mPrefetch;
     }
 
     /**
      * Add another target to the request.
+     *
+     * @return Was the request prefetch before the target was added
      */
-    public void addTarget(Target target) {
+    public boolean addTarget(Target target) {
+        boolean wasPrefetch = mPrefetch;
+        mPrefetch = false;
         mTargets.add(target);
+        return wasPrefetch;
     }
 
     private void filterValidTargets() {
@@ -179,6 +211,7 @@ class ImageRequest {
                 ", mFileSize=" + mFileSize +
                 ", mBitmap=" + mBitmap +
                 ", mTargets=" + mTargets.size() +
+                ", mPrefetch=" + mPrefetch +
                 ", isValid=" + isValid() +
                 '}';
     }

@@ -178,6 +178,25 @@ public final class FastImageLoader {
     }
 
     /**
+     * Prefetch image (uri+spec) to be available in disk cache.<br/>
+     *
+     * @param uri the URI of the image to prefetch
+     * @param specKey the spec to prefetch the image by
+     */
+    public static void prefetchImage(String uri, String specKey) {
+        Utils.notNullOrEmpty(uri, "uri");
+        Utils.notNullOrEmpty(specKey, "specKey");
+        if (INST.mImageLoadHandler == null) {
+            finishInit();
+        }
+        ImageLoadSpec spec = INST.mSpecs.get(specKey);
+        if (spec == null) {
+            throw new IllegalArgumentException("Invalid spec key, no spec defined for the given key: " + specKey);
+        }
+        INST.mImageLoadHandler.prefetchImage(uri, spec);
+    }
+
+    /**
      * Load image by and to the given target.<br/>
      * Handle transformation on the image, image dimension specification and dimension fallback.<br/>
      * If the image of the requested dimensions is not found in memory cache we try to find the fallback dimension, if

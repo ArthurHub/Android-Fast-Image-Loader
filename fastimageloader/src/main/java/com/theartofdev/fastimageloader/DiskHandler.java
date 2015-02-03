@@ -15,11 +15,13 @@ package com.theartofdev.fastimageloader;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
+import java.io.File;
+
 /**
  * Handler for loading image bitmap object from file on disk.<br/>
  * Load the bitmap so it can be re-used.<br/>
  */
-final class DiskLoader {
+final class DiskHandler {
 
     //region: Fields and Consts
 
@@ -32,14 +34,42 @@ final class DiskLoader {
      * Used to reuse bitmaps on image loading from disk
      */
     private final BitmapFactory.Options mOptions;
+
+    /**
+     * the folder that the image cached on disk are located
+     */
+    private File mCacheFolder;
     //endregion
 
-    DiskLoader(MemoryCachePool bitmapRecycler) {
+    DiskHandler(MemoryCachePool bitmapRecycler, File cacheFolder) {
         mBitmapRecycler = bitmapRecycler;
+        mCacheFolder = cacheFolder;
 
         mOptions = new BitmapFactory.Options();
         mOptions.inSampleSize = 1;
         mOptions.inMutable = true;
+    }
+
+    /**
+     * the folder that the image cached on disk are located
+     */
+    public File getCacheFolder() {
+        return mCacheFolder;
+    }
+
+    /**
+     * Gets the representation of the online uri on the local disk.
+     *
+     * @param uri The online image uri
+     * @return The path of the file on the disk
+     */
+    public File getCacheFile(String uri) {
+        int lastSlash = uri.lastIndexOf('/');
+        if (lastSlash == -1) {
+            return null;
+        }
+        String name = Integer.toHexString(uri.substring(0, lastSlash).hashCode()) + "_" + uri.substring(lastSlash + 1).hashCode();
+        return new File(Utils.pathCombine(mCacheFolder.getAbsolutePath(), name));
     }
 
     /**
