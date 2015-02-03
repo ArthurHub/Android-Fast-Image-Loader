@@ -18,6 +18,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Encapsulate
@@ -44,7 +45,7 @@ class ImageRequest {
     /**
      * Is the request is prefetch request
      */
-    private boolean mPrefetch;
+    private volatile boolean mPrefetch;
 
     /**
      * the size of the file in the disk cache
@@ -60,6 +61,11 @@ class ImageRequest {
      * the target to load the image into
      */
     private List<Target> mTargets = new ArrayList<>(3);
+
+    /**
+     * Is download of the image request started
+     */
+    private AtomicBoolean mDownloadStarted = new AtomicBoolean(false);
     //endregion
 
     /**
@@ -179,15 +185,24 @@ class ImageRequest {
     }
 
     /**
-     * Add another target to the request.
-     *
-     * @return Was the request prefetch before the target was added
+     * Mark request download start, return true if download start set or false if was already set.
      */
-    public boolean addTarget(Target target) {
+    public boolean startDownload() {
+        return mDownloadStarted.compareAndSet(false, true);
+    }
+
+    /**
+     * Add another target to the request.<br/>
+     * Check if the request was prefetch that its download has not been started yet.<br/>
+     * If the request was prefetch it will be set to not prefetch
+     *
+     * @return true - request was prefetch and the download not started, false - otherwise.
+     */
+    public boolean addTargetAndCheck(Target target) {
         boolean wasPrefetch = mPrefetch;
         mPrefetch = false;
         mTargets.add(target);
-        return wasPrefetch;
+        return wasPrefetch && !mDownloadStarted.get();
     }
 
     private void filterValidTargets() {

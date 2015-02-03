@@ -154,7 +154,7 @@ final class DiskCache {
                     boolean canceled = true;
                     if (imageRequest.isValid()) {
                         canceled = false;
-                        mDiskHandler.loadImageObject(imageRequest);
+                        mDiskHandler.decodeImageObject(imageRequest);
                     }
                     final boolean finalCanceled = canceled;
                     mHandler.post(new Runnable() {

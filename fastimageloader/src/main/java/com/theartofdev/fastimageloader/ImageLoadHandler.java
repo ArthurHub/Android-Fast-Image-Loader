@@ -139,7 +139,9 @@ final class ImageLoadHandler implements DiskCache.GetCallback, Downloader.Callba
                 if (!file.exists()) {
                     request = new ImageRequest(uri, spec, file);
                     mLoadingRequests.put(imageKey, request);
-                    mDownloader.prefetchAsync(request);
+
+                    Logger.debug("Add prefetch request... [{}]", request);
+                    mDownloader.downloadAsync(request, true);
                 }
             }
         } catch (Exception e) {
@@ -172,15 +174,15 @@ final class ImageLoadHandler implements DiskCache.GetCallback, Downloader.Callba
                     ImageRequest request = mLoadingRequests.get(imageKey);
                     if (request != null) {
                         Logger.debug("Memory cache miss, image already requested, add target to request... [{}] [{}]", request, target);
-                        if (request.addTarget(target)) {
-                            mDiskCache.getAsync(request);
+                        if (request.addTargetAndCheck(target)) {
+                            mDownloader.downloadAsync(request, false);
                         }
                     } else {
                         // start async process of loading image from disk cache or network
                         request = new ImageRequest(target, uri, spec, mDiskHandler.getCacheFile(uri, spec));
                         mLoadingRequests.put(imageKey, request);
 
-                        Logger.debug("Memory cache miss, start image request handling... [{}]", request);
+                        Logger.debug("Memory cache miss, start request handling... [{}]", request);
                         mDiskCache.getAsync(request);
                     }
                 }
@@ -228,7 +230,7 @@ final class ImageLoadHandler implements DiskCache.GetCallback, Downloader.Callba
                         mDiskCache.getAsync(imageRequest);
                     } else {
                         mNetworkRequests++;
-                        mDownloader.downloadAsync(imageRequest);
+                        mDownloader.downloadAsync(imageRequest, false);
                     }
                 }
             } else {
@@ -260,7 +262,7 @@ final class ImageLoadHandler implements DiskCache.GetCallback, Downloader.Callba
                 mMemoryCache.set(imageRequest.getBitmap());
             }
 
-            if (imageRequest.isValid()) {
+            if (imageRequest.isValid() && !imageRequest.isPrefetch()) {
                 if (imageRequest.getBitmap() != null) {
                     mNetworkLoads++;
                     mLoadingRequests.remove(imageRequest.getUniqueKey());

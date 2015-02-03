@@ -79,7 +79,7 @@ final class DiskHandler {
     /**
      * Load image from disk file on the current thread and set it in the image request object.
      */
-    public void loadImageObject(final ImageRequest imageRequest) {
+    public void decodeImageObject(final ImageRequest imageRequest) {
         try {
             //noinspection ResultOfMethodCallIgnored
             imageRequest.getFile().setLastModified(System.currentTimeMillis());
@@ -88,7 +88,7 @@ final class DiskHandler {
             mOptions.inBitmap = bitmap != null ? bitmap.getBitmap() : null;
             mOptions.inPreferredConfig = imageRequest.getSpec().getPixelConfig();
 
-            // load image from disk
+            Logger.debug("Decode image from disk... [{}] [{}]", imageRequest, bitmap);
             Bitmap rawBitmap = BitmapFactory.decodeFile(imageRequest.getFile().getAbsolutePath(), mOptions);
 
             // if cached bitmap was used the raw image will be null

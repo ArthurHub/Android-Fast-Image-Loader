@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ConnectException;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Executor;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -38,11 +38,6 @@ final class Downloader {
     //region: Fields and Consts
 
     /**
-     * queue of pre-fetch requests to download if not already
-     */
-    private final ConcurrentLinkedQueue<ImageRequest> mPrefetchRequests = new ConcurrentLinkedQueue<>();
-
-    /**
      * The HTTP client used to execute download image requests
      */
     private final OkHttpClient mClient;
@@ -50,7 +45,7 @@ final class Downloader {
     /**
      * Used to post execution to main thread.
      */
-    public final Handler mHandler;
+    private final Handler mHandler;
 
     /**
      * Used to load images from the disk.
@@ -63,19 +58,19 @@ final class Downloader {
     private final Callback mCallback;
 
     /**
-     * Threads service for all read operations.
+     * Threads service for download operations.
      */
-    private final ThreadPoolExecutor mExecutorService;
+    private final ThreadPoolExecutor mExecutor;
+
+    /**
+     * Threads service for pre-fetch download operations.
+     */
+    private final ThreadPoolExecutor mPrefetchExecutor;
 
     /**
      * the buffers used to download image
      */
     private final byte[][] mBuffers = new byte[4][];
-
-    /**
-     * Is prefetch is currently running on the list
-     */
-    private boolean mPrefetchRunning;
     //endregion
 
     /**
@@ -95,65 +90,42 @@ final class Downloader {
         mDiskHandler = diskHandler;
         mCallback = callback;
 
-        mExecutorService = new ThreadPoolExecutor(4, 4, 30, TimeUnit.SECONDS,
+        mExecutor = new ThreadPoolExecutor(3, 3, 30, TimeUnit.SECONDS,
                 new LinkedBlockingQueue<Runnable>(), Util.threadFactory("ImageDownloader", true));
-        mExecutorService.allowCoreThreadTimeOut(true);
-    }
+        mExecutor.allowCoreThreadTimeOut(true);
 
-    /**
-     * @param imageRequest
-     */
-    public void prefetchAsync(ImageRequest imageRequest) {
-        mPrefetchRequests.add(imageRequest);
-        if (!mPrefetchRunning) {
-            mPrefetchRunning = true;
-            Logger.debug("Init prefetch executor run... [{}]", mPrefetchRequests.size());
-            mExecutorService.execute(new Runnable() {
-                @Override
-                public void run() {
-                    prefetch();
-                }
-            });
-        }
+        mPrefetchExecutor = new ThreadPoolExecutor(1, 1, 30, TimeUnit.SECONDS,
+                new LinkedBlockingQueue<Runnable>(), Util.threadFactory("ImagePrefetchDownloader", true));
+        mPrefetchExecutor.allowCoreThreadTimeOut(true);
     }
 
     /**
      * Download
      */
-    public void downloadAsync(final ImageRequest imageRequest) {
-        mExecutorService.execute(new Runnable() {
+    public void downloadAsync(final ImageRequest imageRequest, final boolean prefetch) {
+        Executor executor = prefetch ? mPrefetchExecutor : mExecutor;
+        executor.execute(new Runnable() {
             @Override
             public void run() {
-                final boolean canceled = download(imageRequest);
-                final boolean downloaded = imageRequest.getFileSize() > 0;
-                mHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        mCallback.loadImageDownloaderCallback(imageRequest, downloaded, canceled);
-                    }
-                });
+                // mark start download, the first to do this will win (sync between prefetch and load)
+                if (imageRequest.startDownload()) {
+                    Logger.debug("Start image request download... [{}]", imageRequest);
+                    final boolean canceled = download(imageRequest);
+                    final boolean downloaded = imageRequest.getFileSize() > 0;
+                    mHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mCallback.loadImageDownloaderCallback(imageRequest, downloaded, canceled);
+                        }
+                    });
+                } else {
+                    Logger.debug("Image request download already handled [{}]", imageRequest);
+                }
             }
         });
     }
 
     //region: Private methods
-
-    /**
-     * Prefetch the image at the given URI.<br/>
-     * Check if the image was already downloaded, if not execute download.
-     */
-    private void prefetch() {
-        Logger.debug("Start prefetch executor run... [{}]", mPrefetchRequests.size());
-        while (!mPrefetchRequests.isEmpty()) {
-            ImageRequest request = mPrefetchRequests.remove();
-            if (!request.getFile().exists() && request.isPrefetch()) {
-                download(request);
-            }
-        }
-        Logger.debug("Prefetch executor run complete [{}]", mPrefetchRequests.size());
-        mPrefetchRunning = false;
-
-    }
 
     /**
      * Download
@@ -171,22 +143,22 @@ final class Downloader {
             if (!canceled) {
 
                 // start image download request
-                Request request = new Request.Builder().url(imageRequest.getEnhancedUri()).build();
-                Response response = mClient.newCall(request).execute();
+                Request httpRequest = new Request.Builder().url(imageRequest.getEnhancedUri()).build();
+                Response httpResponse = mClient.newCall(httpRequest).execute();
 
                 // check handshake
-                responseCode = response.code();
+                responseCode = httpResponse.code();
                 if (responseCode < 300) {
                     canceled = !imageRequest.isValid();
                     if (!canceled) {
 
                         // download data
-                        downloaded = download(imageRequest, response);
+                        downloaded = download(imageRequest, httpResponse);
                         canceled = !imageRequest.isValid();
                     }
                 } else {
-                    error = new ConnectException(response.code() + ": " + response.message());
-                    Logger.error("Failed to download image... [{}] [{}] [{}]", response.code(), response.message(), imageRequest);
+                    error = new ConnectException(httpResponse.code() + ": " + httpResponse.message());
+                    Logger.error("Failed to download image... [{}] [{}] [{}]", httpResponse.code(), httpResponse.message(), imageRequest);
                 }
             }
         } catch (Exception e) {
@@ -203,7 +175,9 @@ final class Downloader {
             canceled = !imageRequest.isValid();
             if (!canceled) {
                 canceled = false;
-                mDiskHandler.loadImageObject(imageRequest);
+                if (!imageRequest.isPrefetch()) {
+                    mDiskHandler.decodeImageObject(imageRequest);
+                }
             }
         }
 

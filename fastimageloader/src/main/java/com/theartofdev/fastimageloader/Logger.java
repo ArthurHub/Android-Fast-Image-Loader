@@ -69,7 +69,7 @@ final class Logger {
      */
     public static void operation(String url, String specKey, int responseCode, long time, long bytes, Throwable error) {
         if (mLogcatEnabled) {
-            String msg = Utils.format("Operation: DownloadImage [{}] [{}] [{}] [{}]", url, specKey, responseCode, bytes, time);
+            String msg = Utils.format("Operation: DownloadImage [{}] [{}] [{}] [{}] [{}]", url, specKey, responseCode, bytes, time);
             if (error == null) {
                 Log.i(TAG, msg);
             } else {
