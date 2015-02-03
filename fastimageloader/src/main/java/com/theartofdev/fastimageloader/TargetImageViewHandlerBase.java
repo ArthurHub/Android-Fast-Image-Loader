@@ -175,10 +175,8 @@ public abstract class TargetImageViewHandlerBase<T extends ImageView> implements
     @Override
     public void onBitmapLoaded(ReusableBitmap bitmap, LoadedFrom from) {
 
-        clearUsedBitmap();
+        clearUsedBitmap(false);
 
-        mUrl = bitmap.getUrl();
-        mSpecKey = bitmap.getSpec().getKey();
         mLoadState = LoadState.LOADED;
 
         mInUse = true;
@@ -268,8 +266,17 @@ public abstract class TargetImageViewHandlerBase<T extends ImageView> implements
      * Clear the currently used bitmap and mark it as not in use.
      */
     void clearUsedBitmap() {
-        mUrl = null;
-        mSpecKey = null;
+        clearUsedBitmap(true);
+    }
+
+    /**
+     * Clear the currently used bitmap and mark it as not in use.
+     */
+    void clearUsedBitmap(boolean full) {
+        if (full) {
+            mUrl = null;
+            mSpecKey = null;
+        }
         mLoadState = LoadState.UNSET;
         if (mReusableBitmap != null) {
             if (mInUse) {
