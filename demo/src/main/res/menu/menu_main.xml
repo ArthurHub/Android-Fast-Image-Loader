@@ -4,6 +4,12 @@
       tools:context=".MainActivity">
 
     <item
+        android:id="@+id/toggle_prefetch"
+        android:icon="@drawable/ic_arrow_down_bold_circle_white_24dp"
+        android:title="@string/toggle_use_prefetch"
+        app:showAsAction="ifRoom"/>
+
+    <item
         android:id="@+id/clear_disk_cache"
         android:icon="@drawable/ic_recycle_white_24dp"
         android:title="@string/clear_disk_cache"

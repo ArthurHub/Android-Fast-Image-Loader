@@ -39,8 +39,10 @@ public final class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
     };
 
     public Adapter() {
-        for (String item : mItems) {
-            FastImageLoader.prefetchImage(item, Specs.IMG_IX_IMAGE);
+        if (AppApplication.mPrefetchImages) {
+            for (String item : mItems) {
+                FastImageLoader.prefetchImage(item, Specs.IMG_IX_IMAGE);
+            }
         }
     }
 

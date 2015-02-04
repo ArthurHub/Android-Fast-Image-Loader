@@ -14,6 +14,7 @@ package com.theartofdev.fastimageloaderdemo;
 
 import android.app.Application;
 import android.graphics.Bitmap;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.theartofdev.fastimageloader.FastImageLoader;
@@ -26,9 +27,13 @@ public class AppApplication extends Application {
 
     public static final int INSTAGRAM_AVATAR_SIZE = 150;
 
+    public static boolean mPrefetchImages;
+
     @Override
     public void onCreate() {
         super.onCreate();
+
+        mPrefetchImages = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("prefetch", true);
 
         FastImageLoader
                 .init(this)

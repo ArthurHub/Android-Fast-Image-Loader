@@ -3,5 +3,8 @@
 
     <string name="app_name">Fast Image Loader</string>
     <string name="clear_disk_cache">Clear Disk Cache</string>
+    <string name="toggle_use_prefetch">Toggle Use Prefetch</string>
+    <string name="toggle_use_prefetch_on">Prefetch enabled, all feed images will be downloaded in the background</string>
+    <string name="toggle_use_prefetch_off">Prefetch disabled, images will be downloaded only when explicitly requested</string>
 
 </resources>

@@ -12,7 +12,9 @@
 
 package com.theartofdev.fastimageloaderdemo;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -20,6 +22,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.astuetz.PagerSlidingTabStrip;
 import com.theartofdev.fastimageloader.FastImageLoader;
@@ -44,6 +47,7 @@ public class MainActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        setPrefetchMenuIcon(menu.findItem(R.id.toggle_prefetch));
         return true;
     }
 
@@ -52,8 +56,25 @@ public class MainActivity extends ActionBarActivity {
         if (item.getItemId() == R.id.clear_disk_cache) {
             FastImageLoader.clearDiskCache();
             return true;
+        } else if (item.getItemId() == R.id.toggle_prefetch) {
+            AppApplication.mPrefetchImages = !AppApplication.mPrefetchImages;
+
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            prefs.edit().putBoolean("prefetch", AppApplication.mPrefetchImages).apply();
+
+            setPrefetchMenuIcon(item);
+            Toast.makeText(this, AppApplication.mPrefetchImages ? R.string.toggle_use_prefetch_on : R.string.toggle_use_prefetch_off, Toast.LENGTH_LONG).show();
+            return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void setPrefetchMenuIcon(MenuItem item) {
+        if (AppApplication.mPrefetchImages) {
+            item.setIcon(R.drawable.ic_arrow_down_bold_circle_white_24dp);
+        } else {
+            item.setIcon(R.drawable.ic_arrow_down_bold_circle_outline_white_24dp);
+        }
     }
 
     class PagerAdapter extends FragmentPagerAdapter {
