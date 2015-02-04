@@ -45,7 +45,7 @@ public final class FastImageLoader {
     /**
      * Handler for image loading logic
      */
-    private ImageLoadHandler mImageLoadHandler;
+    private FastImageLoaderHandler mFastImageLoaderHandler;
 
     /**
      * Android application to init by
@@ -83,7 +83,7 @@ public final class FastImageLoader {
     public static FastImageLoader init(Application application) {
         Utils.notNull(application, "context");
 
-        if (INST.mImageLoadHandler == null) {
+        if (INST.mFastImageLoaderHandler == null) {
             INST.mApplication = application;
 
             Utils.density = application.getResources().getDisplayMetrics().density;
@@ -158,7 +158,7 @@ public final class FastImageLoader {
      */
     public static ImageLoadSpecBuilder buildSpec(String key) {
         Utils.notNullOrEmpty(key, "key");
-        if (INST.mImageLoadHandler == null) {
+        if (INST.mFastImageLoaderHandler == null) {
             finishInit();
         }
         if (INST.mSpecs.containsKey(key)) {
@@ -187,14 +187,14 @@ public final class FastImageLoader {
     public static void prefetchImage(String uri, String specKey) {
         Utils.notNullOrEmpty(specKey, "specKey");
         if (!TextUtils.isEmpty(uri)) {
-            if (INST.mImageLoadHandler == null) {
+            if (INST.mFastImageLoaderHandler == null) {
                 finishInit();
             }
             ImageLoadSpec spec = INST.mSpecs.get(specKey);
             if (spec == null) {
                 throw new IllegalArgumentException("Invalid spec key, no spec defined for the given key: " + specKey);
             }
-            INST.mImageLoadHandler.prefetchImage(uri, spec);
+            INST.mFastImageLoaderHandler.prefetchImage(uri, spec);
         }
     }
 
@@ -213,7 +213,7 @@ public final class FastImageLoader {
      */
     public static void loadImage(Target target, String altSpecKey) {
         Utils.notNull(target, "target");
-        if (INST.mImageLoadHandler == null) {
+        if (INST.mFastImageLoaderHandler == null) {
             finishInit();
         }
         ImageLoadSpec spec = INST.mSpecs.get(target.getSpecKey());
@@ -224,7 +224,7 @@ public final class FastImageLoader {
         if (altSpecKey != null && altSpec == null) {
             throw new IllegalArgumentException("Invalid alternative spec key, no spec defined for the given key: " + altSpecKey);
         }
-        INST.mImageLoadHandler.loadImage(target, spec, altSpec);
+        INST.mFastImageLoaderHandler.loadImage(target, spec, altSpec);
     }
 
     /**
@@ -235,10 +235,10 @@ public final class FastImageLoader {
      * @throws IllegalStateException NOT initialized.
      */
     public static void clearDiskCache() {
-        if (INST.mImageLoadHandler == null) {
+        if (INST.mFastImageLoaderHandler == null) {
             finishInit();
         }
-        INST.mImageLoadHandler.clearDiskCache();
+        INST.mFastImageLoaderHandler.clearDiskCache();
     }
 
     /**
@@ -265,7 +265,7 @@ public final class FastImageLoader {
             if (INST.mUriEnhancer == null) {
                 INST.mUriEnhancer = new UriEnhancerIdentity();
             }
-            INST.mImageLoadHandler = new ImageLoadHandler(INST.mApplication, INST.mHttpClient);
+            INST.mFastImageLoaderHandler = new FastImageLoaderHandler(INST.mApplication, INST.mHttpClient);
         } else {
             throw new IllegalStateException("Fast Image Loader is NOT initialized, call init(...)");
         }

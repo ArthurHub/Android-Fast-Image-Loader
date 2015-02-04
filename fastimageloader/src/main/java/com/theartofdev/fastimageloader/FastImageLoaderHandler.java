@@ -27,7 +27,7 @@ import java.util.Map;
 /**
  * Handler for image loading using memory/disk cache and other features.
  */
-final class ImageLoadHandler implements DiskCache.GetCallback, Downloader.Callback, ComponentCallbacks2 {
+final class FastImageLoaderHandler implements DiskCache.GetCallback, Downloader.Callback, ComponentCallbacks2 {
 
     //region: Fields and Consts
 
@@ -87,7 +87,7 @@ final class ImageLoadHandler implements DiskCache.GetCallback, Downloader.Callba
      *
      * @param client the OkHttp client to use to download the images.
      */
-    public ImageLoadHandler(Application application, OkHttpClient client) {
+    public FastImageLoaderHandler(Application application, OkHttpClient client) {
 
         File cacheFolder = new File(Utils.pathCombine(application.getCacheDir().getPath(), "ImageCache"));
 
