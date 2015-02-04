@@ -45,7 +45,7 @@ class ImageRequest {
     /**
      * Is the request is prefetch request
      */
-    private volatile boolean mPrefetch;
+    private final boolean mPrefetch;
 
     /**
      * the size of the file in the disk cache
@@ -181,7 +181,7 @@ class ImageRequest {
      * Is the request is for prefetch and not real target
      */
     public boolean isPrefetch() {
-        return mPrefetch;
+        return mPrefetch && mTargets.size() == 0;
     }
 
     /**
@@ -199,10 +199,8 @@ class ImageRequest {
      * @return true - request was prefetch and the download not started, false - otherwise.
      */
     public boolean addTargetAndCheck(Target target) {
-        boolean wasPrefetch = mPrefetch;
-        mPrefetch = false;
         mTargets.add(target);
-        return wasPrefetch && !mDownloadStarted.get();
+        return mPrefetch && !mDownloadStarted.get();
     }
 
     private void filterValidTargets() {

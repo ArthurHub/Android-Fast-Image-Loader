@@ -262,6 +262,7 @@ final class ImageLoadHandler implements DiskCache.GetCallback, Downloader.Callba
                 mMemoryCache.set(imageRequest.getBitmap());
             }
 
+            // request are valid if there is target or prefetch, but here we don't care for prefetch
             if (imageRequest.isValid() && !imageRequest.isPrefetch()) {
                 if (imageRequest.getBitmap() != null) {
                     mNetworkLoads++;

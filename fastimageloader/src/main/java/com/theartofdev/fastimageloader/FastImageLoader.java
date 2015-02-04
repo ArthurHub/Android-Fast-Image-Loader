@@ -14,6 +14,7 @@ package com.theartofdev.fastimageloader;
 
 import android.app.Application;
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
@@ -184,16 +185,17 @@ public final class FastImageLoader {
      * @param specKey the spec to prefetch the image by
      */
     public static void prefetchImage(String uri, String specKey) {
-        Utils.notNullOrEmpty(uri, "uri");
         Utils.notNullOrEmpty(specKey, "specKey");
-        if (INST.mImageLoadHandler == null) {
-            finishInit();
+        if (!TextUtils.isEmpty(uri)) {
+            if (INST.mImageLoadHandler == null) {
+                finishInit();
+            }
+            ImageLoadSpec spec = INST.mSpecs.get(specKey);
+            if (spec == null) {
+                throw new IllegalArgumentException("Invalid spec key, no spec defined for the given key: " + specKey);
+            }
+            INST.mImageLoadHandler.prefetchImage(uri, spec);
         }
-        ImageLoadSpec spec = INST.mSpecs.get(specKey);
-        if (spec == null) {
-            throw new IllegalArgumentException("Invalid spec key, no spec defined for the given key: " + specKey);
-        }
-        INST.mImageLoadHandler.prefetchImage(uri, spec);
     }
 
     /**

@@ -108,7 +108,7 @@ final class Downloader {
             @Override
             public void run() {
                 // mark start download, the first to do this will win (sync between prefetch and load)
-                if (imageRequest.startDownload()) {
+                if ((prefetch || !imageRequest.isPrefetch()) && imageRequest.startDownload()) {
                     Logger.debug("Start image request download... [{}]", imageRequest);
                     final boolean canceled = download(imageRequest);
                     final boolean downloaded = imageRequest.getFileSize() > 0;
