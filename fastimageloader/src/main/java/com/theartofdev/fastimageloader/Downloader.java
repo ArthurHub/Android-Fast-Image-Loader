@@ -176,7 +176,7 @@ final class Downloader {
             if (!canceled) {
                 canceled = false;
                 if (!imageRequest.isPrefetch()) {
-                    mDiskHandler.decodeImageObject(imageRequest);
+                    mDiskHandler.decodeImageObject(imageRequest, imageRequest.getFile(), imageRequest.getSpec());
                 }
             }
         }

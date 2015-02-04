@@ -79,17 +79,17 @@ final class DiskHandler {
     /**
      * Load image from disk file on the current thread and set it in the image request object.
      */
-    public void decodeImageObject(final ImageRequest imageRequest) {
+    public void decodeImageObject(ImageRequest imageRequest, File file, ImageLoadSpec spec) {
         try {
             //noinspection ResultOfMethodCallIgnored
-            imageRequest.getFile().setLastModified(System.currentTimeMillis());
+            file.setLastModified(System.currentTimeMillis());
 
-            ReusableBitmapImpl bitmap = mBitmapRecycler.getUnused(imageRequest.getSpec());
+            ReusableBitmapImpl bitmap = mBitmapRecycler.getUnused(spec);
             mOptions.inBitmap = bitmap != null ? bitmap.getBitmap() : null;
-            mOptions.inPreferredConfig = imageRequest.getSpec().getPixelConfig();
+            mOptions.inPreferredConfig = spec.getPixelConfig();
 
             Logger.debug("Decode image from disk... [{}] [{}]", imageRequest, bitmap);
-            Bitmap rawBitmap = BitmapFactory.decodeFile(imageRequest.getFile().getAbsolutePath(), mOptions);
+            Bitmap rawBitmap = BitmapFactory.decodeFile(file.getAbsolutePath(), mOptions);
 
             // if cached bitmap was used the raw image will be null
             if (rawBitmap != null) {
@@ -104,7 +104,7 @@ final class DiskHandler {
                 }
                 if (bitmap == null) {
                     // create cached bitmap wrapper with new raw bitmap
-                    bitmap = new ReusableBitmapImpl(rawBitmap, imageRequest.getSpec());
+                    bitmap = new ReusableBitmapImpl(rawBitmap, spec);
                     imageRequest.setBitmap(bitmap);
                 }
             } else {

@@ -27,7 +27,7 @@ import java.util.Map;
 /**
  * Handler for image loading using memory/disk cache and other features.
  */
-final class FastImageLoaderHandler implements DiskCache.GetCallback, Downloader.Callback, ComponentCallbacks2 {
+final class FastImageLoaderHandler implements DiskCache.Callback, Downloader.Callback, ComponentCallbacks2 {
 
     //region: Fields and Consts
 
@@ -62,14 +62,19 @@ final class FastImageLoaderHandler implements DiskCache.GetCallback, Downloader.
     private int mMemoryHits;
 
     /**
-     * stats on the number of memory cache hits for fallback dimension
+     * stats on the number of memory cache hits for alternative sepc
      */
-    private int mMemoryFallbackHits;
+    private int mMemoryAltHits;
 
     /**
      * stats on the number of disk cache hits
      */
     private int mDiskHits;
+
+    /**
+     * stats on the number of disk cache hits for alternative sepc
+     */
+    private int mDiskAltHits;
 
     /**
      * stats on the number of cache miss, network begin request
@@ -113,7 +118,7 @@ final class FastImageLoaderHandler implements DiskCache.GetCallback, Downloader.
         sb.append("Image handler report:");
         sb.append('\n');
         sb.append("Memory Hit: ").append(mMemoryHits).append('\n');
-        sb.append("Memory fallback Hit: ").append(mMemoryFallbackHits).append('\n');
+        sb.append("Memory fallback Hit: ").append(mMemoryAltHits).append('\n');
         sb.append("Disk Hit: ").append(mDiskHits).append('\n');
         sb.append("Network Requests: ").append(mNetworkRequests).append('\n');
         sb.append("Network Loaded: ").append(mNetworkLoads).append('\n');
@@ -164,7 +169,7 @@ final class FastImageLoaderHandler implements DiskCache.GetCallback, Downloader.
                 if (image != null) {
                     mMemoryHits++;
                     if (image.getSpec() != spec)
-                        mMemoryFallbackHits++;
+                        mMemoryAltHits++;
                     target.onBitmapLoaded(image, LoadedFrom.MEMORY);
                 }
 
@@ -183,7 +188,8 @@ final class FastImageLoaderHandler implements DiskCache.GetCallback, Downloader.
                         mLoadingRequests.put(imageKey, request);
 
                         Logger.debug("Memory cache miss, start request handling... [{}]", request);
-                        mDiskCache.getAsync(request);
+                        // don't use alternative spec if image was loaded from memory cache
+                        mDiskCache.getAsync(request, image == null ? altSpec : null);
                     }
                 }
             }
@@ -208,26 +214,37 @@ final class FastImageLoaderHandler implements DiskCache.GetCallback, Downloader.
      * Miss - pass the request to image downloader.<br/>
      */
     @Override
-    public void loadImageGetDiskCacheCallback(ImageRequest imageRequest, boolean canceled) {
+    public void loadImageDiskCacheCallback(ImageRequest imageRequest, boolean canceled) {
         try {
-            Logger.debug("Get image from disk cache callback... [{}] [Canceled: {}]", imageRequest, canceled);
+            boolean loaded = imageRequest.getBitmap() != null;
+            boolean loadedAlt = loaded && imageRequest.getBitmap().getSpec() != imageRequest.getSpec();
+            Logger.debug("Get image from disk cache callback... [Loaded: {}, Alt:{}] [Canceled: {}] [{}]", loaded, loadedAlt, canceled, imageRequest);
 
-            // if image object was loaded - add it to memory cache
-            if (imageRequest.getBitmap() != null) {
+            if (loaded) {
+                // if image object was loaded - add it to memory cache
                 mMemoryCache.set(imageRequest.getBitmap());
             }
 
             if (imageRequest.isValid()) {
-                if (imageRequest.getBitmap() != null) {
-                    mDiskHits++;
-                    mLoadingRequests.remove(imageRequest.getUniqueKey());
+                if (loaded) {
+                    // if some image was loaded set it to targets
+                    if (loadedAlt) {
+                        mDiskAltHits++;
+                    } else {
+                        mDiskHits++;
+                    }
                     for (Target target : imageRequest.getValidTargets()) {
                         target.onBitmapLoaded(imageRequest.getBitmap(), LoadedFrom.DISK);
                     }
+                }
+                if (loaded && !loadedAlt) {
+                    // if primary loaded we are done
+                    mLoadingRequests.remove(imageRequest.getUniqueKey());
                 } else {
+                    // need to download primary
                     if (canceled) {
                         // race-condition, canceled request that add valid target (run again)
-                        mDiskCache.getAsync(imageRequest);
+                        mDiskCache.getAsync(imageRequest, null);
                     } else {
                         mNetworkRequests++;
                         mDownloader.downloadAsync(imageRequest, false);
@@ -273,7 +290,7 @@ final class FastImageLoaderHandler implements DiskCache.GetCallback, Downloader.
                 } else {
                     if (canceled) {
                         // race-condition, canceled request that add valid target (run again)
-                        mDiskCache.getAsync(imageRequest);
+                        mDiskCache.getAsync(imageRequest, null);
                     } else {
                         mLoadingRequests.remove(imageRequest.getUniqueKey());
                         for (Target target : imageRequest.getValidTargets()) {

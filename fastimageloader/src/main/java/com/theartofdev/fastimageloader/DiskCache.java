@@ -93,7 +93,7 @@ final class DiskCache {
     /**
      * The callback to execute on async requests to the cache
      */
-    private final GetCallback mCallback;
+    private final Callback mCallback;
 
     /**
      * The time of the last cache check
@@ -104,16 +104,6 @@ final class DiskCache {
      * the current size of the cache
      */
     private long mCurrentCacheSize;
-
-    /**
-     * stats on the number of cache hit
-     */
-    private int mCacheHit;
-
-    /**
-     * stats on the number of cache miss
-     */
-    private int mCacheMiss;
     //endregion
 
     /**
@@ -122,7 +112,7 @@ final class DiskCache {
      * @param diskHandler Used to load images from the disk.
      * @param callback The callback to execute on async requests to the cache
      */
-    public DiskCache(Context context, Handler handler, DiskHandler diskHandler, GetCallback callback) {
+    public DiskCache(Context context, Handler handler, DiskHandler diskHandler, Callback callback) {
         Utils.notNull(context, "context");
         Utils.notNull(handler, "handler");
         Utils.notNull(diskHandler, "diskHandler");
@@ -145,29 +135,36 @@ final class DiskCache {
      * If the image is NOT in the cache the callback will be executed immediately.<br/>
      * If the image is in cache an async operation will load the image from disk and then execute the callback.
      */
-    public void getAsync(final ImageRequest imageRequest) {
-        if (imageRequest.getFile().exists()) {
-            mCacheHit++;
+    public void getAsync(final ImageRequest imageRequest, final ImageLoadSpec altSpec) {
+        File altFile = null;
+        boolean exists = imageRequest.getFile().exists();
+        if (!exists && altSpec != null) {
+            // if primary spec file doesn't exist in cache but alternative does, load it
+            altFile = mDiskHandler.getCacheFile(imageRequest.getUri(), altSpec);
+        }
+        if (exists || (altFile != null && altFile.exists())) {
+            // use the primary or the alternative file and spec to decode the image
+            final File file = exists ? imageRequest.getFile() : altFile;
+            final ImageLoadSpec spec = exists ? imageRequest.getSpec() : altSpec;
             mReadExecutorService.execute(new Runnable() {
                 @Override
                 public void run() {
                     boolean canceled = true;
                     if (imageRequest.isValid()) {
                         canceled = false;
-                        mDiskHandler.decodeImageObject(imageRequest);
+                        mDiskHandler.decodeImageObject(imageRequest, file, spec);
                     }
                     final boolean finalCanceled = canceled;
                     mHandler.post(new Runnable() {
                         @Override
                         public void run() {
-                            mCallback.loadImageGetDiskCacheCallback(imageRequest, finalCanceled);
+                            mCallback.loadImageDiskCacheCallback(imageRequest, finalCanceled);
                         }
                     });
                 }
             });
         } else {
-            mCacheMiss++;
-            mCallback.loadImageGetDiskCacheCallback(imageRequest, false);
+            mCallback.loadImageDiskCacheCallback(imageRequest, false);
         }
     }
 
@@ -214,9 +211,7 @@ final class DiskCache {
      * Populate the given string builder with report on cache status.
      */
     public void report(StringBuilder sb) {
-        sb.append("Disk Cache: ").append(mCacheHit + mCacheMiss).append('\n');
-        sb.append("Cache Hit: ").append(mCacheHit).append('\n');
-        sb.append("Cache Miss: ").append(mCacheMiss).append('\n');
+        sb.append("Disk Cache: ");
         if (mLastCacheScanTime > 0) {
             sb.append("Size: ").append(NumberFormat.getInstance().format(mCurrentCacheSize / 1024)).append("K\n");
             sb.append("Since Last Scan: ").append(NumberFormat.getInstance().format((System.currentTimeMillis() - mLastCacheScanTime) / 1000 / 60)).append(" Minutes\n");
@@ -230,8 +225,6 @@ final class DiskCache {
         return "ImageDiskCache{" +
                 "mLastCacheScanTime=" + mLastCacheScanTime +
                 ", mCurrentCacheSize=" + mCurrentCacheSize +
-                ", mCacheHit=" + mCacheHit +
-                ", mCacheMiss=" + mCacheMiss +
                 '}';
     }
 
@@ -338,12 +331,12 @@ final class DiskCache {
     /**
      * Callback for getting cached image.
      */
-    static interface GetCallback {
+    static interface Callback {
 
         /**
          * Callback for getting cached image, if not cached will have null.
          */
-        void loadImageGetDiskCacheCallback(ImageRequest imageRequest, boolean canceled);
+        void loadImageDiskCacheCallback(ImageRequest imageRequest, boolean canceled);
     }
     //endregion
 }
