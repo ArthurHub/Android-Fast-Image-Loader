@@ -40,11 +40,6 @@ public final class FILUtils {
     public static final RectF mRectF = new RectF();
 
     /**
-     * the logical density of the display.
-     */
-    public static float density = 1;
-
-    /**
      * If to show indicator if the image was loaded from MEMORY/DISK/NETWORK.
      */
     public static boolean debugIndicator;

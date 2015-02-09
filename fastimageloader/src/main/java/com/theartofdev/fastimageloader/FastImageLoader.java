@@ -90,8 +90,6 @@ public final class FastImageLoader {
         if (INST.mFastImageLoaderHandler == null) {
             INST.mApplication = application;
 
-            FILUtils.density = application.getResources().getDisplayMetrics().density;
-
             Display display = ((WindowManager) application.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
             display.getSize(FILUtils.displaySize);
 
