@@ -19,6 +19,8 @@ import android.os.Handler;
 import android.text.TextUtils;
 
 import com.squareup.okhttp.OkHttpClient;
+import com.theartofdev.fastimageloader.impl.Logger;
+import com.theartofdev.fastimageloader.impl.Utils;
 
 import java.io.File;
 import java.util.HashMap;

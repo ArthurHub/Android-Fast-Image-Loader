@@ -14,9 +14,9 @@ package com.theartofdev.fastimageloader;
 
 /**
  * Represents an arbitrary listener for image loading.<br/>
- * Client will receive the raw instance of {@link ReusableBitmap} and will
- * be responsible for setting its {@link ReusableBitmap#incrementInUse()} and
- * {@link ReusableBitmap#decrementInUse()} state correctly.
+ * Client will receive the raw instance of {@link com.theartofdev.fastimageloader.ReusableBitmap} and will
+ * be responsible for setting its {@link com.theartofdev.fastimageloader.ReusableBitmap#incrementInUse()} and
+ * {@link com.theartofdev.fastimageloader.ReusableBitmap#decrementInUse()} state correctly.
  * <p/>
  * Instances of this interface will used to determine the image to load by {@link #getUrl()} and the
  * specification to load the image by {@link #getSpecKey()}.<br/>

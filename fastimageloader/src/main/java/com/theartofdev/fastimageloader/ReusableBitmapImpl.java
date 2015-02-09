@@ -14,6 +14,9 @@ package com.theartofdev.fastimageloader;
 
 import android.graphics.Bitmap;
 
+import com.theartofdev.fastimageloader.impl.Logger;
+import com.theartofdev.fastimageloader.impl.Utils;
+
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**

@@ -15,6 +15,9 @@ package com.theartofdev.fastimageloader;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
+import com.theartofdev.fastimageloader.impl.Logger;
+import com.theartofdev.fastimageloader.impl.Utils;
+
 import java.io.File;
 
 /**

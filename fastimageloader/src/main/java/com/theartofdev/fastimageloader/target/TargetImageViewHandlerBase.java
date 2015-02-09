@@ -10,12 +10,20 @@
 // - Sun Tsu,
 // "The Art of War"
 
-package com.theartofdev.fastimageloader;
+package com.theartofdev.fastimageloader.target;
 
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
+
+import com.theartofdev.fastimageloader.FastImageLoader;
+import com.theartofdev.fastimageloader.LoadState;
+import com.theartofdev.fastimageloader.LoadedFrom;
+import com.theartofdev.fastimageloader.impl.Logger;
+import com.theartofdev.fastimageloader.ReusableBitmap;
+import com.theartofdev.fastimageloader.Target;
+import com.theartofdev.fastimageloader.impl.Utils;
 
 /**
  * Handler for loading image as {@link com.theartofdev.fastimageloader.ReusableBitmap} and managing its lifecycle.<br/>

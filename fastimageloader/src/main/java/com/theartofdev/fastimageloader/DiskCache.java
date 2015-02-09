@@ -19,6 +19,8 @@ import android.preference.PreferenceManager;
 import android.text.format.DateUtils;
 
 import com.squareup.okhttp.internal.Util;
+import com.theartofdev.fastimageloader.impl.Logger;
+import com.theartofdev.fastimageloader.impl.Utils;
 
 import java.io.File;
 import java.text.NumberFormat;

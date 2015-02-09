@@ -10,7 +10,7 @@
 // - Sun Tsu,
 // "The Art of War"
 
-package com.theartofdev.fastimageloader;
+package com.theartofdev.fastimageloader.target;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -18,8 +18,11 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
+import com.theartofdev.fastimageloader.LoadState;
+import com.theartofdev.fastimageloader.impl.Utils;
+
 /**
- * {@link ImageView} with embedded handling of loading image using {@link FastImageLoader} and managing its lifecycle.
+ * {@link ImageView} with embedded handling of loading image using {@link com.theartofdev.fastimageloader.FastImageLoader} and managing its lifecycle.
  */
 public class TargetImageView extends ImageView {
 

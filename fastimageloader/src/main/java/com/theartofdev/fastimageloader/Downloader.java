@@ -18,6 +18,8 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import com.squareup.okhttp.internal.Util;
+import com.theartofdev.fastimageloader.impl.Logger;
+import com.theartofdev.fastimageloader.impl.Utils;
 
 import java.io.File;
 import java.io.FileOutputStream;

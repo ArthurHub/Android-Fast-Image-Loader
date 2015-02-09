@@ -20,6 +20,9 @@ import android.view.Display;
 import android.view.WindowManager;
 
 import com.squareup.okhttp.OkHttpClient;
+import com.theartofdev.fastimageloader.adapter.UriEnhancerIdentity;
+import com.theartofdev.fastimageloader.impl.Logger;
+import com.theartofdev.fastimageloader.impl.Utils;
 
 import java.util.HashMap;
 import java.util.Map;

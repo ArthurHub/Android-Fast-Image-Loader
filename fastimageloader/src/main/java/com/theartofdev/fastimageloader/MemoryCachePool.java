@@ -14,6 +14,8 @@ package com.theartofdev.fastimageloader;
 
 import android.content.ComponentCallbacks2;
 
+import com.theartofdev.fastimageloader.impl.Logger;
+
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;

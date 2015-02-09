@@ -10,7 +10,11 @@
 // - Sun Tsu,
 // "The Art of War"
 
-package com.theartofdev.fastimageloader;
+package com.theartofdev.fastimageloader.adapter;
+
+import com.theartofdev.fastimageloader.ImageLoadSpec;
+import com.theartofdev.fastimageloader.UriEnhancer;
+import com.theartofdev.fastimageloader.impl.Utils;
 
 /**
  * URL enhancer for thumbor (http://thumbor.org/) service.<br/>

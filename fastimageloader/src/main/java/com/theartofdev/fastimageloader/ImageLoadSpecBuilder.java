@@ -16,6 +16,8 @@ import android.app.Application;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 
+import com.theartofdev.fastimageloader.impl.Utils;
+
 /**
  * Builder for creating {@link com.theartofdev.fastimageloader.ImageLoadSpec} instances.
  * <p/>

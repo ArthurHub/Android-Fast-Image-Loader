@@ -10,14 +10,17 @@
 // - Sun Tsu,
 // "The Art of War"
 
-package com.theartofdev.fastimageloader;
+package com.theartofdev.fastimageloader.impl;
 
 import android.util.Log;
+
+import com.theartofdev.fastimageloader.LoadedFrom;
+import com.theartofdev.fastimageloader.LogAppender;
 
 /**
  * Logger.
  */
-final class Logger {
+public final class Logger {
 
     /**
      * The tag to use for all logs
@@ -27,17 +30,17 @@ final class Logger {
     /**
      * If to write logs to logcat.
      */
-    static boolean mLogcatEnabled = false;
+    public static boolean mLogcatEnabled = false;
 
     /**
      * Extensibility appender to write the logs to.
      */
-    static LogAppender mAppender;
+    public static LogAppender mAppender;
 
     /**
      * The min log level to write logs at, logs below this level are ignored.
      */
-    static int mLogLevel = Log.INFO;
+    public static int mLogLevel = Log.INFO;
 
     /**
      * Image load operation complete.

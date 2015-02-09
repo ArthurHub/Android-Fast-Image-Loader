@@ -10,7 +10,10 @@
 // - Sun Tsu,
 // "The Art of War"
 
-package com.theartofdev.fastimageloader;
+package com.theartofdev.fastimageloader.adapter;
+
+import com.theartofdev.fastimageloader.ImageLoadSpec;
+import com.theartofdev.fastimageloader.UriEnhancer;
 
 /**
  * URL enhancer that doesn't change the URI.

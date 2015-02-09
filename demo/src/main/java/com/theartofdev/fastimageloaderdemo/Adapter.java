@@ -21,7 +21,7 @@ import android.widget.TextView;
 
 import com.theartofdev.fastimageloader.FastImageLoader;
 import com.theartofdev.fastimageloader.ImageLoadSpec;
-import com.theartofdev.fastimageloader.TargetImageView;
+import com.theartofdev.fastimageloader.target.TargetImageView;
 import com.theartofdev.fastimageloaderdemo.zoom.ZoomActivity;
 
 public final class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {

@@ -10,39 +10,43 @@
 // - Sun Tsu,
 // "The Art of War"
 
-package com.theartofdev.fastimageloader;
+package com.theartofdev.fastimageloader.target;
 
 import android.widget.ImageView;
+
+import com.theartofdev.fastimageloader.LoadedFrom;
+import com.theartofdev.fastimageloader.ReusableBitmap;
 
 /**
  * See {@link TargetImageViewHandlerBase}.
  */
-public class TargetImageViewBitmapHandler extends TargetImageViewHandlerBase<ImageView> {
+public class TargetImageViewDrawableHandler extends TargetImageViewHandlerBase<ImageView> {
 
     /**
      * @param imageView The image view to handle.
      */
-    public TargetImageViewBitmapHandler(ImageView imageView) {
+    public TargetImageViewDrawableHandler(ImageView imageView) {
         super(imageView);
     }
 
     /**
      * {@inheritDoc}
      * <p/>
-     * Set image view bitmap to null.
+     * Set image drawable to null.
      */
     @Override
     protected void clearImage() {
-        mImageView.setImageBitmap(null);
+        mImageView.setImageDrawable(null);
     }
 
     /**
      * {@inheritDoc}
      * <p/>
-     * Set image view bitmap to the loaded image.
+     * Create {@link TargetDrawable} and set it.
      */
     @Override
     protected void setImage(ReusableBitmap bitmap, LoadedFrom from) {
-        mImageView.setImageBitmap(bitmap.getBitmap());
+        TargetDrawable drawable = new TargetDrawable(bitmap.getBitmap(), from, mRounded, from == LoadedFrom.NETWORK && mImageView.getDrawable() == null);
+        mImageView.setImageDrawable(drawable);
     }
 }

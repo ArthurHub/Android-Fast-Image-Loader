@@ -22,8 +22,8 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.theartofdev.fastimageloader.TargetAvatarImageView;
-import com.theartofdev.fastimageloader.TargetImageView;
+import com.theartofdev.fastimageloader.target.TargetAvatarImageView;
+import com.theartofdev.fastimageloader.target.TargetImageView;
 import com.theartofdev.fastimageloaderdemo.R;
 import com.theartofdev.fastimageloaderdemo.Specs;
 import com.theartofdev.fastimageloaderdemo.instagram.service.Item;

@@ -18,8 +18,8 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.theartofdev.fastimageloader.FastImageLoader;
-import com.theartofdev.fastimageloader.UriEnhancerIdentity;
-import com.theartofdev.fastimageloader.UriEnhancerImgIX;
+import com.theartofdev.fastimageloader.adapter.UriEnhancerIdentity;
+import com.theartofdev.fastimageloader.adapter.UriEnhancerImgIX;
 
 public class AppApplication extends Application {
 

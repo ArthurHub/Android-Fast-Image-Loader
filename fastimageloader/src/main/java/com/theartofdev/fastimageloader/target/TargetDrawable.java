@@ -10,7 +10,7 @@
 // - Sun Tsu,
 // "The Art of War"
 
-package com.theartofdev.fastimageloader;
+package com.theartofdev.fastimageloader.target;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
@@ -21,6 +21,9 @@ import android.graphics.Paint;
 import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
 import android.os.SystemClock;
+
+import com.theartofdev.fastimageloader.LoadedFrom;
+import com.theartofdev.fastimageloader.impl.Utils;
 
 import static android.graphics.Color.GREEN;
 import static android.graphics.Color.RED;

@@ -24,7 +24,7 @@
         android:layout_marginBottom="4dp"
         android:singleLine="true"/>
 
-    <com.theartofdev.fastimageloader.TargetImageView
+    <com.theartofdev.fastimageloader.target.TargetImageView
         android:id="@+id/image_view"
         android:layout_width="match_parent"
         android:layout_height="@dimen/image_height"

@@ -10,7 +10,7 @@
 // - Sun Tsu,
 // "The Art of War"
 
-package com.theartofdev.fastimageloader;
+package com.theartofdev.fastimageloader.impl;
 
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -25,17 +25,17 @@ import java.util.Collection;
 /**
  * General utility methods.
  */
-final class Utils {
+public final class Utils {
 
     /**
      * Rect to draw circle
      */
-    static final Rect mRect = new Rect();
+    public static final Rect mRect = new Rect();
 
     /**
      * Rect to draw circle
      */
-    static final RectF mRectF = new RectF();
+    public static final RectF mRectF = new RectF();
 
     /**
      * the logical density of the display.

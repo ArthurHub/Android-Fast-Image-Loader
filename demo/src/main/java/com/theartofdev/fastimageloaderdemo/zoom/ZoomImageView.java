@@ -19,7 +19,7 @@ import android.widget.ProgressBar;
 
 import com.theartofdev.fastimageloader.LoadedFrom;
 import com.theartofdev.fastimageloader.ReusableBitmap;
-import com.theartofdev.fastimageloader.TargetImageViewBitmapHandler;
+import com.theartofdev.fastimageloader.target.TargetImageViewBitmapHandler;
 
 import uk.co.senab.photoview.PhotoView;
 
