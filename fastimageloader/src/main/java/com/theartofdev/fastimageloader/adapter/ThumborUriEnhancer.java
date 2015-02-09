@@ -21,7 +21,7 @@ import com.theartofdev.fastimageloader.impl.Utils;
  * Add image load specification into the path of the image URL.<br/>
  * Using Thumbor service URI to build new URI with the image URI as suffix.
  */
-public class UriEnhancerThumbor implements UriEnhancer {
+public class ThumborUriEnhancer implements UriEnhancer {
 
     //region: Fields and Consts
 
@@ -31,14 +31,14 @@ public class UriEnhancerThumbor implements UriEnhancer {
     private final String mBaseUri;
     //endregion
 
-    protected UriEnhancerThumbor() {
+    protected ThumborUriEnhancer() {
         mBaseUri = null;
     }
 
     /**
      * @param baseUri the thumbor base URI
      */
-    public UriEnhancerThumbor(String baseUri) {
+    public ThumborUriEnhancer(String baseUri) {
         Utils.notNullOrEmpty(baseUri, "baseUri");
 
         baseUri = baseUri.trim();

@@ -20,7 +20,7 @@ import android.view.Display;
 import android.view.WindowManager;
 
 import com.squareup.okhttp.OkHttpClient;
-import com.theartofdev.fastimageloader.adapter.UriEnhancerIdentity;
+import com.theartofdev.fastimageloader.adapter.IdentityUriEnhancer;
 import com.theartofdev.fastimageloader.impl.Logger;
 import com.theartofdev.fastimageloader.impl.Utils;
 
@@ -266,7 +266,7 @@ public final class FastImageLoader {
                 INST.mHttpClient.setReadTimeout(15, TimeUnit.SECONDS);
             }
             if (INST.mUriEnhancer == null) {
-                INST.mUriEnhancer = new UriEnhancerIdentity();
+                INST.mUriEnhancer = new IdentityUriEnhancer();
             }
             INST.mFastImageLoaderHandler = new FastImageLoaderHandler(INST.mApplication, INST.mHttpClient);
         } else {

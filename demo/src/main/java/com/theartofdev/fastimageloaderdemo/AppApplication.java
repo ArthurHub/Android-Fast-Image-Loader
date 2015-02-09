@@ -18,8 +18,8 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.theartofdev.fastimageloader.FastImageLoader;
-import com.theartofdev.fastimageloader.adapter.UriEnhancerIdentity;
-import com.theartofdev.fastimageloader.adapter.UriEnhancerImgIX;
+import com.theartofdev.fastimageloader.adapter.IdentityUriEnhancer;
+import com.theartofdev.fastimageloader.adapter.ImgIXUriEnhancer;
 
 public class AppApplication extends Application {
 
@@ -37,7 +37,7 @@ public class AppApplication extends Application {
 
         FastImageLoader
                 .init(this)
-                .setDefaultUriEnhancer(new UriEnhancerImgIX())
+                .setDefaultUriEnhancer(new ImgIXUriEnhancer())
                 .setWriteLogsToLogcat(true)
                 .setLogLevel(Log.DEBUG)
                 .setDebugIndicator(true);
@@ -53,16 +53,16 @@ public class AppApplication extends Application {
                 .setPixelConfig(Bitmap.Config.RGB_565)
                 .build();
 
-        UriEnhancerIdentity uriEnhancerIdentity = new UriEnhancerIdentity();
+        IdentityUriEnhancer identityUriEnhancer = new IdentityUriEnhancer();
         FastImageLoader.buildSpec(Specs.INSTA_AVATAR)
                 .setDimension(INSTAGRAM_AVATAR_SIZE)
-                .setUriEnhancer(uriEnhancerIdentity)
+                .setUriEnhancer(identityUriEnhancer)
                 .build();
 
         FastImageLoader.buildSpec(Specs.INSTA_IMAGE)
                 .setDimension(INSTAGRAM_IMAGE_SIZE)
                 .setPixelConfig(Bitmap.Config.RGB_565)
-                .setUriEnhancer(uriEnhancerIdentity)
+                .setUriEnhancer(identityUriEnhancer)
                 .build();
 
         FastImageLoader.buildSpec(Specs.UNBOUNDED_MAX)

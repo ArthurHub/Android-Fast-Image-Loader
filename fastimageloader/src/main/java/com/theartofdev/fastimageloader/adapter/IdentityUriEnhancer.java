@@ -18,7 +18,7 @@ import com.theartofdev.fastimageloader.UriEnhancer;
 /**
  * URL enhancer that doesn't change the URI.
  */
-public class UriEnhancerIdentity implements UriEnhancer {
+public class IdentityUriEnhancer implements UriEnhancer {
 
     @Override
     public String enhance(String url, ImageLoadSpec spec) {

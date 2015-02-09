@@ -20,7 +20,7 @@ import com.theartofdev.fastimageloader.impl.Utils;
  * Add image load specification into the path of the image URL.<br/>
  * The image URI is already Thumbor URI, add Thumbor parameters in the middle of the URI.
  */
-public class UriEnhancerThumborInPlace extends UriEnhancerThumbor {
+public class ThumborInlineUriEnhancer extends ThumborUriEnhancer {
 
     /**
      * the path part that split the thumbor URI part from image part.
@@ -30,7 +30,7 @@ public class UriEnhancerThumborInPlace extends UriEnhancerThumbor {
     /**
      * @param pathPartSplit the path part that split the thumbor URI part from image part.
      */
-    public UriEnhancerThumborInPlace(String pathPartSplit) {
+    public ThumborInlineUriEnhancer(String pathPartSplit) {
         Utils.notNullOrEmpty(pathPartSplit, "pathPartSplit");
         mPathPartSplit = pathPartSplit;
     }

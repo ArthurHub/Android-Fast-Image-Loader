@@ -19,7 +19,7 @@ import com.theartofdev.fastimageloader.UriEnhancer;
  * URL enhancer for imgIX (http://www.imgix.com) service.<br/>
  * Add image load specification as query params to the image URL.
  */
-public class UriEnhancerImgIX implements UriEnhancer {
+public class ImgIXUriEnhancer implements UriEnhancer {
 
     @Override
     public String enhance(String url, ImageLoadSpec spec) {
