@@ -151,6 +151,13 @@ public abstract class TargetImageViewHandlerBase<T extends ImageView> implements
     }
 
     /**
+     * See {@link #loadImage(String, String, String, boolean)}.
+     */
+    public void loadImage(String url, String specKey, String altSpecKey) {
+        loadImage(url, specKey, altSpecKey, false);
+    }
+
+    /**
      * Load image from the given source.<br/>
      * If image of the same source is already requested/loaded the request is ignored unless force is true.
      *
@@ -178,6 +185,13 @@ public abstract class TargetImageViewHandlerBase<T extends ImageView> implements
             }
             mImageView.invalidate();
         }
+    }
+
+    /**
+     * Clear the currently used bitmap and mark it as not in use.
+     */
+    public void clearUsedBitmap() {
+        clearUsedBitmap(true);
     }
 
     @Override
@@ -273,14 +287,7 @@ public abstract class TargetImageViewHandlerBase<T extends ImageView> implements
     /**
      * Clear the currently used bitmap and mark it as not in use.
      */
-    void clearUsedBitmap() {
-        clearUsedBitmap(true);
-    }
-
-    /**
-     * Clear the currently used bitmap and mark it as not in use.
-     */
-    void clearUsedBitmap(boolean full) {
+    private void clearUsedBitmap(boolean full) {
         if (full) {
             mUrl = null;
             mSpecKey = null;

@@ -48,17 +48,17 @@ public class TargetDrawable extends Drawable {
      */
     public static boolean debugIndicator;
 
-    private static Paint mDebugPaint;
+    protected static Paint mDebugPaint;
 
-    private final Paint mPaint;
+    protected final Paint mPaint;
 
-    private final Matrix mMatrix = new Matrix();
+    protected final Matrix mMatrix = new Matrix();
 
-    private final LoadedFrom mLoadedFrom;
+    protected final LoadedFrom mLoadedFrom;
 
-    private final float mBitmapWidth;
+    protected final float mBitmapWidth;
 
-    private final float mBitmapHeight;
+    protected final float mBitmapHeight;
 
     protected float mScale = -1;
 
@@ -198,7 +198,7 @@ public class TargetDrawable extends Drawable {
      * draw indicator on where the image was loaded from.<br/>
      * Green - memory, Yellow - disk, Red - network.
      */
-    private void drawDebugIndicator(Canvas canvas) {
+    protected void drawDebugIndicator(Canvas canvas) {
         if (mDebugPaint == null) {
             mDebugPaint = new Paint();
             mDebugPaint.setAntiAlias(true);
