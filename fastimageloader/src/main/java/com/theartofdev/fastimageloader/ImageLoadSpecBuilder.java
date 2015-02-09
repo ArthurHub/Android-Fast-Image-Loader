@@ -13,8 +13,11 @@
 package com.theartofdev.fastimageloader;
 
 import android.app.Application;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Point;
+import android.view.Display;
+import android.view.WindowManager;
 
 import com.theartofdev.fastimageloader.impl.util.FILUtils;
 
@@ -90,7 +93,10 @@ public final class ImageLoadSpecBuilder {
      * Get the display size of the device.
      */
     public Point getDisplaySize() {
-        return FILUtils.displaySize;
+        Point p = new Point();
+        Display display = ((WindowManager) mApplication.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+        display.getSize(p);
+        return p;
     }
 
     /**
@@ -113,8 +119,9 @@ public final class ImageLoadSpecBuilder {
      * the width and height of the image in pixels to the size of the screen.
      */
     public ImageLoadSpecBuilder setDimensionByDisplay() {
-        mWidth = FILUtils.displaySize.x;
-        mHeight = FILUtils.displaySize.y;
+        Point size = getDisplaySize();
+        mWidth = size.x;
+        mHeight = size.y;
         return this;
     }
 

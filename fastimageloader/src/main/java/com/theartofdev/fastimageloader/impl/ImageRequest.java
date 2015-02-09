@@ -16,7 +16,6 @@ import android.text.TextUtils;
 
 import com.theartofdev.fastimageloader.ImageLoadSpec;
 import com.theartofdev.fastimageloader.Target;
-import com.theartofdev.fastimageloader.impl.util.FILUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -101,8 +100,15 @@ class ImageRequest {
     /**
      * The unique key of the image request.
      */
-    String getUniqueKey() {
-        return FILUtils.getUriUniqueKey(mSpec, mUri);
+    public String getUniqueKey() {
+        return getUriUniqueKey(mSpec, mUri);
+    }
+
+    /**
+     * The unique key of the image URI with the given spec.
+     */
+    public static String getUriUniqueKey(ImageLoadSpec spec, String uri) {
+        return uri + "$" + spec.getKey();
     }
 
     /**

@@ -12,12 +12,9 @@
 
 package com.theartofdev.fastimageloader.impl.util;
 
-import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.text.TextUtils;
-
-import com.theartofdev.fastimageloader.ImageLoadSpec;
 
 import java.io.Closeable;
 import java.io.File;
@@ -38,18 +35,6 @@ public final class FILUtils {
      * Rect to draw circle
      */
     public static final RectF mRectF = new RectF();
-
-    /**
-     * the size of the device display
-     */
-    public static Point displaySize = new Point();
-
-    /**
-     * The unique key of the image URI with the given spec.
-     */
-    public static String getUriUniqueKey(ImageLoadSpec spec, String uri) {
-        return uri + "$" + spec.getKey();
-    }
 
     /**
      * Validate given argument isn't null.

@@ -142,7 +142,7 @@ public final class FastImageLoaderHandler implements DiskCache.Callback, Downloa
      */
     public void prefetchImage(String uri, ImageLoadSpec spec) {
         try {
-            String imageKey = FILUtils.getUriUniqueKey(spec, uri);
+            String imageKey = ImageRequest.getUriUniqueKey(spec, uri);
             ImageRequest request = mLoadingRequests.get(imageKey);
             if (request == null) {
                 File file = mDiskHandler.getCacheFile(uri, spec);
@@ -180,7 +180,7 @@ public final class FastImageLoaderHandler implements DiskCache.Callback, Downloa
 
                 // not found or loaded alternative spec
                 if (image == null || image.getSpec() != spec) {
-                    String imageKey = FILUtils.getUriUniqueKey(spec, uri);
+                    String imageKey = ImageRequest.getUriUniqueKey(spec, uri);
                     ImageRequest request = mLoadingRequests.get(imageKey);
                     if (request != null) {
                         FILLogger.debug("Memory cache miss, image already requested, add target to request... [{}] [{}]", request, target);
