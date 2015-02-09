@@ -43,6 +43,11 @@ public class TargetDrawable extends Drawable {
 
     private static final float FADE_DURATION = 200f;
 
+    /**
+     * If to show indicator if the image was loaded from MEMORY/DISK/NETWORK.
+     */
+    public static boolean debugIndicator;
+
     private static Paint mDebugPaint;
 
     private final Paint mPaint;
@@ -170,7 +175,7 @@ public class TargetDrawable extends Drawable {
             invalidateSelf();
         }
 
-        if (FILUtils.debugIndicator) {
+        if (debugIndicator) {
             drawDebugIndicator(canvas);
         }
     }

@@ -40,11 +40,6 @@ public final class FILUtils {
     public static final RectF mRectF = new RectF();
 
     /**
-     * If to show indicator if the image was loaded from MEMORY/DISK/NETWORK.
-     */
-    public static boolean debugIndicator;
-
-    /**
      * the size of the device display
      */
     public static Point displaySize = new Point();
