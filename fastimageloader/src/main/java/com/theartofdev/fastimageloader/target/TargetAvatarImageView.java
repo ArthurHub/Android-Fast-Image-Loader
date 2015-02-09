@@ -98,11 +98,11 @@ public class TargetAvatarImageView extends TargetImageView {
                 init();
             }
 
-            FILUtils.mRectF.set(getPaddingLeft(), getPaddingTop(), getWidth() - getPaddingRight(), getHeight() - getPaddingBottom());
+            FILUtils.rectF.set(getPaddingLeft(), getPaddingTop(), getWidth() - getPaddingRight(), getHeight() - getPaddingBottom());
             if (isRounded()) {
-                canvas.drawRoundRect(FILUtils.mRectF, getWidth(), getHeight(), mBackPaint);
+                canvas.drawRoundRect(FILUtils.rectF, getWidth(), getHeight(), mBackPaint);
             } else {
-                canvas.drawRect(FILUtils.mRectF, mBackPaint);
+                canvas.drawRect(FILUtils.rectF, mBackPaint);
             }
 
             mTextPaint.setTextSize(getWidth() / 1.8f);

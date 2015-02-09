@@ -27,14 +27,14 @@ import java.util.Collection;
 public final class FILUtils {
 
     /**
-     * Rect to draw circle
+     * Reuse Rect object
      */
-    public static final Rect mRect = new Rect();
+    public static final Rect rect = new Rect();
 
     /**
-     * Rect to draw circle
+     * Reuse RectF object
      */
-    public static final RectF mRectF = new RectF();
+    public static final RectF rectF = new RectF();
 
     /**
      * Validate given argument isn't null.

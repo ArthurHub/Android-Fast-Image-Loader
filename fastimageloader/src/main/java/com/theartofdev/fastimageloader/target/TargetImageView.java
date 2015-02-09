@@ -162,8 +162,8 @@ public class TargetImageView extends ImageView {
      */
     protected void drawPlaceholder(Canvas canvas, LoadState loadState) {
         if (mPlaceholder != null) {
-            canvas.getClipBounds(FILUtils.mRect);
-            mPlaceholder.setBounds(FILUtils.mRect);
+            canvas.getClipBounds(FILUtils.rect);
+            mPlaceholder.setBounds(FILUtils.rect);
             mPlaceholder.draw(canvas);
         }
     }

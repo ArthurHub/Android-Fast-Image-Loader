@@ -186,11 +186,11 @@ public class TargetDrawable extends Drawable {
     protected void drawBitmap(Canvas canvas) {
         int width = getBounds().width();
         int height = getBounds().height();
-        FILUtils.mRectF.set(0, 0, width, height);
+        FILUtils.rectF.set(0, 0, width, height);
         if (mRounded) {
-            canvas.drawRoundRect(FILUtils.mRectF, width / 2, height / 2, mPaint);
+            canvas.drawRoundRect(FILUtils.rectF, width / 2, height / 2, mPaint);
         } else {
-            canvas.drawRect(FILUtils.mRectF, mPaint);
+            canvas.drawRect(FILUtils.rectF, mPaint);
         }
     }
 
