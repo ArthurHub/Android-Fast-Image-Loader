@@ -16,7 +16,7 @@ import android.app.Application;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 
-import com.theartofdev.fastimageloader.impl.Utils;
+import com.theartofdev.fastimageloader.impl.util.FILUtils;
 
 /**
  * Builder for creating {@link com.theartofdev.fastimageloader.ImageLoadSpec} instances.
@@ -77,9 +77,9 @@ public final class ImageLoadSpecBuilder {
      * @param uriEnhancer default URI enhancer to use for this spec image loading
      */
     ImageLoadSpecBuilder(String key, Application application, UriEnhancer uriEnhancer) {
-        Utils.notNullOrEmpty(key, "key");
-        Utils.notNull(application, "application");
-        Utils.notNull(uriEnhancer, "uriEnhancer");
+        FILUtils.notNullOrEmpty(key, "key");
+        FILUtils.notNull(application, "application");
+        FILUtils.notNull(uriEnhancer, "uriEnhancer");
 
         mKey = key;
         mApplication = application;
@@ -90,7 +90,7 @@ public final class ImageLoadSpecBuilder {
      * Get the display size of the device.
      */
     public Point getDisplaySize() {
-        return Utils.displaySize;
+        return FILUtils.displaySize;
     }
 
     /**
@@ -113,8 +113,8 @@ public final class ImageLoadSpecBuilder {
      * the width and height of the image in pixels to the size of the screen.
      */
     public ImageLoadSpecBuilder setDimensionByDisplay() {
-        mWidth = Utils.displaySize.x;
-        mHeight = Utils.displaySize.y;
+        mWidth = FILUtils.displaySize.x;
+        mHeight = FILUtils.displaySize.y;
         return this;
     }
 
@@ -237,7 +237,7 @@ public final class ImageLoadSpecBuilder {
         if (mWidth < 0 || mHeight < 0)
             throw new IllegalArgumentException("width and height must be set");
 
-        float densityAdj = Utils.density >= mMaxDensity ? mMaxDensity / Utils.density : 1f;
+        float densityAdj = FILUtils.density >= mMaxDensity ? mMaxDensity / FILUtils.density : 1f;
 
         ImageLoadSpec spec = new ImageLoadSpec(mKey, (int) (mWidth * densityAdj), (int) (mHeight * densityAdj), mFormat, mPixelConfig, mUriEnhancer);
 

@@ -14,7 +14,7 @@ package com.theartofdev.fastimageloader.adapter;
 
 import com.theartofdev.fastimageloader.ImageLoadSpec;
 import com.theartofdev.fastimageloader.UriEnhancer;
-import com.theartofdev.fastimageloader.impl.Utils;
+import com.theartofdev.fastimageloader.impl.util.FILUtils;
 
 /**
  * URL enhancer for thumbor (http://thumbor.org/) service.<br/>
@@ -39,7 +39,7 @@ public class ThumborUriEnhancer implements UriEnhancer {
      * @param baseUri the thumbor base URI
      */
     public ThumborUriEnhancer(String baseUri) {
-        Utils.notNullOrEmpty(baseUri, "baseUri");
+        FILUtils.notNullOrEmpty(baseUri, "baseUri");
 
         baseUri = baseUri.trim();
         if (baseUri.endsWith("/"))

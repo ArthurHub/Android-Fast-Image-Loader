@@ -15,6 +15,7 @@ package com.theartofdev.fastimageloader.impl;
 import android.content.ComponentCallbacks2;
 
 import com.theartofdev.fastimageloader.ImageLoadSpec;
+import com.theartofdev.fastimageloader.impl.util.FILLogger;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -248,7 +249,7 @@ final class MemoryCachePool {
      * @param graceLevel the number of unused bitmaps NOT to release
      */
     private void releaseUnUsedBitmaps(int graceLevel) {
-        Logger.debug("trim image cache to size [{}]", graceLevel);
+        FILLogger.debug("trim image cache to size [{}]", graceLevel);
         for (LinkedList<ReusableBitmapImpl> list : mBitmapsCachePool.values()) {
             int listGrace = graceLevel;
             Iterator<ReusableBitmapImpl> iter = list.iterator();

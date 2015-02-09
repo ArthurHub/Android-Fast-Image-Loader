@@ -20,7 +20,7 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 
 import com.theartofdev.fastimageloader.LoadState;
-import com.theartofdev.fastimageloader.impl.Utils;
+import com.theartofdev.fastimageloader.impl.util.FILUtils;
 
 /**
  * TODO:a add doc
@@ -98,11 +98,11 @@ public class TargetAvatarImageView extends TargetImageView {
                 init();
             }
 
-            Utils.mRectF.set(getPaddingLeft(), getPaddingTop(), getWidth() - getPaddingRight(), getHeight() - getPaddingBottom());
+            FILUtils.mRectF.set(getPaddingLeft(), getPaddingTop(), getWidth() - getPaddingRight(), getHeight() - getPaddingBottom());
             if (isRounded()) {
-                canvas.drawRoundRect(Utils.mRectF, getWidth(), getHeight(), mBackPaint);
+                canvas.drawRoundRect(FILUtils.mRectF, getWidth(), getHeight(), mBackPaint);
             } else {
-                canvas.drawRect(Utils.mRectF, mBackPaint);
+                canvas.drawRect(FILUtils.mRectF, mBackPaint);
             }
 
             mTextPaint.setTextSize(getWidth() / 1.8f);

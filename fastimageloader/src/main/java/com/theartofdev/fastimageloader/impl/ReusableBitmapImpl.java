@@ -16,6 +16,8 @@ import android.graphics.Bitmap;
 
 import com.theartofdev.fastimageloader.ImageLoadSpec;
 import com.theartofdev.fastimageloader.ReusableBitmap;
+import com.theartofdev.fastimageloader.impl.util.FILLogger;
+import com.theartofdev.fastimageloader.impl.util.FILUtils;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -67,8 +69,8 @@ final class ReusableBitmapImpl implements ReusableBitmap {
      * @param spec the spec to load the image by
      */
     public ReusableBitmapImpl(Bitmap bitmap, ImageLoadSpec spec) {
-        Utils.notNull(bitmap, "bitmap");
-        Utils.notNull(spec, "spec");
+        FILUtils.notNull(bitmap, "bitmap");
+        FILUtils.notNull(spec, "spec");
         mBitmap = bitmap;
         mSpec = spec;
     }
@@ -130,7 +132,7 @@ final class ReusableBitmapImpl implements ReusableBitmap {
      * Release the inner bitmap.
      */
     public void close() {
-        Logger.debug("Close recycle bitmap [{}]", this);
+        FILLogger.debug("Close recycle bitmap [{}]", this);
         mClosed = true;
         mBitmapUrl = null;
         mBitmap.recycle();

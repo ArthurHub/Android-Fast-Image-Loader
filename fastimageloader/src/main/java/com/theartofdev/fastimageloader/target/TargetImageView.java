@@ -19,10 +19,11 @@ import android.util.AttributeSet;
 import android.widget.ImageView;
 
 import com.theartofdev.fastimageloader.LoadState;
-import com.theartofdev.fastimageloader.impl.Utils;
+import com.theartofdev.fastimageloader.impl.util.FILUtils;
 
 /**
- * {@link ImageView} with embedded handling of loading image using {@link com.theartofdev.fastimageloader.FastImageLoader} and managing its lifecycle.
+ * {@link ImageView} with embedded handling of loading image using {@link com.theartofdev.fastimageloader.FastImageLoader}
+ * and managing its lifecycle.
  */
 public class TargetImageView extends ImageView {
 
@@ -161,8 +162,8 @@ public class TargetImageView extends ImageView {
      */
     protected void drawPlaceholder(Canvas canvas, LoadState loadState) {
         if (mPlaceholder != null) {
-            canvas.getClipBounds(Utils.mRect);
-            mPlaceholder.setBounds(Utils.mRect);
+            canvas.getClipBounds(FILUtils.mRect);
+            mPlaceholder.setBounds(FILUtils.mRect);
             mPlaceholder.draw(canvas);
         }
     }

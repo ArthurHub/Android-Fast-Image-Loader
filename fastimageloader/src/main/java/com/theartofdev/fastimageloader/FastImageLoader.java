@@ -22,8 +22,8 @@ import android.view.WindowManager;
 import com.squareup.okhttp.OkHttpClient;
 import com.theartofdev.fastimageloader.adapter.IdentityUriEnhancer;
 import com.theartofdev.fastimageloader.impl.FastImageLoaderHandler;
-import com.theartofdev.fastimageloader.impl.Logger;
-import com.theartofdev.fastimageloader.impl.Utils;
+import com.theartofdev.fastimageloader.impl.util.FILLogger;
+import com.theartofdev.fastimageloader.impl.util.FILUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -85,15 +85,15 @@ public final class FastImageLoader {
      * @throws IllegalStateException already initialized
      */
     public static FastImageLoader init(Application application) {
-        Utils.notNull(application, "context");
+        FILUtils.notNull(application, "context");
 
         if (INST.mFastImageLoaderHandler == null) {
             INST.mApplication = application;
 
-            Utils.density = application.getResources().getDisplayMetrics().density;
+            FILUtils.density = application.getResources().getDisplayMetrics().density;
 
             Display display = ((WindowManager) application.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-            display.getSize(Utils.displaySize);
+            display.getSize(FILUtils.displaySize);
 
             return INST;
         } else {
@@ -121,7 +121,7 @@ public final class FastImageLoader {
      * If to write logs to logcat (Default: false).
      */
     public FastImageLoader setWriteLogsToLogcat(boolean enable) {
-        Logger.mLogcatEnabled = enable;
+        FILLogger.mLogcatEnabled = enable;
         return INST;
     }
 
@@ -130,7 +130,7 @@ public final class FastImageLoader {
      * Use: {@link Log#DEBUG}, {@link Log#INFO}, {@link Log#WARN}, {@link Log#ERROR}, {@link Log#ASSERT}.
      */
     public FastImageLoader setLogLevel(int level) {
-        Logger.mLogLevel = level;
+        FILLogger.mLogLevel = level;
         return INST;
     }
 
@@ -138,7 +138,7 @@ public final class FastImageLoader {
      * Set appender to use to send logs to, allow client to log this library inner logs into custom framework.
      */
     public FastImageLoader setLogAppender(LogAppender appender) {
-        Logger.mAppender = appender;
+        FILLogger.mAppender = appender;
         return INST;
     }
 
@@ -146,7 +146,7 @@ public final class FastImageLoader {
      * Is to show indicator if the image was loaded from MEMORY/DISK/NETWORK.
      */
     public FastImageLoader setDebugIndicator(boolean enable) {
-        Utils.debugIndicator = enable;
+        FILUtils.debugIndicator = enable;
         return INST;
     }
 
@@ -161,7 +161,7 @@ public final class FastImageLoader {
      * @throws IllegalArgumentException spec with the given key already defined
      */
     public static ImageLoadSpecBuilder buildSpec(String key) {
-        Utils.notNullOrEmpty(key, "key");
+        FILUtils.notNullOrEmpty(key, "key");
         if (INST.mFastImageLoaderHandler == null) {
             finishInit();
         }
@@ -178,7 +178,7 @@ public final class FastImageLoader {
      * @return spec instance or null if no matching spec found
      */
     public static ImageLoadSpec getSpec(String key) {
-        Utils.notNullOrEmpty(key, "key");
+        FILUtils.notNullOrEmpty(key, "key");
         return INST.mSpecs.get(key);
     }
 
@@ -189,7 +189,7 @@ public final class FastImageLoader {
      * @param specKey the spec to prefetch the image by
      */
     public static void prefetchImage(String uri, String specKey) {
-        Utils.notNullOrEmpty(specKey, "specKey");
+        FILUtils.notNullOrEmpty(specKey, "specKey");
         if (!TextUtils.isEmpty(uri)) {
             if (INST.mFastImageLoaderHandler == null) {
                 finishInit();
@@ -216,7 +216,7 @@ public final class FastImageLoader {
      * @throws IllegalStateException NOT initialized
      */
     public static void loadImage(Target target, String altSpecKey) {
-        Utils.notNull(target, "target");
+        FILUtils.notNull(target, "target");
         if (INST.mFastImageLoaderHandler == null) {
             finishInit();
         }

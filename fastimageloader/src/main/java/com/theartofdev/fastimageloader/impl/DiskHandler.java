@@ -16,6 +16,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 import com.theartofdev.fastimageloader.ImageLoadSpec;
+import com.theartofdev.fastimageloader.impl.util.FILLogger;
+import com.theartofdev.fastimageloader.impl.util.FILUtils;
 
 import java.io.File;
 
@@ -70,12 +72,12 @@ final class DiskHandler {
         if (lastSlash == -1) {
             return null;
         }
-        String name = Utils.format("{}_{}_{}_{}",
+        String name = FILUtils.format("{}_{}_{}_{}",
                 Integer.toHexString(uri.substring(0, lastSlash).hashCode()),
                 Integer.toHexString(uri.substring(lastSlash + 1).hashCode()),
                 uri.substring(Math.max(lastSlash + 1, uri.length() - 10)),
                 spec.getKey());
-        return new File(Utils.pathCombine(mCacheFolder.getAbsolutePath(), name));
+        return new File(FILUtils.pathCombine(mCacheFolder.getAbsolutePath(), name));
     }
 
     /**
@@ -90,7 +92,7 @@ final class DiskHandler {
             mOptions.inBitmap = bitmap != null ? bitmap.getBitmap() : null;
             mOptions.inPreferredConfig = spec.getPixelConfig();
 
-            Logger.debug("Decode image from disk... [{}] [{}]", imageRequest, bitmap);
+            FILLogger.debug("Decode image from disk... [{}] [{}]", imageRequest, bitmap);
             Bitmap rawBitmap = BitmapFactory.decodeFile(file.getAbsolutePath(), mOptions);
 
             // if cached bitmap was used the raw image will be null
@@ -110,7 +112,7 @@ final class DiskHandler {
                     imageRequest.setBitmap(bitmap);
                 }
             } else {
-                Logger.critical("Failed to load image from cache [{}] [{}]", imageRequest, bitmap);
+                FILLogger.critical("Failed to load image from cache [{}] [{}]", imageRequest, bitmap);
                 if (bitmap != null) {
                     mBitmapRecycler.returnUnused(bitmap);
                     bitmap = null;
@@ -121,7 +123,7 @@ final class DiskHandler {
                 bitmap.setUrl(imageRequest.getUri());
             }
         } catch (Throwable e) {
-            Logger.warn("Failed to load disk cached image [{}]", e, imageRequest);
+            FILLogger.warn("Failed to load disk cached image [{}]", e, imageRequest);
         }
     }
 }

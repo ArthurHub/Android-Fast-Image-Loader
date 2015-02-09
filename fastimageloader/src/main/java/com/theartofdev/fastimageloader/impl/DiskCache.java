@@ -20,6 +20,8 @@ import android.text.format.DateUtils;
 
 import com.squareup.okhttp.internal.Util;
 import com.theartofdev.fastimageloader.ImageLoadSpec;
+import com.theartofdev.fastimageloader.impl.util.FILLogger;
+import com.theartofdev.fastimageloader.impl.util.FILUtils;
 
 import java.io.File;
 import java.text.NumberFormat;
@@ -114,10 +116,10 @@ final class DiskCache {
      * @param callback The callback to execute on async requests to the cache
      */
     public DiskCache(Context context, Handler handler, DiskHandler diskHandler, Callback callback) {
-        Utils.notNull(context, "context");
-        Utils.notNull(handler, "handler");
-        Utils.notNull(diskHandler, "diskHandler");
-        Utils.notNull(callback, "callback");
+        FILUtils.notNull(context, "context");
+        FILUtils.notNull(handler, "handler");
+        FILUtils.notNull(diskHandler, "diskHandler");
+        FILUtils.notNull(callback, "callback");
 
         mHandler = handler;
         mContext = context;
@@ -194,11 +196,11 @@ final class DiskCache {
                 String[] list = mDiskHandler.getCacheFolder().list();
                 for (String filePath : list) {
                     try {
-                        File file = new File(Utils.pathCombine(mDiskHandler.getCacheFolder().getAbsolutePath(), filePath));
+                        File file = new File(FILUtils.pathCombine(mDiskHandler.getCacheFolder().getAbsolutePath(), filePath));
                         //noinspection ResultOfMethodCallIgnored
                         file.delete();
                     } catch (Exception e) {
-                        Logger.warn("Failed to delete disk cached image", e);
+                        FILLogger.warn("Failed to delete disk cached image", e);
                     }
                 }
                 mCurrentCacheSize = 0;
@@ -293,14 +295,14 @@ final class DiskCache {
 
                     saveStats();
 
-                    Logger.info("Image disk cache scan complete [Before: {} / {}K] [After: {} / {}K] [Delete TTL: {}] [Delete size: {}]",
+                    FILLogger.info("Image disk cache scan complete [Before: {} / {}K] [After: {} / {}K] [Delete TTL: {}] [Delete size: {}]",
                             allImages.length, totalSizeFull / 1024, allImages.length - deleteByTTL - deleteByMaxSize, totalSize / 1024, deleteByTTL, deleteByMaxSize);
                 } finally {
-                    Logger.info("ImageCacheScan [{}]", System.currentTimeMillis() - startTime);
+                    FILLogger.info("ImageCacheScan [{}]", System.currentTimeMillis() - startTime);
                 }
             }
         } catch (Exception e) {
-            Logger.critical("Error in image disk cache scan", e);
+            FILLogger.critical("Error in image disk cache scan", e);
         }
     }
 

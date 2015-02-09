@@ -13,7 +13,7 @@
 package com.theartofdev.fastimageloader.adapter;
 
 import com.theartofdev.fastimageloader.ImageLoadSpec;
-import com.theartofdev.fastimageloader.impl.Utils;
+import com.theartofdev.fastimageloader.impl.util.FILUtils;
 
 /**
  * URL enhancer for thumbor (http://thumbor.org/) service.<br/>
@@ -31,7 +31,7 @@ public class ThumborInlineUriEnhancer extends ThumborUriEnhancer {
      * @param pathPartSplit the path part that split the thumbor URI part from image part.
      */
     public ThumborInlineUriEnhancer(String pathPartSplit) {
-        Utils.notNullOrEmpty(pathPartSplit, "pathPartSplit");
+        FILUtils.notNullOrEmpty(pathPartSplit, "pathPartSplit");
         mPathPartSplit = pathPartSplit;
     }
 

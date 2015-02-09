@@ -20,10 +20,10 @@ import android.widget.ImageView;
 import com.theartofdev.fastimageloader.FastImageLoader;
 import com.theartofdev.fastimageloader.LoadState;
 import com.theartofdev.fastimageloader.LoadedFrom;
-import com.theartofdev.fastimageloader.impl.Logger;
 import com.theartofdev.fastimageloader.ReusableBitmap;
 import com.theartofdev.fastimageloader.Target;
-import com.theartofdev.fastimageloader.impl.Utils;
+import com.theartofdev.fastimageloader.impl.util.FILLogger;
+import com.theartofdev.fastimageloader.impl.util.FILUtils;
 
 /**
  * Handler for loading image as {@link com.theartofdev.fastimageloader.ReusableBitmap} and managing its lifecycle.<br/>
@@ -99,7 +99,7 @@ public abstract class TargetImageViewHandlerBase<T extends ImageView> implements
      * @param imageView The image view to handle.
      */
     public TargetImageViewHandlerBase(T imageView) {
-        Utils.notNull(imageView, "imageView");
+        FILUtils.notNull(imageView, "imageView");
         mImageView = imageView;
         mImageView.addOnAttachStateChangeListener(this);
     }
@@ -160,7 +160,7 @@ public abstract class TargetImageViewHandlerBase<T extends ImageView> implements
      * @param force true - force image load even if it is the same source
      */
     public void loadImage(String url, String specKey, String altSpecKey, boolean force) {
-        Utils.notNull(specKey, "spec");
+        FILUtils.notNull(specKey, "spec");
 
         if (!TextUtils.equals(mUrl, url) || TextUtils.isEmpty(url) || force) {
             mStartImageLoadTime = System.currentTimeMillis();
@@ -193,7 +193,7 @@ public abstract class TargetImageViewHandlerBase<T extends ImageView> implements
 
         setImage(bitmap, from);
 
-        Logger.operation(mUrl, mSpecKey, from, true, System.currentTimeMillis() - mStartImageLoadTime);
+        FILLogger.operation(mUrl, mSpecKey, from, true, System.currentTimeMillis() - mStartImageLoadTime);
     }
 
     @Override
@@ -205,7 +205,7 @@ public abstract class TargetImageViewHandlerBase<T extends ImageView> implements
             clearImage();
             mImageView.invalidate();
         }
-        Logger.operation(url, specKey, null, false, System.currentTimeMillis() - mStartImageLoadTime);
+        FILLogger.operation(url, specKey, null, false, System.currentTimeMillis() - mStartImageLoadTime);
     }
 
     /**
@@ -219,7 +219,7 @@ public abstract class TargetImageViewHandlerBase<T extends ImageView> implements
                 mInUse = true;
                 mReusableBitmap.incrementInUse();
             } else {
-                Logger.info("ImageView attachToWindow uses recycled bitmap, reload... [{}]", mReusableBitmap);
+                FILLogger.info("ImageView attachToWindow uses recycled bitmap, reload... [{}]", mReusableBitmap);
                 loadImage(mUrl, mSpecKey, null, true);
             }
         }

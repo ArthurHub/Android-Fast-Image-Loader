@@ -18,6 +18,8 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import com.squareup.okhttp.internal.Util;
+import com.theartofdev.fastimageloader.impl.util.FILLogger;
+import com.theartofdev.fastimageloader.impl.util.FILUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -80,10 +82,10 @@ final class Downloader {
      * @param callback The callback to execute on async requests to the downloader
      */
     public Downloader(OkHttpClient client, Handler handler, DiskHandler diskHandler, Callback callback) {
-        Utils.notNull(client, "client");
-        Utils.notNull(handler, "handler");
-        Utils.notNull(diskHandler, "imageLoader");
-        Utils.notNull(callback, "callback");
+        FILUtils.notNull(client, "client");
+        FILUtils.notNull(handler, "handler");
+        FILUtils.notNull(diskHandler, "imageLoader");
+        FILUtils.notNull(callback, "callback");
 
         mClient = client;
         mHandler = handler;
@@ -109,7 +111,7 @@ final class Downloader {
             public void run() {
                 // mark start download, the first to do this will win (sync between prefetch and load)
                 if ((prefetch || !imageRequest.isPrefetch()) && imageRequest.startDownload()) {
-                    Logger.debug("Start image request download... [{}]", imageRequest);
+                    FILLogger.debug("Start image request download... [{}]", imageRequest);
                     final boolean canceled = download(imageRequest);
                     final boolean downloaded = imageRequest.getFileSize() > 0;
                     mHandler.post(new Runnable() {
@@ -119,7 +121,7 @@ final class Downloader {
                         }
                     });
                 } else {
-                    Logger.debug("Image request download already handled [{}]", imageRequest);
+                    FILLogger.debug("Image request download already handled [{}]", imageRequest);
                 }
             }
         });
@@ -158,16 +160,16 @@ final class Downloader {
                     }
                 } else {
                     error = new ConnectException(httpResponse.code() + ": " + httpResponse.message());
-                    Logger.error("Failed to download image... [{}] [{}] [{}]", httpResponse.code(), httpResponse.message(), imageRequest);
+                    FILLogger.error("Failed to download image... [{}] [{}] [{}]", httpResponse.code(), httpResponse.message(), imageRequest);
                 }
             }
         } catch (Exception e) {
             error = e;
-            Logger.error("Failed to download image [{}]", e, imageRequest);
+            FILLogger.error("Failed to download image [{}]", e, imageRequest);
         }
 
         if (downloaded || error != null) {
-            Logger.operation(imageRequest.getEnhancedUri(), imageRequest.getSpec().getKey(), responseCode, System.currentTimeMillis() - start, imageRequest.getFileSize(), error);
+            FILLogger.operation(imageRequest.getEnhancedUri(), imageRequest.getSpec().getKey(), responseCode, System.currentTimeMillis() - start, imageRequest.getFileSize(), error);
         }
 
         // if downloaded and request is still valid - load the image object
@@ -207,7 +209,7 @@ final class Downloader {
             buffer = getBuffer();
 
             // don't cancel download if passed 50%
-            long contentLength = Utils.parseLong(response.header("content-length"), -1);
+            long contentLength = FILUtils.parseLong(response.header("content-length"), -1);
             while ((contentLength < 0 || contentLength * .5f < size || imageRequest.isValid()) && (len = in.read(buffer)) != -1) {
                 size += len;
                 out.write(buffer, 0, len);
@@ -219,13 +221,13 @@ final class Downloader {
                     imageRequest.setFileSize(size);
                     return true;
                 } else {
-                    Logger.warn("Failed to rename temp download file to target file");
+                    FILLogger.warn("Failed to rename temp download file to target file");
                 }
             }
         } finally {
-            Utils.closeSafe(out);
-            Utils.closeSafe(in);
-            Utils.deleteSafe(tmpFile);
+            FILUtils.closeSafe(out);
+            FILUtils.closeSafe(in);
+            FILUtils.deleteSafe(tmpFile);
             returnBuffer(buffer);
         }
         return false;

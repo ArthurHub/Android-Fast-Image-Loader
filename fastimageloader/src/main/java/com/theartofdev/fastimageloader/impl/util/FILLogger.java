@@ -10,7 +10,7 @@
 // - Sun Tsu,
 // "The Art of War"
 
-package com.theartofdev.fastimageloader.impl;
+package com.theartofdev.fastimageloader.impl.util;
 
 import android.util.Log;
 
@@ -20,7 +20,7 @@ import com.theartofdev.fastimageloader.LogAppender;
 /**
  * Logger.
  */
-public final class Logger {
+public final class FILLogger {
 
     /**
      * The tag to use for all logs
@@ -53,7 +53,7 @@ public final class Logger {
      */
     public static void operation(String url, String specKey, LoadedFrom from, boolean successful, long time) {
         if (mLogcatEnabled) {
-            String msg = Utils.format("Operation: LoadImage [{}] [{}] [{}] [{}]", from, specKey, successful, time);
+            String msg = FILUtils.format("Operation: LoadImage [{}] [{}] [{}] [{}]", from, specKey, successful, time);
             Log.println(from == LoadedFrom.MEMORY ? Log.DEBUG : Log.INFO, TAG, msg);
         }
         if (mAppender != null)
@@ -72,7 +72,7 @@ public final class Logger {
      */
     public static void operation(String url, String specKey, int responseCode, long time, long bytes, Throwable error) {
         if (mLogcatEnabled) {
-            String msg = Utils.format("Operation: DownloadImage [{}] [{}] [{}] [{}] [{}]", url, specKey, responseCode, bytes, time);
+            String msg = FILUtils.format("Operation: DownloadImage [{}] [{}] [{}] [{}] [{}]", url, specKey, responseCode, bytes, time);
             if (error == null) {
                 Log.i(TAG, msg);
             } else {
@@ -95,36 +95,36 @@ public final class Logger {
     public static void debug(String msg, Object arg1) {
         if (mLogLevel <= Log.DEBUG) {
             if (mLogcatEnabled)
-                Log.d(TAG, Utils.format(msg, arg1));
+                Log.d(TAG, FILUtils.format(msg, arg1));
             if (mAppender != null)
-                mAppender.log(Log.DEBUG, TAG, Utils.format(msg, arg1), null);
+                mAppender.log(Log.DEBUG, TAG, FILUtils.format(msg, arg1), null);
         }
     }
 
     public static void debug(String msg, Object arg1, Object arg2) {
         if (mLogLevel <= Log.DEBUG) {
             if (mLogcatEnabled)
-                Log.d(TAG, Utils.format(msg, arg1, arg2));
+                Log.d(TAG, FILUtils.format(msg, arg1, arg2));
             if (mAppender != null)
-                mAppender.log(Log.DEBUG, TAG, Utils.format(msg, arg1, arg2), null);
+                mAppender.log(Log.DEBUG, TAG, FILUtils.format(msg, arg1, arg2), null);
         }
     }
 
     public static void debug(String msg, Object arg1, Object arg2, Object arg3) {
         if (mLogLevel <= Log.DEBUG) {
             if (mLogcatEnabled)
-                Log.d(TAG, Utils.format(msg, arg1, arg2, arg3));
+                Log.d(TAG, FILUtils.format(msg, arg1, arg2, arg3));
             if (mAppender != null)
-                mAppender.log(Log.DEBUG, TAG, Utils.format(msg, arg1, arg2, arg3), null);
+                mAppender.log(Log.DEBUG, TAG, FILUtils.format(msg, arg1, arg2, arg3), null);
         }
     }
 
     public static void debug(String msg, Object arg1, Object arg2, Object arg3, Object arg4) {
         if (mLogLevel <= Log.DEBUG) {
             if (mLogcatEnabled)
-                Log.d(TAG, Utils.format(msg, arg1, arg2, arg3, arg4));
+                Log.d(TAG, FILUtils.format(msg, arg1, arg2, arg3, arg4));
             if (mAppender != null)
-                mAppender.log(Log.DEBUG, TAG, Utils.format(msg, arg1, arg2, arg3, arg4), null);
+                mAppender.log(Log.DEBUG, TAG, FILUtils.format(msg, arg1, arg2, arg3, arg4), null);
         }
     }
 
@@ -140,54 +140,54 @@ public final class Logger {
     public static void info(String msg, Object arg1) {
         if (mLogLevel <= Log.INFO) {
             if (mLogcatEnabled)
-                Log.i(TAG, Utils.format(msg, arg1));
+                Log.i(TAG, FILUtils.format(msg, arg1));
             if (mAppender != null)
-                mAppender.log(Log.INFO, TAG, Utils.format(msg, arg1), null);
+                mAppender.log(Log.INFO, TAG, FILUtils.format(msg, arg1), null);
         }
     }
 
     public static void info(String msg, Object arg1, Object arg2) {
         if (mLogLevel <= Log.INFO) {
             if (mLogcatEnabled)
-                Log.i(TAG, Utils.format(msg, arg1, arg2));
+                Log.i(TAG, FILUtils.format(msg, arg1, arg2));
             if (mAppender != null)
-                mAppender.log(Log.INFO, TAG, Utils.format(msg, arg1, arg2), null);
+                mAppender.log(Log.INFO, TAG, FILUtils.format(msg, arg1, arg2), null);
         }
     }
 
     public static void info(String msg, Object arg1, Object arg2, Object arg3) {
         if (mLogLevel <= Log.INFO) {
             if (mLogcatEnabled)
-                Log.i(TAG, Utils.format(msg, arg1, arg2, arg3));
+                Log.i(TAG, FILUtils.format(msg, arg1, arg2, arg3));
             if (mAppender != null)
-                mAppender.log(Log.INFO, TAG, Utils.format(msg, arg1, arg2, arg3), null);
+                mAppender.log(Log.INFO, TAG, FILUtils.format(msg, arg1, arg2, arg3), null);
         }
     }
 
     public static void info(String msg, Object... args) {
         if (mLogLevel <= Log.INFO) {
             if (mLogcatEnabled)
-                Log.i(TAG, Utils.format(msg, args));
+                Log.i(TAG, FILUtils.format(msg, args));
             if (mAppender != null)
-                mAppender.log(Log.INFO, TAG, Utils.format(msg, args), null);
+                mAppender.log(Log.INFO, TAG, FILUtils.format(msg, args), null);
         }
     }
 
     public static void warn(String msg, Object... args) {
         if (mLogLevel <= Log.WARN) {
             if (mLogcatEnabled)
-                Log.w(TAG, Utils.format(msg, args));
+                Log.w(TAG, FILUtils.format(msg, args));
             if (mAppender != null)
-                mAppender.log(Log.WARN, TAG, Utils.format(msg, args), null);
+                mAppender.log(Log.WARN, TAG, FILUtils.format(msg, args), null);
         }
     }
 
     public static void warn(String msg, Throwable e, Object... args) {
         if (mLogLevel <= Log.WARN) {
             if (mLogcatEnabled)
-                Log.w(TAG, Utils.format(msg, args), e);
+                Log.w(TAG, FILUtils.format(msg, args), e);
             if (mAppender != null)
-                mAppender.log(Log.WARN, TAG, Utils.format(msg, args), e);
+                mAppender.log(Log.WARN, TAG, FILUtils.format(msg, args), e);
         }
     }
 
@@ -202,7 +202,7 @@ public final class Logger {
 
     public static void error(String msg, Object... args) {
         if (mLogLevel <= Log.ERROR) {
-            msg = Utils.format(msg, args);
+            msg = FILUtils.format(msg, args);
             if (mLogcatEnabled)
                 Log.e(TAG, msg);
             if (mAppender != null)
@@ -212,7 +212,7 @@ public final class Logger {
 
     public static void error(String msg, Throwable e, Object... args) {
         if (mLogLevel <= Log.ERROR) {
-            msg = Utils.format(msg, args);
+            msg = FILUtils.format(msg, args);
             if (mLogcatEnabled)
                 Log.e(TAG, msg, e);
             if (mAppender != null)
@@ -222,7 +222,7 @@ public final class Logger {
 
     public static void critical(String msg, Object... args) {
         if (mLogLevel <= Log.ASSERT) {
-            msg = Utils.format(msg, args);
+            msg = FILUtils.format(msg, args);
             Exception e = new Exception(msg);
             if (mLogcatEnabled)
                 Log.e(TAG, msg, e);
@@ -233,7 +233,7 @@ public final class Logger {
 
     public static void critical(String msg, Throwable e, Object... args) {
         if (mLogLevel <= Log.ASSERT) {
-            msg = Utils.format(msg, args);
+            msg = FILUtils.format(msg, args);
             if (mLogcatEnabled)
                 Log.e(TAG, msg, e);
             if (mAppender != null)

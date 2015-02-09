@@ -23,7 +23,7 @@ import android.graphics.drawable.Drawable;
 import android.os.SystemClock;
 
 import com.theartofdev.fastimageloader.LoadedFrom;
-import com.theartofdev.fastimageloader.impl.Utils;
+import com.theartofdev.fastimageloader.impl.util.FILUtils;
 
 import static android.graphics.Color.GREEN;
 import static android.graphics.Color.RED;
@@ -79,7 +79,7 @@ public class TargetDrawable extends Drawable {
      * @param showFade if to show fade effect starting from now
      */
     public TargetDrawable(Bitmap bitmap, LoadedFrom loadedFrom, boolean rounded, boolean showFade) {
-        Utils.notNull(bitmap, "bitmap");
+        FILUtils.notNull(bitmap, "bitmap");
 
         mLoadedFrom = loadedFrom;
         mRounded = rounded;
@@ -170,7 +170,7 @@ public class TargetDrawable extends Drawable {
             invalidateSelf();
         }
 
-        if (Utils.debugIndicator) {
+        if (FILUtils.debugIndicator) {
             drawDebugIndicator(canvas);
         }
     }
@@ -181,11 +181,11 @@ public class TargetDrawable extends Drawable {
     protected void drawBitmap(Canvas canvas) {
         int width = getBounds().width();
         int height = getBounds().height();
-        Utils.mRectF.set(0, 0, width, height);
+        FILUtils.mRectF.set(0, 0, width, height);
         if (mRounded) {
-            canvas.drawRoundRect(Utils.mRectF, width / 2, height / 2, mPaint);
+            canvas.drawRoundRect(FILUtils.mRectF, width / 2, height / 2, mPaint);
         } else {
-            canvas.drawRect(Utils.mRectF, mPaint);
+            canvas.drawRect(FILUtils.mRectF, mPaint);
         }
     }
 
@@ -203,9 +203,9 @@ public class TargetDrawable extends Drawable {
         int height = getBounds().height();
 
         mDebugPaint.setColor(WHITE);
-        canvas.drawCircle(width / 2, height / 2, (int) (5 * Utils.density), mDebugPaint);
+        canvas.drawCircle(width / 2, height / 2, (int) (5 * FILUtils.density), mDebugPaint);
 
         mDebugPaint.setColor(mLoadedFrom == LoadedFrom.MEMORY ? GREEN : mLoadedFrom == LoadedFrom.DISK ? YELLOW : RED);
-        canvas.drawCircle(width / 2, height / 2, (int) (3 * Utils.density), mDebugPaint);
+        canvas.drawCircle(width / 2, height / 2, (int) (3 * FILUtils.density), mDebugPaint);
     }
 }

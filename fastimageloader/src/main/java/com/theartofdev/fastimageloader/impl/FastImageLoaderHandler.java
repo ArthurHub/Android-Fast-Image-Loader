@@ -22,6 +22,8 @@ import com.squareup.okhttp.OkHttpClient;
 import com.theartofdev.fastimageloader.ImageLoadSpec;
 import com.theartofdev.fastimageloader.LoadedFrom;
 import com.theartofdev.fastimageloader.Target;
+import com.theartofdev.fastimageloader.impl.util.FILLogger;
+import com.theartofdev.fastimageloader.impl.util.FILUtils;
 
 import java.io.File;
 import java.util.HashMap;
@@ -97,7 +99,7 @@ public final class FastImageLoaderHandler implements DiskCache.Callback, Downloa
      */
     public FastImageLoaderHandler(Application application, OkHttpClient client) {
 
-        File cacheFolder = new File(Utils.pathCombine(application.getCacheDir().getPath(), "ImageCache"));
+        File cacheFolder = new File(FILUtils.pathCombine(application.getCacheDir().getPath(), "ImageCache"));
 
         //noinspection ResultOfMethodCallIgnored
         cacheFolder.mkdirs();
@@ -140,7 +142,7 @@ public final class FastImageLoaderHandler implements DiskCache.Callback, Downloa
      */
     public void prefetchImage(String uri, ImageLoadSpec spec) {
         try {
-            String imageKey = Utils.getUriUniqueKey(spec, uri);
+            String imageKey = FILUtils.getUriUniqueKey(spec, uri);
             ImageRequest request = mLoadingRequests.get(imageKey);
             if (request == null) {
                 File file = mDiskHandler.getCacheFile(uri, spec);
@@ -148,12 +150,12 @@ public final class FastImageLoaderHandler implements DiskCache.Callback, Downloa
                     request = new ImageRequest(uri, spec, file);
                     mLoadingRequests.put(imageKey, request);
 
-                    Logger.debug("Add prefetch request... [{}]", request);
+                    FILLogger.debug("Add prefetch request... [{}]", request);
                     mDownloader.downloadAsync(request, true);
                 }
             }
         } catch (Exception e) {
-            Logger.critical("Error in prefetch image [{}] [{}]", e, uri, spec);
+            FILLogger.critical("Error in prefetch image [{}] [{}]", e, uri, spec);
         }
     }
 
@@ -178,10 +180,10 @@ public final class FastImageLoaderHandler implements DiskCache.Callback, Downloa
 
                 // not found or loaded alternative spec
                 if (image == null || image.getSpec() != spec) {
-                    String imageKey = Utils.getUriUniqueKey(spec, uri);
+                    String imageKey = FILUtils.getUriUniqueKey(spec, uri);
                     ImageRequest request = mLoadingRequests.get(imageKey);
                     if (request != null) {
-                        Logger.debug("Memory cache miss, image already requested, add target to request... [{}] [{}]", request, target);
+                        FILLogger.debug("Memory cache miss, image already requested, add target to request... [{}] [{}]", request, target);
                         if (request.addTargetAndCheck(target)) {
                             mDownloader.downloadAsync(request, false);
                         }
@@ -190,14 +192,14 @@ public final class FastImageLoaderHandler implements DiskCache.Callback, Downloa
                         request = new ImageRequest(target, uri, spec, mDiskHandler.getCacheFile(uri, spec));
                         mLoadingRequests.put(imageKey, request);
 
-                        Logger.debug("Memory cache miss, start request handling... [{}]", request);
+                        FILLogger.debug("Memory cache miss, start request handling... [{}]", request);
                         // don't use alternative spec if image was loaded from memory cache
                         mDiskCache.getAsync(request, image == null ? altSpec : null);
                     }
                 }
             }
         } catch (Exception e) {
-            Logger.critical("Error in load image [{}]", e, target);
+            FILLogger.critical("Error in load image [{}]", e, target);
             target.onBitmapFailed();
         }
     }
@@ -221,7 +223,7 @@ public final class FastImageLoaderHandler implements DiskCache.Callback, Downloa
         try {
             boolean loaded = imageRequest.getBitmap() != null;
             boolean loadedAlt = loaded && imageRequest.getBitmap().getSpec() != imageRequest.getSpec();
-            Logger.debug("Get image from disk cache callback... [Loaded: {}, Alt:{}] [Canceled: {}] [{}]", loaded, loadedAlt, canceled, imageRequest);
+            FILLogger.debug("Get image from disk cache callback... [Loaded: {}, Alt:{}] [Canceled: {}] [{}]", loaded, loadedAlt, canceled, imageRequest);
 
             if (loaded) {
                 // if image object was loaded - add it to memory cache
@@ -258,7 +260,7 @@ public final class FastImageLoaderHandler implements DiskCache.Callback, Downloa
             }
         } catch (Exception e) {
             mLoadingRequests.remove(imageRequest.getUniqueKey());
-            Logger.critical("Error in load image disk callback", e);
+            FILLogger.critical("Error in load image disk callback", e);
         }
     }
 
@@ -270,7 +272,7 @@ public final class FastImageLoaderHandler implements DiskCache.Callback, Downloa
     @Override
     public void loadImageDownloaderCallback(ImageRequest imageRequest, boolean downloaded, boolean canceled) {
         try {
-            Logger.debug("Load image from network callback... [{}] [Downloaded: {}] [Canceled: {}]", imageRequest, downloaded, canceled);
+            FILLogger.debug("Load image from network callback... [{}] [Downloaded: {}] [Canceled: {}]", imageRequest, downloaded, canceled);
 
             // if image was downloaded - notify disk cache
             if (downloaded) {
@@ -307,7 +309,7 @@ public final class FastImageLoaderHandler implements DiskCache.Callback, Downloa
             }
         } catch (Exception e) {
             mLoadingRequests.remove(imageRequest.getUniqueKey());
-            Logger.critical("Error in load image downloader callback", e);
+            FILLogger.critical("Error in load image downloader callback", e);
         }
     }
 

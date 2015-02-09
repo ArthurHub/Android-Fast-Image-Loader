@@ -10,7 +10,7 @@
 // - Sun Tsu,
 // "The Art of War"
 
-package com.theartofdev.fastimageloader.impl;
+package com.theartofdev.fastimageloader.impl.util;
 
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -27,7 +27,7 @@ import java.util.Collection;
 /**
  * General utility methods.
  */
-public final class Utils {
+public final class FILUtils {
 
     /**
      * Rect to draw circle
@@ -162,7 +162,7 @@ public final class Utils {
             try {
                 closeable.close();
             } catch (IOException e) {
-                Logger.warn("Failed to close closable object [{}]", e, closeable);
+                FILLogger.warn("Failed to close closable object [{}]", e, closeable);
             }
         }
     }
@@ -178,7 +178,7 @@ public final class Utils {
                 //noinspection ResultOfMethodCallIgnored
                 file.delete();
             } catch (Throwable e) {
-                Logger.warn("Failed to delete file [{}]", e, file);
+                FILLogger.warn("Failed to delete file [{}]", e, file);
             }
         }
     }
