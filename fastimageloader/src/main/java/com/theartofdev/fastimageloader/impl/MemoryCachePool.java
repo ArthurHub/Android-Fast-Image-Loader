@@ -233,7 +233,7 @@ final class MemoryCachePool {
             Iterator<ReusableBitmapImpl> iter = list.iterator();
             while (iter.hasNext()) {
                 ReusableBitmapImpl bitmap = iter.next();
-                if (uri.equals(bitmap.getUrl())) {
+                if (uri.equals(bitmap.getUri())) {
                     iter.remove();
                     list.addLast(bitmap);
                     return bitmap;

@@ -52,7 +52,7 @@ public final class ImageLoadSpec {
     /**
      * The URI enhancer to use for this spec image loading
      */
-    private final UriEnhancer mUriEnhancer;
+    private final ImageServiceAdapter mImageServiceAdapter;
     //endregion
 
     /**
@@ -63,15 +63,15 @@ public final class ImageLoadSpec {
      * @param height the height of the image in pixels
      * @param format The format of the image.
      * @param pixelConfig the pixel configuration to load the image in (4 bytes per image pixel, 2 bytes, etc.)
-     * @param uriEnhancer The URI enhancer to use for this spec image loading
+     * @param imageServiceAdapter The URI enhancer to use for this spec image loading
      */
-    ImageLoadSpec(String key, int width, int height, Format format, Bitmap.Config pixelConfig, UriEnhancer uriEnhancer) {
+    ImageLoadSpec(String key, int width, int height, Format format, Bitmap.Config pixelConfig, ImageServiceAdapter imageServiceAdapter) {
         mKey = key;
         mWidth = width;
         mHeight = height;
         mFormat = format;
         mPixelConfig = pixelConfig;
-        mUriEnhancer = uriEnhancer;
+        mImageServiceAdapter = imageServiceAdapter;
     }
 
     /**
@@ -112,8 +112,8 @@ public final class ImageLoadSpec {
     /**
      * The URI enhancer to use for this spec image loading
      */
-    public UriEnhancer getUriEnhancer() {
-        return mUriEnhancer;
+    public ImageServiceAdapter getImageServiceAdapter() {
+        return mImageServiceAdapter;
     }
 
     /**
@@ -131,7 +131,7 @@ public final class ImageLoadSpec {
                 ", mHeight=" + mHeight +
                 ", mFormat=" + mFormat +
                 ", mPixelConfig=" + mPixelConfig +
-                ", mUriEnhancer=" + mUriEnhancer +
+                ", mImageServiceAdapter=" + mImageServiceAdapter +
                 '}';
     }
 

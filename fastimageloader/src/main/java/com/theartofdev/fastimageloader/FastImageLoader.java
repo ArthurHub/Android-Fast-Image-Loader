@@ -20,7 +20,7 @@ import android.view.Display;
 import android.view.WindowManager;
 
 import com.squareup.okhttp.OkHttpClient;
-import com.theartofdev.fastimageloader.adapter.IdentityUriEnhancer;
+import com.theartofdev.fastimageloader.adapter.IdentityAdapter;
 import com.theartofdev.fastimageloader.impl.FastImageLoaderHandler;
 import com.theartofdev.fastimageloader.impl.util.FILLogger;
 import com.theartofdev.fastimageloader.impl.util.FILUtils;
@@ -57,9 +57,9 @@ public final class FastImageLoader {
     private Application mApplication;
 
     /**
-     * used to enhance image URI by spec for image service (Thumbor\imgIX\etc.)
+     * used to convert image URI by spec for image service (Thumbor\imgIX\etc.)
      */
-    private UriEnhancer mUriEnhancer;
+    private ImageServiceAdapter mImageServiceAdapter;
 
     /**
      * The OK HTTP client to be used to download images
@@ -77,7 +77,7 @@ public final class FastImageLoader {
      * Initialize the image loader with given android application context.<br/>
      * Image loader can be initialized only once where you can set all the configuration
      * properties:
-     * {@link #setDefaultUriEnhancer(UriEnhancer)},
+     * {@link #setDefaultUriEnhancer(ImageServiceAdapter)},
      * {@link #setHttpClient(com.squareup.okhttp.OkHttpClient)},
      * {@link #setDebugIndicator(boolean)}.
      *
@@ -102,10 +102,10 @@ public final class FastImageLoader {
     }
 
     /**
-     * used to enhance image URI by spec for image service (Thumbor\imgIX\etc.)
+     * used to convert image URI by spec for image service (Thumbor\imgIX\etc.)
      */
-    public FastImageLoader setDefaultUriEnhancer(UriEnhancer uriEnhancer) {
-        mUriEnhancer = uriEnhancer;
+    public FastImageLoader setDefaultUriEnhancer(ImageServiceAdapter imageServiceAdapter) {
+        mImageServiceAdapter = imageServiceAdapter;
         return INST;
     }
 
@@ -168,7 +168,7 @@ public final class FastImageLoader {
         if (INST.mSpecs.containsKey(key)) {
             throw new IllegalArgumentException("Spec with the same key already exists");
         }
-        return new ImageLoadSpecBuilder(key, INST.mApplication, INST.mUriEnhancer);
+        return new ImageLoadSpecBuilder(key, INST.mApplication, INST.mImageServiceAdapter);
     }
 
     /**
@@ -266,8 +266,8 @@ public final class FastImageLoader {
                 INST.mHttpClient.setConnectTimeout(10, TimeUnit.SECONDS);
                 INST.mHttpClient.setReadTimeout(15, TimeUnit.SECONDS);
             }
-            if (INST.mUriEnhancer == null) {
-                INST.mUriEnhancer = new IdentityUriEnhancer();
+            if (INST.mImageServiceAdapter == null) {
+                INST.mImageServiceAdapter = new IdentityAdapter();
             }
             INST.mFastImageLoaderHandler = new FastImageLoaderHandler(INST.mApplication, INST.mHttpClient);
         } else {

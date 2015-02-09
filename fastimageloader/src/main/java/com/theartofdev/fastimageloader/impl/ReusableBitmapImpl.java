@@ -86,7 +86,7 @@ final class ReusableBitmapImpl implements ReusableBitmap {
     }
 
     @Override
-    public String getUrl() {
+    public String getUri() {
         return mBitmapUrl;
     }
 

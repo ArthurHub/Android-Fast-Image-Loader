@@ -68,22 +68,22 @@ public final class ImageLoadSpecBuilder {
     /**
      * The URI enhancer to use for this spec image loading
      */
-    private UriEnhancer mUriEnhancer;
+    private ImageServiceAdapter mImageServiceAdapter;
     //endregion
 
     /**
      * @param key the unique key of the spec used for identification and debug
      * @param application The application object
-     * @param uriEnhancer default URI enhancer to use for this spec image loading
+     * @param imageServiceAdapter default URI enhancer to use for this spec image loading
      */
-    ImageLoadSpecBuilder(String key, Application application, UriEnhancer uriEnhancer) {
+    ImageLoadSpecBuilder(String key, Application application, ImageServiceAdapter imageServiceAdapter) {
         FILUtils.notNullOrEmpty(key, "key");
         FILUtils.notNull(application, "application");
-        FILUtils.notNull(uriEnhancer, "uriEnhancer");
+        FILUtils.notNull(imageServiceAdapter, "imageServiceAdapter");
 
         mKey = key;
         mApplication = application;
-        mUriEnhancer = uriEnhancer;
+        mImageServiceAdapter = imageServiceAdapter;
     }
 
     /**
@@ -223,8 +223,8 @@ public final class ImageLoadSpecBuilder {
     /**
      * The URI enhancer to use for this spec image loading
      */
-    public ImageLoadSpecBuilder setUriEnhancer(UriEnhancer uriEnhancer) {
-        mUriEnhancer = uriEnhancer;
+    public ImageLoadSpecBuilder setImageServiceAdapter(ImageServiceAdapter imageServiceAdapter) {
+        mImageServiceAdapter = imageServiceAdapter;
         return this;
     }
 
@@ -239,7 +239,7 @@ public final class ImageLoadSpecBuilder {
 
         float densityAdj = FILUtils.density >= mMaxDensity ? mMaxDensity / FILUtils.density : 1f;
 
-        ImageLoadSpec spec = new ImageLoadSpec(mKey, (int) (mWidth * densityAdj), (int) (mHeight * densityAdj), mFormat, mPixelConfig, mUriEnhancer);
+        ImageLoadSpec spec = new ImageLoadSpec(mKey, (int) (mWidth * densityAdj), (int) (mHeight * densityAdj), mFormat, mPixelConfig, mImageServiceAdapter);
 
         FastImageLoader.addSpec(spec);
 

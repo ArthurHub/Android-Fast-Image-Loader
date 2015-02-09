@@ -18,7 +18,7 @@ import com.theartofdev.fastimageloader.LoadedFrom;
 import com.theartofdev.fastimageloader.LogAppender;
 
 /**
- * Logger.
+ * Logger for Fast Image Loader internal use only.
  */
 public final class FILLogger {
 

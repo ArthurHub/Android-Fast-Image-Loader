@@ -13,19 +13,18 @@
 package com.theartofdev.fastimageloader.adapter;
 
 import com.theartofdev.fastimageloader.ImageLoadSpec;
-import com.theartofdev.fastimageloader.UriEnhancer;
+import com.theartofdev.fastimageloader.ImageServiceAdapter;
 
 /**
- * URL enhancer for imgIX (http://www.imgix.com) service.<br/>
- * Add image load specification as query params to the image URL.
+ * imgIX image service (http://www.imgix.com) adapter.<br/>
  */
-public class ImgIXUriEnhancer implements UriEnhancer {
+public class ImgIXAdapter implements ImageServiceAdapter {
 
     @Override
-    public String enhance(String url, ImageLoadSpec spec) {
-        StringBuilder sb = new StringBuilder(url);
+    public String convert(String uri, ImageLoadSpec spec) {
+        StringBuilder sb = new StringBuilder(uri);
 
-        int qIdx = url.indexOf('?');
+        int qIdx = uri.indexOf('?');
         sb.append(qIdx > -1 ? '&' : '?');
 
         if (spec.getFormat() == ImageLoadSpec.Format.JPEG)

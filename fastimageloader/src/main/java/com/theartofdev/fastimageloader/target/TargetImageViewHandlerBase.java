@@ -134,7 +134,7 @@ public abstract class TargetImageViewHandlerBase<T extends ImageView> implements
     }
 
     @Override
-    public String getUrl() {
+    public String getUri() {
         return mUrl;
     }
 
@@ -215,7 +215,7 @@ public abstract class TargetImageViewHandlerBase<T extends ImageView> implements
      */
     public void onViewShown() {
         if (mReusableBitmap != null && !mInUse) {
-            if (TextUtils.equals(mReusableBitmap.getUrl(), mUrl)) {
+            if (TextUtils.equals(mReusableBitmap.getUri(), mUrl)) {
                 mInUse = true;
                 mReusableBitmap.incrementInUse();
             } else {

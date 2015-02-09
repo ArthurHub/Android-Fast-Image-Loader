@@ -116,7 +116,7 @@ class ImageRequest {
      * the URL of the requested image with thumbor parameters
      */
     public String getEnhancedUri() {
-        return mSpec.getUriEnhancer().enhance(mUri, mSpec);
+        return mSpec.getImageServiceAdapter().convert(mUri, mSpec);
     }
 
     /**
@@ -209,7 +209,7 @@ class ImageRequest {
 
     private void filterValidTargets() {
         for (int i = mTargets.size() - 1; i >= 0; i--) {
-            boolean isValid = TextUtils.equals(mTargets.get(i).getUrl(), mUri);
+            boolean isValid = TextUtils.equals(mTargets.get(i).getUri(), mUri);
             if (!isValid) {
                 mTargets.remove(i);
             }

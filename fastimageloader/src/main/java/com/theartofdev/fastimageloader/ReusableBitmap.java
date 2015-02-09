@@ -20,33 +20,36 @@ import android.graphics.Bitmap;
 public interface ReusableBitmap {
 
     /**
-     * The actual bitmap
+     * The actual bitmap instance.
      */
     Bitmap getBitmap();
 
     /**
-     * the URL of the loaded image in the bitmap.
+     * the URI of the loaded image in the bitmap.<br/>
+     * Used to know if the target requested image has been changed.<br/>
      */
-    String getUrl();
+    String getUri();
 
     /**
-     * the spec the loaded image was loaded by
+     * the spec the loaded image was loaded by.
      */
     ImageLoadSpec getSpec();
 
     /**
-     * Is the bitmap is currently in use
+     * Is the bitmap is currently in use and cannot be reused.
      */
     boolean isInUse();
 
     /**
      * Increment the bitmap in use count by 1.<br/>
+     * Affects the {@link #isInUse()} to know if the bitmap can be reused.<br/>
      * Critical to call this method correctly.
      */
     void incrementInUse();
 
     /**
      * Decrement the bitmap in use count by 1.<br/>
+     * Affects the {@link #isInUse()} to know if the bitmap can be reused.<br/>
      * Critical to call this method correctly.
      */
     void decrementInUse();

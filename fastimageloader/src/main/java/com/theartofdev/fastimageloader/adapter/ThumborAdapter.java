@@ -13,15 +13,15 @@
 package com.theartofdev.fastimageloader.adapter;
 
 import com.theartofdev.fastimageloader.ImageLoadSpec;
-import com.theartofdev.fastimageloader.UriEnhancer;
+import com.theartofdev.fastimageloader.ImageServiceAdapter;
 import com.theartofdev.fastimageloader.impl.util.FILUtils;
 
 /**
- * URL enhancer for thumbor (http://thumbor.org/) service.<br/>
+ * thumbor image service (http://thumbor.org/) adapter.<br/>
  * Add image load specification into the path of the image URL.<br/>
  * Using Thumbor service URI to build new URI with the image URI as suffix.
  */
-public class ThumborUriEnhancer implements UriEnhancer {
+public class ThumborAdapter implements ImageServiceAdapter {
 
     //region: Fields and Consts
 
@@ -31,14 +31,14 @@ public class ThumborUriEnhancer implements UriEnhancer {
     private final String mBaseUri;
     //endregion
 
-    protected ThumborUriEnhancer() {
+    protected ThumborAdapter() {
         mBaseUri = null;
     }
 
     /**
      * @param baseUri the thumbor base URI
      */
-    public ThumborUriEnhancer(String baseUri) {
+    public ThumborAdapter(String baseUri) {
         FILUtils.notNullOrEmpty(baseUri, "baseUri");
 
         baseUri = baseUri.trim();
@@ -48,8 +48,8 @@ public class ThumborUriEnhancer implements UriEnhancer {
     }
 
     @Override
-    public String enhance(String url, ImageLoadSpec spec) {
-        return createUri(mBaseUri, url, spec);
+    public String convert(String uri, ImageLoadSpec spec) {
+        return createUri(mBaseUri, uri, spec);
     }
 
     /**

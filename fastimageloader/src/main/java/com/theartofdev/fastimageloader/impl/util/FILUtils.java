@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.util.Collection;
 
 /**
- * General utility methods.
+ * General utility methods for Fast Image Loader internal use only.
  */
 public final class FILUtils {
 

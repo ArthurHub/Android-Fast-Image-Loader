@@ -203,9 +203,9 @@ public class TargetDrawable extends Drawable {
         int height = getBounds().height();
 
         mDebugPaint.setColor(WHITE);
-        canvas.drawCircle(width / 2, height / 2, (int) (5 * FILUtils.density), mDebugPaint);
+        canvas.drawCircle(width / 2, height / 2, 12, mDebugPaint);
 
         mDebugPaint.setColor(mLoadedFrom == LoadedFrom.MEMORY ? GREEN : mLoadedFrom == LoadedFrom.DISK ? YELLOW : RED);
-        canvas.drawCircle(width / 2, height / 2, (int) (3 * FILUtils.density), mDebugPaint);
+        canvas.drawCircle(width / 2, height / 2, 12, mDebugPaint);
     }
 }

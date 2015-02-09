@@ -13,15 +13,15 @@
 package com.theartofdev.fastimageloader.adapter;
 
 import com.theartofdev.fastimageloader.ImageLoadSpec;
-import com.theartofdev.fastimageloader.UriEnhancer;
+import com.theartofdev.fastimageloader.ImageServiceAdapter;
 
 /**
- * URL enhancer that doesn't change the URI.
+ * Doesn't change the URI.
  */
-public class IdentityUriEnhancer implements UriEnhancer {
+public class IdentityAdapter implements ImageServiceAdapter {
 
     @Override
-    public String enhance(String url, ImageLoadSpec spec) {
-        return url;
+    public String convert(String uri, ImageLoadSpec spec) {
+        return uri;
     }
 }

@@ -15,22 +15,23 @@ package com.theartofdev.fastimageloader;
 /**
  * Represents an arbitrary listener for image loading.<br/>
  * Client will receive the raw instance of {@link com.theartofdev.fastimageloader.ReusableBitmap} and will
- * be responsible for setting its {@link com.theartofdev.fastimageloader.ReusableBitmap#incrementInUse()} and
- * {@link com.theartofdev.fastimageloader.ReusableBitmap#decrementInUse()} state correctly.
+ * be responsible for calling {@link com.theartofdev.fastimageloader.ReusableBitmap#incrementInUse()} and
+ * {@link com.theartofdev.fastimageloader.ReusableBitmap#decrementInUse()} correctly.
  * <p/>
- * Instances of this interface will used to determine the image to load by {@link #getUrl()} and the
+ * Instances of this interface will used to determine the image to load by {@link #getUri()} and the
  * specification to load the image by {@link #getSpecKey()}.<br/>
- * Those methods will also be used to cancel image load request it the returned value have been changed or nullified.
+ * Those methods will also be used to cancel image load request if the returned value of
+ * {@link #getUri()} has been changed or nullified.
  * <p/>
- * It is recommended that you add this interface directly on to a custom view type when using in an
- * adapter to ensure correct recycling behavior.
+ * <b>Note: </b> Prefer using {@link com.theartofdev.fastimageloader.target.TargetImageViewHandlerBase}, it
+ * implements most of the required functionality.
  */
 public interface Target {
 
     /**
-     * The URL source of the image
+     * The URI source of the image
      */
-    String getUrl();
+    String getUri();
 
     /**
      * the spec to load the image by

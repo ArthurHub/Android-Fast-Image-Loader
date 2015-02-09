@@ -167,7 +167,7 @@ public final class FastImageLoaderHandler implements DiskCache.Callback, Downloa
      */
     public void loadImage(Target target, ImageLoadSpec spec, ImageLoadSpec altSpec) {
         try {
-            String uri = target.getUrl();
+            String uri = target.getUri();
             if (!TextUtils.isEmpty(uri)) {
 
                 ReusableBitmapImpl image = mMemoryCache.get(uri, spec, altSpec);

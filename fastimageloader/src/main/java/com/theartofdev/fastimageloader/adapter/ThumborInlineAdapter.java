@@ -16,11 +16,11 @@ import com.theartofdev.fastimageloader.ImageLoadSpec;
 import com.theartofdev.fastimageloader.impl.util.FILUtils;
 
 /**
- * URL enhancer for thumbor (http://thumbor.org/) service.<br/>
+ * thumbor image service (http://thumbor.org/) adapter.<br/>
  * Add image load specification into the path of the image URL.<br/>
  * The image URI is already Thumbor URI, add Thumbor parameters in the middle of the URI.
  */
-public class ThumborInlineUriEnhancer extends ThumborUriEnhancer {
+public class ThumborInlineAdapter extends ThumborAdapter {
 
     /**
      * the path part that split the thumbor URI part from image part.
@@ -30,19 +30,19 @@ public class ThumborInlineUriEnhancer extends ThumborUriEnhancer {
     /**
      * @param pathPartSplit the path part that split the thumbor URI part from image part.
      */
-    public ThumborInlineUriEnhancer(String pathPartSplit) {
+    public ThumborInlineAdapter(String pathPartSplit) {
         FILUtils.notNullOrEmpty(pathPartSplit, "pathPartSplit");
         mPathPartSplit = pathPartSplit;
     }
 
     @Override
-    public String enhance(String url, ImageLoadSpec spec) {
-        int idx = url.indexOf(mPathPartSplit);
+    public String convert(String uri, ImageLoadSpec spec) {
+        int idx = uri.indexOf(mPathPartSplit);
         if (idx > -1) {
-            String thumborPart = url.substring(0, idx);
-            String imagePart = url.substring(idx + mPathPartSplit.length());
+            String thumborPart = uri.substring(0, idx);
+            String imagePart = uri.substring(idx + mPathPartSplit.length());
             return createUri(thumborPart, imagePart, spec);
         }
-        return url;
+        return uri;
     }
 }

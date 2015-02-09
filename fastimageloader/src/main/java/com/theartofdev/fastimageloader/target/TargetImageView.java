@@ -59,7 +59,7 @@ public class TargetImageView extends ImageView {
      * The URL source of the image
      */
     public String getUrl() {
-        return mHandler.getUrl();
+        return mHandler.getUri();
     }
 
     /**
