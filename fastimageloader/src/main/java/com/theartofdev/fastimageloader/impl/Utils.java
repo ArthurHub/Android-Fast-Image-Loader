@@ -17,6 +17,8 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.text.TextUtils;
 
+import com.theartofdev.fastimageloader.ImageLoadSpec;
+
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
@@ -51,6 +53,13 @@ public final class Utils {
      * the size of the device display
      */
     public static Point displaySize = new Point();
+
+    /**
+     * The unique key of the image URI with the given spec.
+     */
+    public static String getUriUniqueKey(ImageLoadSpec spec, String uri) {
+        return uri + "$" + spec.getKey();
+    }
 
     /**
      * Validate given argument isn't null.

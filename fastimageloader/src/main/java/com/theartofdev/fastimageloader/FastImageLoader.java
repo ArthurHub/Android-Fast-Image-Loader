@@ -21,6 +21,7 @@ import android.view.WindowManager;
 
 import com.squareup.okhttp.OkHttpClient;
 import com.theartofdev.fastimageloader.adapter.IdentityUriEnhancer;
+import com.theartofdev.fastimageloader.impl.FastImageLoaderHandler;
 import com.theartofdev.fastimageloader.impl.Logger;
 import com.theartofdev.fastimageloader.impl.Utils;
 

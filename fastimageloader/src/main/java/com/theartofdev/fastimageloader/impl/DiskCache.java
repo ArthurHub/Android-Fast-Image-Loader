@@ -10,7 +10,7 @@
 // - Sun Tsu,
 // "The Art of War"
 
-package com.theartofdev.fastimageloader;
+package com.theartofdev.fastimageloader.impl;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -19,8 +19,7 @@ import android.preference.PreferenceManager;
 import android.text.format.DateUtils;
 
 import com.squareup.okhttp.internal.Util;
-import com.theartofdev.fastimageloader.impl.Logger;
-import com.theartofdev.fastimageloader.impl.Utils;
+import com.theartofdev.fastimageloader.ImageLoadSpec;
 
 import java.io.File;
 import java.text.NumberFormat;

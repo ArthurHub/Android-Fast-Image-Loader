@@ -10,9 +10,12 @@
 // - Sun Tsu,
 // "The Art of War"
 
-package com.theartofdev.fastimageloader;
+package com.theartofdev.fastimageloader.impl;
 
 import android.text.TextUtils;
+
+import com.theartofdev.fastimageloader.ImageLoadSpec;
+import com.theartofdev.fastimageloader.Target;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -98,7 +101,7 @@ class ImageRequest {
      * The unique key of the image request.
      */
     String getUniqueKey() {
-        return mSpec.getUriUniqueKey(mUri);
+        return Utils.getUriUniqueKey(mSpec, mUri);
     }
 
     /**

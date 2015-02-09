@@ -123,13 +123,6 @@ public final class ImageLoadSpec {
         return mWidth > 0 && mHeight > 0;
     }
 
-    /**
-     * The unique key of the image URI with the given spec.
-     */
-    String getUriUniqueKey(String uri) {
-        return uri + "$" + mKey;
-    }
-
     @Override
     public String toString() {
         return "ImageLoadSpec{" +

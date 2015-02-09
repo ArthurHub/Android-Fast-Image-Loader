@@ -10,7 +10,7 @@
 // - Sun Tsu,
 // "The Art of War"
 
-package com.theartofdev.fastimageloader;
+package com.theartofdev.fastimageloader.impl;
 
 import android.app.Application;
 import android.content.ComponentCallbacks2;
@@ -19,8 +19,9 @@ import android.os.Handler;
 import android.text.TextUtils;
 
 import com.squareup.okhttp.OkHttpClient;
-import com.theartofdev.fastimageloader.impl.Logger;
-import com.theartofdev.fastimageloader.impl.Utils;
+import com.theartofdev.fastimageloader.ImageLoadSpec;
+import com.theartofdev.fastimageloader.LoadedFrom;
+import com.theartofdev.fastimageloader.Target;
 
 import java.io.File;
 import java.util.HashMap;
@@ -29,7 +30,7 @@ import java.util.Map;
 /**
  * Handler for image loading using memory/disk cache and other features.
  */
-final class FastImageLoaderHandler implements DiskCache.Callback, Downloader.Callback, ComponentCallbacks2 {
+public final class FastImageLoaderHandler implements DiskCache.Callback, Downloader.Callback, ComponentCallbacks2 {
 
     //region: Fields and Consts
 
@@ -139,7 +140,7 @@ final class FastImageLoaderHandler implements DiskCache.Callback, Downloader.Cal
      */
     public void prefetchImage(String uri, ImageLoadSpec spec) {
         try {
-            String imageKey = spec.getUriUniqueKey(uri);
+            String imageKey = Utils.getUriUniqueKey(spec, uri);
             ImageRequest request = mLoadingRequests.get(imageKey);
             if (request == null) {
                 File file = mDiskHandler.getCacheFile(uri, spec);
@@ -177,7 +178,7 @@ final class FastImageLoaderHandler implements DiskCache.Callback, Downloader.Cal
 
                 // not found or loaded alternative spec
                 if (image == null || image.getSpec() != spec) {
-                    String imageKey = spec.getUriUniqueKey(uri);
+                    String imageKey = Utils.getUriUniqueKey(spec, uri);
                     ImageRequest request = mLoadingRequests.get(imageKey);
                     if (request != null) {
                         Logger.debug("Memory cache miss, image already requested, add target to request... [{}] [{}]", request, target);
