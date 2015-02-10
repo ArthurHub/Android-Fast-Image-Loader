@@ -16,6 +16,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 import com.theartofdev.fastimageloader.ImageLoadSpec;
+import com.theartofdev.fastimageloader.MemoryPool;
 import com.theartofdev.fastimageloader.ReusableBitmap;
 import com.theartofdev.fastimageloader.impl.util.FILLogger;
 import com.theartofdev.fastimageloader.impl.util.FILUtils;
@@ -33,7 +34,7 @@ final class DiskHandler {
     /**
      * Handler for bitmap recycling, holds recycled bitmaps by dimension key to be used later.
      */
-    private final com.theartofdev.fastimageloader.MemoryCachePool mBitmapRecycler;
+    private final MemoryPool mBitmapPool;
 
     /**
      * Used to reuse bitmaps on image loading from disk
@@ -46,8 +47,8 @@ final class DiskHandler {
     private File mCacheFolder;
     //endregion
 
-    DiskHandler(com.theartofdev.fastimageloader.MemoryCachePool bitmapRecycler, File cacheFolder) {
-        mBitmapRecycler = bitmapRecycler;
+    DiskHandler(MemoryPool bitmapPool, File cacheFolder) {
+        mBitmapPool = bitmapPool;
         mCacheFolder = cacheFolder;
 
         mOptions = new BitmapFactory.Options();
@@ -89,7 +90,7 @@ final class DiskHandler {
             //noinspection ResultOfMethodCallIgnored
             file.setLastModified(System.currentTimeMillis());
 
-            ReusableBitmap bitmap = mBitmapRecycler.getUnused(spec);
+            ReusableBitmap bitmap = mBitmapPool.getUnused(spec);
             mOptions.inBitmap = bitmap != null ? bitmap.getBitmap() : null;
             mOptions.inPreferredConfig = spec.getPixelConfig();
 
@@ -101,7 +102,7 @@ final class DiskHandler {
                 if (bitmap != null) {
                     if (rawBitmap != bitmap.getBitmap()) {
                         // failed to use recycled bitmap, return it
-                        mBitmapRecycler.returnUnused(bitmap);
+                        mBitmapPool.returnUnused(bitmap);
                         bitmap = null;
                     } else {
                         imageRequest.setBitmap(bitmap);
@@ -115,7 +116,7 @@ final class DiskHandler {
             } else {
                 FILLogger.critical("Failed to load image from cache [{}] [{}]", imageRequest, bitmap);
                 if (bitmap != null) {
-                    mBitmapRecycler.returnUnused(bitmap);
+                    mBitmapPool.returnUnused(bitmap);
                     bitmap = null;
                 }
             }

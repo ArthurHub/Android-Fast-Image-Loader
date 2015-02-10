@@ -34,7 +34,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Disk cache for image handler.<br/>
  */
-final class DiskCache {
+public class DiskCacheImpl implements com.theartofdev.fastimageloader.DiskCache {
 
     //region: Fields and Consts
 
@@ -94,11 +94,6 @@ final class DiskCache {
     private final DiskHandler mDiskHandler;
 
     /**
-     * The callback to execute on async requests to the cache
-     */
-    private final Callback mCallback;
-
-    /**
      * The time of the last cache check
      */
     private long mLastCacheScanTime = -1;
@@ -113,18 +108,15 @@ final class DiskCache {
      * @param context the application object to read config stuff
      * @param handler Used to post execution to main thread.
      * @param diskHandler Used to load images from the disk.
-     * @param callback The callback to execute on async requests to the cache
      */
-    public DiskCache(Context context, Handler handler, DiskHandler diskHandler, Callback callback) {
+    public DiskCacheImpl(Context context, Handler handler, DiskHandler diskHandler) {
         FILUtils.notNull(context, "context");
         FILUtils.notNull(handler, "handler");
         FILUtils.notNull(diskHandler, "diskHandler");
-        FILUtils.notNull(callback, "callback");
 
         mHandler = handler;
         mContext = context;
         mDiskHandler = diskHandler;
-        mCallback = callback;
 
         mReadExecutorService = new ThreadPoolExecutor(0, 1, 60, TimeUnit.SECONDS,
                 new LinkedBlockingQueue<Runnable>(), Util.threadFactory("ImageCacheRead", true));
@@ -133,12 +125,8 @@ final class DiskCache {
                 new LinkedBlockingQueue<Runnable>(), Util.threadFactory("ImageCacheScan", true));
     }
 
-    /**
-     * Get disk cached image for the given request.<br/>
-     * If the image is NOT in the cache the callback will be executed immediately.<br/>
-     * If the image is in cache an async operation will load the image from disk and then execute the callback.
-     */
-    public void getAsync(final ImageRequest imageRequest, final ImageLoadSpec altSpec) {
+    @Override
+    public void getAsync(final ImageRequest imageRequest, final ImageLoadSpec altSpec, final Callback callback) {
         File altFile = null;
         boolean exists = imageRequest.getFile().exists();
         if (!exists && altSpec != null) {
@@ -161,19 +149,20 @@ final class DiskCache {
                     mHandler.post(new Runnable() {
                         @Override
                         public void run() {
-                            mCallback.loadImageDiskCacheCallback(imageRequest, finalCanceled);
+                            callback.loadImageDiskCacheCallback(imageRequest, finalCanceled);
                         }
                     });
                 }
             });
         } else {
-            mCallback.loadImageDiskCacheCallback(imageRequest, false);
+            callback.loadImageDiskCacheCallback(imageRequest, false);
         }
     }
 
     /**
      * Image added to disk cache, update the disk cache.
      */
+    @Override
     public void imageAdded(long size) {
         mCurrentCacheSize += size;
         if (mLastCacheScanTime < 1 || mLastCacheScanTime + SCAN_INTERVAL < System.currentTimeMillis() || mCurrentCacheSize > MAX_SIZE) {
@@ -189,6 +178,7 @@ final class DiskCache {
     /**
      * Clear all the cached files.
      */
+    @Override
     public void clear() {
         mReadExecutorService.execute(new Runnable() {
             @Override
@@ -334,7 +324,7 @@ final class DiskCache {
     /**
      * Callback for getting cached image.
      */
-    static interface Callback {
+    public static interface Callback {
 
         /**
          * Callback for getting cached image, if not cached will have null.

@@ -15,7 +15,7 @@ package com.theartofdev.fastimageloader;
 /**
  * TODO:a add doc
  */
-public interface MemoryCachePool {
+public interface MemoryPool {
 
     /**
      * Retrieve an image for the specified {@code url} and {@code spec}.<br/>

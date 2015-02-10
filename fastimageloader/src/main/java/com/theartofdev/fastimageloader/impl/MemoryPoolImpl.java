@@ -15,6 +15,7 @@ package com.theartofdev.fastimageloader.impl;
 import android.content.ComponentCallbacks2;
 
 import com.theartofdev.fastimageloader.ImageLoadSpec;
+import com.theartofdev.fastimageloader.MemoryPool;
 import com.theartofdev.fastimageloader.ReusableBitmap;
 import com.theartofdev.fastimageloader.impl.util.FILLogger;
 
@@ -29,7 +30,7 @@ import java.util.Map;
  * and small for smaller.<br/>
  * Caches may be evicted when memory pressure is detected.
  */
-final class MemoryCachePool implements com.theartofdev.fastimageloader.MemoryCachePool {
+public class MemoryPoolImpl implements MemoryPool {
 
     //region: Fields and Consts
 

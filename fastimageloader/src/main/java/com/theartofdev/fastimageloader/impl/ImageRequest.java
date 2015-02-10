@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Encapsulate
  */
-class ImageRequest {
+public class ImageRequest {
 
     //region: Fields and Consts
 
