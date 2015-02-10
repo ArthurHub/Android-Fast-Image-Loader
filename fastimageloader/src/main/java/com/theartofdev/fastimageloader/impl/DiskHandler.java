@@ -32,11 +32,6 @@ public class DiskHandler {
     //region: Fields and Consts
 
     /**
-     * Handler for bitmap recycling, holds recycled bitmaps by dimension key to be used later.
-     */
-    private final MemoryPool mBitmapPool;
-
-    /**
      * Used to reuse bitmaps on image loading from disk
      */
     private final BitmapFactory.Options mOptions;
@@ -47,8 +42,7 @@ public class DiskHandler {
     private File mCacheFolder;
     //endregion
 
-    public DiskHandler(MemoryPool bitmapPool, File cacheFolder) {
-        mBitmapPool = bitmapPool;
+    public DiskHandler(File cacheFolder) {
         mCacheFolder = cacheFolder;
 
         mOptions = new BitmapFactory.Options();
@@ -85,42 +79,45 @@ public class DiskHandler {
     /**
      * Load image from disk file on the current thread and set it in the image request object.
      */
-    public void decodeImageObject(ImageRequest imageRequest, File file, ImageLoadSpec spec) {
-        try {
-            //noinspection ResultOfMethodCallIgnored
-            file.setLastModified(System.currentTimeMillis());
+    public void decodeImageObject(MemoryPool memoryPool, ImageRequest imageRequest, File file, ImageLoadSpec spec) {
+        ReusableBitmap poolBitmap = memoryPool.getUnused(spec);
 
-            ReusableBitmap bitmap = mBitmapPool.getUnused(spec);
-            mOptions.inBitmap = bitmap != null ? bitmap.getBitmap() : null;
+        FILLogger.debug("Decode image from disk... [{}] [{}]", imageRequest, poolBitmap);
+        ReusableBitmap decodedBitmap = decodeImageObject(file, spec, poolBitmap);
+
+        if (decodedBitmap != null) {
+            imageRequest.setBitmap(decodedBitmap);
+        }
+
+        if (poolBitmap != null && poolBitmap != decodedBitmap) {
+            memoryPool.returnUnused(poolBitmap);
+        }
+    }
+
+    /**
+     * Load image from disk file on the current thread and set it in the image request object.
+     */
+    protected ReusableBitmap decodeImageObject(File file, ImageLoadSpec spec, ReusableBitmap poolBitmap) {
+        try {
+            mOptions.inBitmap = poolBitmap != null ? poolBitmap.getBitmap() : null;
             mOptions.inPreferredConfig = spec.getPixelConfig();
 
-            FILLogger.debug("Decode image from disk... [{}] [{}]", imageRequest, bitmap);
             Bitmap rawBitmap = BitmapFactory.decodeFile(file.getAbsolutePath(), mOptions);
-
-            // if cached bitmap was used the raw image will be null
             if (rawBitmap != null) {
-                if (bitmap != null) {
-                    if (rawBitmap != bitmap.getBitmap()) {
-                        // failed to use recycled bitmap, return it
-                        mBitmapPool.returnUnused(bitmap);
-                        bitmap = null;
-                    } else {
-                        imageRequest.setBitmap(bitmap);
-                    }
+                if (poolBitmap != null && poolBitmap.getBitmap() == rawBitmap) {
+                    // successful load of image into reusable bitmap
+                    return poolBitmap;
                 }
-                if (bitmap == null) {
-                    // create cached bitmap wrapper with new raw bitmap
-                    bitmap = new ReusableBitmap(rawBitmap, spec);
-                    imageRequest.setBitmap(bitmap);
-                }
+
+                FILLogger.debug("Create new reusable bitmap... [{}]", spec);
+                return new ReusableBitmap(rawBitmap, spec);
             } else {
-                FILLogger.critical("Failed to load image from cache [{}] [{}]", imageRequest, bitmap);
-                if (bitmap != null) {
-                    mBitmapPool.returnUnused(bitmap);
-                }
+                FILLogger.critical("Failed to load image from cache [{}] [{}] [{}]", file, spec, poolBitmap);
+                return null;
             }
         } catch (Throwable e) {
-            FILLogger.warn("Failed to load disk cached image [{}]", e, imageRequest);
+            FILLogger.warn("Failed to load disk cached image [{}] [{}] [{}]", e, file, spec, poolBitmap);
+            return null;
         }
     }
 }

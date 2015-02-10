@@ -19,6 +19,7 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import com.squareup.okhttp.internal.Util;
+import com.theartofdev.fastimageloader.MemoryPool;
 import com.theartofdev.fastimageloader.impl.util.FILLogger;
 import com.theartofdev.fastimageloader.impl.util.FILUtils;
 
@@ -69,6 +70,8 @@ public final class DownloaderImpl implements com.theartofdev.fastimageloader.Dow
      * the buffers used to download image
      */
     private final byte[][] mBuffers = new byte[4][];
+
+    private MemoryPool mMemoryPool;
     //endregion
 
     /**
@@ -76,11 +79,13 @@ public final class DownloaderImpl implements com.theartofdev.fastimageloader.Dow
      * @param client the OkHttp client to use to download the images.
      * @param diskHandler Handler for loading image bitmap object from file on disk.
      */
-    public DownloaderImpl(Context context, OkHttpClient client, DiskHandler diskHandler) {
+    public DownloaderImpl(Context context, OkHttpClient client, MemoryPool memoryPool, DiskHandler diskHandler) {
         FILUtils.notNull(client, "client");
+        FILUtils.notNull(memoryPool, "memoryPool");
         FILUtils.notNull(diskHandler, "imageLoader");
 
         mClient = client;
+        mMemoryPool = memoryPool;
         mDiskHandler = diskHandler;
 
         mHandler = new Handler(context.getMainLooper());
@@ -169,7 +174,7 @@ public final class DownloaderImpl implements com.theartofdev.fastimageloader.Dow
             if (!canceled) {
                 canceled = false;
                 if (!imageRequest.isPrefetch()) {
-                    mDiskHandler.decodeImageObject(imageRequest, imageRequest.getFile(), imageRequest.getSpec());
+                    mDiskHandler.decodeImageObject(mMemoryPool, imageRequest, imageRequest.getFile(), imageRequest.getSpec());
                 }
             }
         }

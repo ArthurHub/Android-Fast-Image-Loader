@@ -20,6 +20,7 @@ import android.text.format.DateUtils;
 
 import com.squareup.okhttp.internal.Util;
 import com.theartofdev.fastimageloader.ImageLoadSpec;
+import com.theartofdev.fastimageloader.MemoryPool;
 import com.theartofdev.fastimageloader.impl.util.FILLogger;
 import com.theartofdev.fastimageloader.impl.util.FILUtils;
 
@@ -102,17 +103,21 @@ public class DiskCacheImpl implements com.theartofdev.fastimageloader.DiskCache 
      * the current size of the cache
      */
     private long mCurrentCacheSize;
+
+    private MemoryPool mMemoryPool;
     //endregion
 
     /**
      * @param context the application object to read config stuff
      * @param diskHandler Used to load images from the disk.
      */
-    public DiskCacheImpl(Context context, DiskHandler diskHandler) {
+    public DiskCacheImpl(Context context, MemoryPool memoryPool, DiskHandler diskHandler) {
         FILUtils.notNull(context, "context");
+        FILUtils.notNull(memoryPool, "memoryPool");
         FILUtils.notNull(diskHandler, "diskHandler");
 
         mContext = context;
+        mMemoryPool = memoryPool;
         mDiskHandler = diskHandler;
 
         mHandler = new Handler(context.getMainLooper());
@@ -126,12 +131,14 @@ public class DiskCacheImpl implements com.theartofdev.fastimageloader.DiskCache 
 
     @Override
     public void getAsync(final ImageRequest imageRequest, final ImageLoadSpec altSpec, final Callback callback) {
+
         File altFile = null;
         boolean exists = imageRequest.getFile().exists();
         if (!exists && altSpec != null) {
             // if primary spec file doesn't exist in cache but alternative does, load it
             altFile = mDiskHandler.getCacheFile(imageRequest.getUri(), altSpec);
         }
+
         if (exists || (altFile != null && altFile.exists())) {
             // use the primary or the alternative file and spec to decode the image
             final File file = exists ? imageRequest.getFile() : altFile;
@@ -139,18 +146,7 @@ public class DiskCacheImpl implements com.theartofdev.fastimageloader.DiskCache 
             mReadExecutorService.execute(new Runnable() {
                 @Override
                 public void run() {
-                    boolean canceled = true;
-                    if (imageRequest.isValid()) {
-                        canceled = false;
-                        mDiskHandler.decodeImageObject(imageRequest, file, spec);
-                    }
-                    final boolean finalCanceled = canceled;
-                    mHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            callback.loadImageDiskCacheCallback(imageRequest, finalCanceled);
-                        }
-                    });
+                    loadImageFromCache(imageRequest, file, spec, callback);
                 }
             });
         } else {
@@ -223,9 +219,29 @@ public class DiskCacheImpl implements com.theartofdev.fastimageloader.DiskCache 
     //region: Private methods
 
     /**
+     * Load the given cached image file into reusable bitmap, post result on given callback.<br/>
+     * This method is executed on a dedicated separate thread.
+     */
+    protected void loadImageFromCache(final ImageRequest imageRequest, File file, ImageLoadSpec spec, final Callback callback) {
+
+        final boolean canceled = !imageRequest.isValid();
+        if (!canceled) {
+            //noinspection ResultOfMethodCallIgnored
+            file.setLastModified(System.currentTimeMillis());
+            mDiskHandler.decodeImageObject(mMemoryPool, imageRequest, file, spec);
+        }
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                callback.loadImageDiskCacheCallback(imageRequest, canceled);
+            }
+        });
+    }
+
+    /**
      * Iterate over all the cached image files to delete LRU images.
      */
-    private void scanCache() {
+    protected void scanCache() {
         try {
             if (mLastCacheScanTime < 1) {
                 loadStats();
@@ -299,7 +315,7 @@ public class DiskCacheImpl implements com.theartofdev.fastimageloader.DiskCache 
      * Load stats used for cache operation: last cache scan, total cache size.<br/>
      * The states are persisted so cache scan won't happen unless really required.
      */
-    private void loadStats() {
+    protected void loadStats() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
         mLastCacheScanTime = prefs.getLong(STATS_LAST_SCAN, 0);
         mCurrentCacheSize += prefs.getLong(STATS_CACHE_SIZE, 0);
@@ -309,7 +325,7 @@ public class DiskCacheImpl implements com.theartofdev.fastimageloader.DiskCache 
      * Save stats used for cache operation: last cache scan, total cache size.<br/>
      * The states are persisted so cache scan won't happen unless really required.
      */
-    private void saveStats() {
+    protected void saveStats() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putLong(STATS_LAST_SCAN, mLastCacheScanTime);

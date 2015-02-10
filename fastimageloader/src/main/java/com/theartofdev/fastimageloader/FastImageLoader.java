@@ -308,12 +308,12 @@ public final class FastImageLoader {
                     mMemoryPool = new MemoryPoolImpl();
                 }
 
-                DiskHandler mDiskHandler = new DiskHandler(mMemoryPool, cacheFolder);
+                DiskHandler mDiskHandler = new DiskHandler(cacheFolder);
                 if (mDiskCache == null) {
-                    mDiskCache = new DiskCacheImpl(mApplication, mDiskHandler);
+                    mDiskCache = new DiskCacheImpl(mApplication, mMemoryPool, mDiskHandler);
                 }
                 if (mDownloader == null) {
-                    mDownloader = new DownloaderImpl(mApplication, mHttpClient, mDiskHandler);
+                    mDownloader = new DownloaderImpl(mApplication, mHttpClient, mMemoryPool, mDiskHandler);
                 }
 
                 INST.mLoaderHandler = new LoaderHandler(mApplication, mMemoryPool, mDiskCache, mDiskHandler, mDownloader);
