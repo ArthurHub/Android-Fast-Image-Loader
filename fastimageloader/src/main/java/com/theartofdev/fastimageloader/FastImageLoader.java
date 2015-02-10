@@ -21,7 +21,7 @@ import com.theartofdev.fastimageloader.adapter.IdentityAdapter;
 import com.theartofdev.fastimageloader.impl.FastImageLoaderHandler;
 import com.theartofdev.fastimageloader.impl.util.FILLogger;
 import com.theartofdev.fastimageloader.impl.util.FILUtils;
-import com.theartofdev.fastimageloader.target.TargetDrawable;
+import com.theartofdev.fastimageloader.target.TargetHelper;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -138,7 +138,7 @@ public final class FastImageLoader {
      * Is to show indicator if the image was loaded from MEMORY/DISK/NETWORK.
      */
     public FastImageLoader setDebugIndicator(boolean enable) {
-        TargetDrawable.debugIndicator = enable;
+        TargetHelper.debugIndicator = enable;
         return INST;
     }
 

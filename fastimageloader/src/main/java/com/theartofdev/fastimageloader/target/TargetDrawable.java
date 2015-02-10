@@ -18,17 +18,13 @@ import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
 import android.os.SystemClock;
 
 import com.theartofdev.fastimageloader.LoadedFrom;
 import com.theartofdev.fastimageloader.impl.util.FILUtils;
-
-import static android.graphics.Color.GREEN;
-import static android.graphics.Color.RED;
-import static android.graphics.Color.WHITE;
-import static android.graphics.Color.YELLOW;
 
 /**
  * Drawable used for loaded images with additional capabilities:<br/>
@@ -42,13 +38,6 @@ public class TargetDrawable extends Drawable {
     //region: Fields and Consts
 
     private static final float FADE_DURATION = 200f;
-
-    /**
-     * If to show indicator if the image was loaded from MEMORY/DISK/NETWORK.
-     */
-    public static boolean debugIndicator;
-
-    protected static Paint mDebugPaint;
 
     protected final Paint mPaint;
 
@@ -175,8 +164,9 @@ public class TargetDrawable extends Drawable {
             invalidateSelf();
         }
 
-        if (debugIndicator) {
-            drawDebugIndicator(canvas);
+        if (TargetHelper.debugIndicator) {
+            Rect bounds = getBounds();
+            TargetHelper.drawDebugIndicator(canvas, mLoadedFrom, bounds.width(), bounds.height());
         }
     }
 
@@ -184,33 +174,12 @@ public class TargetDrawable extends Drawable {
      * Draw the bitmap on the canvas either rounded or rectangular.
      */
     protected void drawBitmap(Canvas canvas) {
-        int width = getBounds().width();
-        int height = getBounds().height();
-        FILUtils.rectF.set(0, 0, width, height);
+        Rect bounds = getBounds();
+        FILUtils.rectF.set(0, 0, bounds.width(), bounds.height());
         if (mRounded) {
-            canvas.drawRoundRect(FILUtils.rectF, width / 2, height / 2, mPaint);
+            canvas.drawRoundRect(FILUtils.rectF, bounds.width() / 2, bounds.height() / 2, mPaint);
         } else {
             canvas.drawRect(FILUtils.rectF, mPaint);
         }
-    }
-
-    /**
-     * draw indicator on where the image was loaded from.<br/>
-     * Green - memory, Yellow - disk, Red - network.
-     */
-    protected void drawDebugIndicator(Canvas canvas) {
-        if (mDebugPaint == null) {
-            mDebugPaint = new Paint();
-            mDebugPaint.setAntiAlias(true);
-        }
-
-        int width = getBounds().width();
-        int height = getBounds().height();
-
-        mDebugPaint.setColor(WHITE);
-        canvas.drawCircle(width / 2, height / 2, 12, mDebugPaint);
-
-        mDebugPaint.setColor(mLoadedFrom == LoadedFrom.MEMORY ? GREEN : mLoadedFrom == LoadedFrom.DISK ? YELLOW : RED);
-        canvas.drawCircle(width / 2, height / 2, 12, mDebugPaint);
     }
 }
