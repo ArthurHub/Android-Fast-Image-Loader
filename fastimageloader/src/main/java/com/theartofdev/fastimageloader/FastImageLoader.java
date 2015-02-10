@@ -65,6 +65,21 @@ public final class FastImageLoader {
     private ImageServiceAdapter mImageServiceAdapter;
 
     /**
+     * the memory pool to use
+     */
+    private MemoryPool mMemoryPool;
+
+    /**
+     * the disk cache to use
+     */
+    private DiskCache mDiskCache;
+
+    /**
+     * the downloader to use
+     */
+    private Downloader mDownloader;
+
+    /**
      * The OK HTTP client to be used to download images
      */
     private OkHttpClient mHttpClient;
@@ -104,6 +119,27 @@ public final class FastImageLoader {
     public FastImageLoader setDefaultUriEnhancer(ImageServiceAdapter imageServiceAdapter) {
         mImageServiceAdapter = imageServiceAdapter;
         return INST;
+    }
+
+    /**
+     * Set the memory pool handler to be used.
+     */
+    public void setMemoryPool(MemoryPool memoryPool) {
+        mMemoryPool = memoryPool;
+    }
+
+    /**
+     * Set the disk cache handler to be used.
+     */
+    public void setDiskCache(DiskCache diskCache) {
+        mDiskCache = diskCache;
+    }
+
+    /**
+     * Set the downloader handler to be used.
+     */
+    public void setDownloader(Downloader downloader) {
+        mDownloader = downloader;
     }
 
     /**
@@ -268,12 +304,19 @@ public final class FastImageLoader {
                 //noinspection ResultOfMethodCallIgnored
                 cacheFolder.mkdirs();
 
-                MemoryPool memoryPool = new MemoryPoolImpl();
-                DiskHandler mDiskHandler = new DiskHandler(memoryPool, cacheFolder);
-                DiskCache diskCache = new DiskCacheImpl(mApplication, mDiskHandler);
-                Downloader downloader = new DownloaderImpl(mApplication, mHttpClient, mDiskHandler);
+                if (mMemoryPool == null) {
+                    mMemoryPool = new MemoryPoolImpl();
+                }
 
-                INST.mLoaderHandler = new LoaderHandler(mApplication, memoryPool, diskCache, mDiskHandler, downloader);
+                DiskHandler mDiskHandler = new DiskHandler(mMemoryPool, cacheFolder);
+                if (mDiskCache == null) {
+                    mDiskCache = new DiskCacheImpl(mApplication, mDiskHandler);
+                }
+                if (mDownloader == null) {
+                    mDownloader = new DownloaderImpl(mApplication, mHttpClient, mDiskHandler);
+                }
+
+                INST.mLoaderHandler = new LoaderHandler(mApplication, mMemoryPool, mDiskCache, mDiskHandler, mDownloader);
             } else {
                 throw new IllegalStateException("Fast Image Loader is NOT initialized, call init(...)");
             }
