@@ -27,7 +27,7 @@ import java.io.File;
  * Handler for loading image bitmap object from file on disk.<br/>
  * Load the bitmap so it can be re-used.<br/>
  */
-final class DiskHandler {
+public class DiskHandler {
 
     //region: Fields and Consts
 
@@ -47,7 +47,7 @@ final class DiskHandler {
     private File mCacheFolder;
     //endregion
 
-    DiskHandler(MemoryPool bitmapPool, File cacheFolder) {
+    public DiskHandler(MemoryPool bitmapPool, File cacheFolder) {
         mBitmapPool = bitmapPool;
         mCacheFolder = cacheFolder;
 

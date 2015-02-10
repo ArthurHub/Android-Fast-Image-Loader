@@ -184,9 +184,7 @@ public class MemoryPoolImpl implements MemoryPool {
 
     }
 
-    /**
-     * Handle trim memory event to release image caches on memory pressure.
-     */
+    @Override
     public void onTrimMemory(int level) {
         switch (level) {
             case ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN:

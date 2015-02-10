@@ -35,7 +35,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * TODO:a add doc
  */
-public final class DownloaderImpl {
+public final class DownloaderImpl implements com.theartofdev.fastimageloader.Downloader {
 
     //region: Fields and Consts
 
@@ -93,11 +93,7 @@ public final class DownloaderImpl {
         mPrefetchExecutor.allowCoreThreadTimeOut(true);
     }
 
-    /**
-     * Download
-     *
-     * @param callback The callback to execute on async requests to the downloader
-     */
+    @Override
     public void downloadAsync(final ImageRequest imageRequest, final boolean prefetch, final Callback callback) {
         Executor executor = prefetch ? mPrefetchExecutor : mExecutor;
         executor.execute(new Runnable() {
@@ -269,7 +265,7 @@ public final class DownloaderImpl {
     /**
      * Callback for getting cached image.
      */
-    static interface Callback {
+    public static interface Callback {
 
         /**
          * Callback for getting cached image, if not cached will have null.

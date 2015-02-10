@@ -15,13 +15,13 @@ package com.theartofdev.fastimageloader.impl;
 import android.app.Application;
 import android.content.ComponentCallbacks2;
 import android.content.res.Configuration;
-import android.os.Handler;
 import android.text.TextUtils;
 
-import com.squareup.okhttp.OkHttpClient;
 import com.theartofdev.fastimageloader.DiskCache;
+import com.theartofdev.fastimageloader.Downloader;
 import com.theartofdev.fastimageloader.ImageLoadSpec;
 import com.theartofdev.fastimageloader.LoadedFrom;
+import com.theartofdev.fastimageloader.MemoryPool;
 import com.theartofdev.fastimageloader.ReusableBitmap;
 import com.theartofdev.fastimageloader.Target;
 import com.theartofdev.fastimageloader.impl.util.FILLogger;
@@ -46,7 +46,7 @@ public final class LoaderHandler implements DiskCacheImpl.Callback, DownloaderIm
     /**
      * Memory cache for images loaded
      */
-    private final MemoryPoolImpl mMemoryCache;
+    private final MemoryPool mMemoryPool;
 
     /**
      * Disk cache for images loaded
@@ -56,7 +56,7 @@ public final class LoaderHandler implements DiskCacheImpl.Callback, DownloaderIm
     /**
      * Downloader to download images from the web
      */
-    private final DownloaderImpl mDownloader;
+    private final Downloader mDownloader;
 
     /**
      * Handler for loading image from disk
@@ -96,23 +96,18 @@ public final class LoaderHandler implements DiskCacheImpl.Callback, DownloaderIm
 
     /**
      * Init.
-     *
-     * @param client the OkHttp client to use to download the images.
      */
-    public LoaderHandler(Application application, OkHttpClient client) {
+    public LoaderHandler(Application application, MemoryPool memoryPool, DiskCache diskCache, DiskHandler diskHandler, Downloader downloader) {
+        FILUtils.notNull(application, "application");
+        FILUtils.notNull(memoryPool, "memoryPool");
+        FILUtils.notNull(diskCache, "diskCache");
+        FILUtils.notNull(diskHandler, "diskHandler");
+        FILUtils.notNull(downloader, "downloader");
 
-        File cacheFolder = new File(FILUtils.pathCombine(application.getCacheDir().getPath(), "ImageCache"));
-
-        //noinspection ResultOfMethodCallIgnored
-        cacheFolder.mkdirs();
-
-        mMemoryCache = new MemoryPoolImpl();
-
-        Handler handler = new Handler();
-        mDiskHandler = new DiskHandler(mMemoryCache, cacheFolder);
-        mDiskCache = new DiskCacheImpl(application, handler, mDiskHandler);
-
-        mDownloader = new DownloaderImpl(client, handler, mDiskHandler);
+        mMemoryPool = memoryPool;
+        mDiskCache = diskCache;
+        mDiskHandler = diskHandler;
+        mDownloader = downloader;
 
         application.registerComponentCallbacks(this);
     }
@@ -131,7 +126,7 @@ public final class LoaderHandler implements DiskCacheImpl.Callback, DownloaderIm
         sb.append("Network Requests: ").append(mNetworkRequests).append('\n');
         sb.append("Network Loaded: ").append(mNetworkLoads).append('\n');
         sb.append('\n');
-        mMemoryCache.report(sb);
+        //mMemoryPool.report(sb);
         sb.append('\n');
         //mDiskCache.report(sb);
         return sb.toString();
@@ -173,7 +168,7 @@ public final class LoaderHandler implements DiskCacheImpl.Callback, DownloaderIm
             String uri = target.getUri();
             if (!TextUtils.isEmpty(uri)) {
 
-                ReusableBitmap image = mMemoryCache.get(uri, spec, altSpec);
+                ReusableBitmap image = mMemoryPool.get(uri, spec, altSpec);
                 if (image != null) {
                     mMemoryHits++;
                     if (image.getSpec() != spec)
@@ -230,7 +225,7 @@ public final class LoaderHandler implements DiskCacheImpl.Callback, DownloaderIm
 
             if (loaded) {
                 // if image object was loaded - add it to memory cache
-                mMemoryCache.set(imageRequest.getBitmap());
+                mMemoryPool.set(imageRequest.getBitmap());
             }
 
             if (imageRequest.isValid()) {
@@ -284,7 +279,7 @@ public final class LoaderHandler implements DiskCacheImpl.Callback, DownloaderIm
 
             // if image object was loaded - add it to memory cache
             if (imageRequest.getBitmap() != null) {
-                mMemoryCache.set(imageRequest.getBitmap());
+                mMemoryPool.set(imageRequest.getBitmap());
             }
 
             // request are valid if there is target or prefetch, but here we don't care for prefetch
@@ -318,7 +313,7 @@ public final class LoaderHandler implements DiskCacheImpl.Callback, DownloaderIm
 
     @Override
     public void onTrimMemory(int level) {
-        mMemoryCache.onTrimMemory(level);
+        mMemoryPool.onTrimMemory(level);
     }
 
     @Override
@@ -328,7 +323,7 @@ public final class LoaderHandler implements DiskCacheImpl.Callback, DownloaderIm
 
     @Override
     public void onLowMemory() {
-        mMemoryCache.onTrimMemory(0);
+        mMemoryPool.onTrimMemory(0);
     }
     //endregion
 }

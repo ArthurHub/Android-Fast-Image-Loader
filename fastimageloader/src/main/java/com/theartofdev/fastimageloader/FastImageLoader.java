@@ -13,16 +13,22 @@
 package com.theartofdev.fastimageloader;
 
 import android.app.Application;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 
 import com.squareup.okhttp.OkHttpClient;
 import com.theartofdev.fastimageloader.adapter.IdentityAdapter;
+import com.theartofdev.fastimageloader.impl.DiskCacheImpl;
+import com.theartofdev.fastimageloader.impl.DiskHandler;
+import com.theartofdev.fastimageloader.impl.DownloaderImpl;
 import com.theartofdev.fastimageloader.impl.LoaderHandler;
+import com.theartofdev.fastimageloader.impl.MemoryPoolImpl;
 import com.theartofdev.fastimageloader.impl.util.FILLogger;
 import com.theartofdev.fastimageloader.impl.util.FILUtils;
 import com.theartofdev.fastimageloader.target.TargetHelper;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -154,9 +160,8 @@ public final class FastImageLoader {
      */
     public static ImageLoadSpecBuilder buildSpec(String key) {
         FILUtils.notNullOrEmpty(key, "key");
-        if (INST.mLoaderHandler == null) {
-            finishInit();
-        }
+
+        INST.finishInit();
         if (INST.mSpecs.containsKey(key)) {
             throw new IllegalArgumentException("Spec with the same key already exists");
         }
@@ -183,9 +188,8 @@ public final class FastImageLoader {
     public static void prefetchImage(String uri, String specKey) {
         FILUtils.notNullOrEmpty(specKey, "specKey");
         if (!TextUtils.isEmpty(uri)) {
-            if (INST.mLoaderHandler == null) {
-                finishInit();
-            }
+
+            INST.finishInit();
             ImageLoadSpec spec = INST.mSpecs.get(specKey);
             if (spec == null) {
                 throw new IllegalArgumentException("Invalid spec key, no spec defined for the given key: " + specKey);
@@ -209,9 +213,8 @@ public final class FastImageLoader {
      */
     public static void loadImage(Target target, String altSpecKey) {
         FILUtils.notNull(target, "target");
-        if (INST.mLoaderHandler == null) {
-            finishInit();
-        }
+
+        INST.finishInit();
         ImageLoadSpec spec = INST.mSpecs.get(target.getSpecKey());
         ImageLoadSpec altSpec = altSpecKey != null ? INST.mSpecs.get(altSpecKey) : null;
         if (spec == null) {
@@ -231,9 +234,7 @@ public final class FastImageLoader {
      * @throws IllegalStateException NOT initialized.
      */
     public static void clearDiskCache() {
-        if (INST.mLoaderHandler == null) {
-            finishInit();
-        }
+        INST.finishInit();
         INST.mLoaderHandler.clearDiskCache();
     }
 
@@ -251,19 +252,33 @@ public final class FastImageLoader {
      *
      * @throws IllegalStateException NOT initialized.
      */
-    private static void finishInit() {
-        if (INST.mApplication != null) {
-            if (INST.mHttpClient == null) {
-                INST.mHttpClient = new OkHttpClient();
-                INST.mHttpClient.setConnectTimeout(10, TimeUnit.SECONDS);
-                INST.mHttpClient.setReadTimeout(15, TimeUnit.SECONDS);
+    private void finishInit() {
+        if (INST.mLoaderHandler == null) {
+            if (INST.mApplication != null) {
+                if (INST.mHttpClient == null) {
+                    INST.mHttpClient = new OkHttpClient();
+                    INST.mHttpClient.setConnectTimeout(10, TimeUnit.SECONDS);
+                    INST.mHttpClient.setReadTimeout(15, TimeUnit.SECONDS);
+                }
+                if (INST.mImageServiceAdapter == null) {
+                    INST.mImageServiceAdapter = new IdentityAdapter();
+                }
+
+                File cacheFolder = new File(FILUtils.pathCombine(mApplication.getCacheDir().getPath(), "ImageCache"));
+
+                //noinspection ResultOfMethodCallIgnored
+                cacheFolder.mkdirs();
+
+                Handler handler = new Handler();
+                MemoryPool memoryPool = new MemoryPoolImpl();
+                DiskHandler mDiskHandler = new DiskHandler(memoryPool, cacheFolder);
+                DiskCache diskCache = new DiskCacheImpl(mApplication, handler, mDiskHandler);
+                Downloader downloader = new DownloaderImpl(mHttpClient, handler, mDiskHandler);
+
+                INST.mLoaderHandler = new LoaderHandler(mApplication, memoryPool, diskCache, mDiskHandler, downloader);
+            } else {
+                throw new IllegalStateException("Fast Image Loader is NOT initialized, call init(...)");
             }
-            if (INST.mImageServiceAdapter == null) {
-                INST.mImageServiceAdapter = new IdentityAdapter();
-            }
-            INST.mLoaderHandler = new LoaderHandler(INST.mApplication, INST.mHttpClient);
-        } else {
-            throw new IllegalStateException("Fast Image Loader is NOT initialized, call init(...)");
         }
     }
     //endregion

@@ -42,4 +42,9 @@ public interface MemoryPool {
      * Clears the cache/pool.
      */
     void clear();
+
+    /**
+     * Handle trim memory event to release image caches on memory pressure.
+     */
+    void onTrimMemory(int level);
 }
