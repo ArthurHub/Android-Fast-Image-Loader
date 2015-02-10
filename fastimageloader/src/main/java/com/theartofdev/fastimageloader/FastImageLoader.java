@@ -18,8 +18,8 @@ import android.util.Log;
 
 import com.squareup.okhttp.OkHttpClient;
 import com.theartofdev.fastimageloader.adapter.IdentityAdapter;
+import com.theartofdev.fastimageloader.impl.DecoderImpl;
 import com.theartofdev.fastimageloader.impl.DiskCacheImpl;
-import com.theartofdev.fastimageloader.impl.DiskHandler;
 import com.theartofdev.fastimageloader.impl.DownloaderImpl;
 import com.theartofdev.fastimageloader.impl.LoaderHandler;
 import com.theartofdev.fastimageloader.impl.MemoryPoolImpl;
@@ -63,6 +63,11 @@ public final class FastImageLoader {
      * used to convert image URI by spec for image service (Thumbor\imgIX\etc.)
      */
     private ImageServiceAdapter mImageServiceAdapter;
+
+    /**
+     * the decoder to use
+     */
+    private Decoder mDecoder;
 
     /**
      * the memory pool to use
@@ -119,6 +124,13 @@ public final class FastImageLoader {
     public FastImageLoader setDefaultUriEnhancer(ImageServiceAdapter imageServiceAdapter) {
         mImageServiceAdapter = imageServiceAdapter;
         return INST;
+    }
+
+    /**
+     * Set the decoder handler to be used.
+     */
+    public void setDecoder(Decoder decoder) {
+        mDecoder = decoder;
     }
 
     /**
@@ -301,22 +313,20 @@ public final class FastImageLoader {
 
                 File cacheFolder = new File(FILUtils.pathCombine(mApplication.getCacheDir().getPath(), "ImageCache"));
 
-                //noinspection ResultOfMethodCallIgnored
-                cacheFolder.mkdirs();
-
                 if (mMemoryPool == null) {
                     mMemoryPool = new MemoryPoolImpl();
                 }
-
-                DiskHandler mDiskHandler = new DiskHandler(cacheFolder);
+                if (mDecoder == null) {
+                    mDecoder = new DecoderImpl();
+                }
                 if (mDiskCache == null) {
-                    mDiskCache = new DiskCacheImpl(mApplication, mMemoryPool, mDiskHandler);
+                    mDiskCache = new DiskCacheImpl(mApplication, cacheFolder, mMemoryPool, mDecoder);
                 }
                 if (mDownloader == null) {
-                    mDownloader = new DownloaderImpl(mApplication, mHttpClient, mMemoryPool, mDiskHandler);
+                    mDownloader = new DownloaderImpl(mApplication, mHttpClient, mMemoryPool, mDecoder);
                 }
 
-                INST.mLoaderHandler = new LoaderHandler(mApplication, mMemoryPool, mDiskCache, mDiskHandler, mDownloader);
+                INST.mLoaderHandler = new LoaderHandler(mApplication, mMemoryPool, mDiskCache, mDownloader);
             } else {
                 throw new IllegalStateException("Fast Image Loader is NOT initialized, call init(...)");
             }

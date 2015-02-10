@@ -19,6 +19,7 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import com.squareup.okhttp.internal.Util;
+import com.theartofdev.fastimageloader.Decoder;
 import com.theartofdev.fastimageloader.MemoryPool;
 import com.theartofdev.fastimageloader.impl.util.FILLogger;
 import com.theartofdev.fastimageloader.impl.util.FILUtils;
@@ -54,7 +55,7 @@ public final class DownloaderImpl implements com.theartofdev.fastimageloader.Dow
     /**
      * Used to load images from the disk.
      */
-    private final DiskHandler mDiskHandler;
+    private final Decoder mDecoder;
 
     /**
      * Threads service for download operations.
@@ -77,16 +78,16 @@ public final class DownloaderImpl implements com.theartofdev.fastimageloader.Dow
     /**
      * @param context
      * @param client the OkHttp client to use to download the images.
-     * @param diskHandler Handler for loading image bitmap object from file on disk.
+     * @param decoder Handler for loading image bitmap object from file on disk.
      */
-    public DownloaderImpl(Context context, OkHttpClient client, MemoryPool memoryPool, DiskHandler diskHandler) {
+    public DownloaderImpl(Context context, OkHttpClient client, MemoryPool memoryPool, Decoder decoder) {
         FILUtils.notNull(client, "client");
         FILUtils.notNull(memoryPool, "memoryPool");
-        FILUtils.notNull(diskHandler, "imageLoader");
+        FILUtils.notNull(decoder, "imageLoader");
 
         mClient = client;
         mMemoryPool = memoryPool;
-        mDiskHandler = diskHandler;
+        mDecoder = decoder;
 
         mHandler = new Handler(context.getMainLooper());
 
@@ -174,7 +175,7 @@ public final class DownloaderImpl implements com.theartofdev.fastimageloader.Dow
             if (!canceled) {
                 canceled = false;
                 if (!imageRequest.isPrefetch()) {
-                    mDiskHandler.decodeImageObject(mMemoryPool, imageRequest, imageRequest.getFile(), imageRequest.getSpec());
+                    mDecoder.decode(mMemoryPool, imageRequest, imageRequest.getFile(), imageRequest.getSpec());
                 }
             }
         }

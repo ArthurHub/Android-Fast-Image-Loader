@@ -19,6 +19,7 @@ import android.preference.PreferenceManager;
 import android.text.format.DateUtils;
 
 import com.squareup.okhttp.internal.Util;
+import com.theartofdev.fastimageloader.Decoder;
 import com.theartofdev.fastimageloader.ImageLoadSpec;
 import com.theartofdev.fastimageloader.MemoryPool;
 import com.theartofdev.fastimageloader.impl.util.FILLogger;
@@ -42,57 +43,62 @@ public class DiskCacheImpl implements com.theartofdev.fastimageloader.DiskCache 
     /**
      * The key to persist stats last scan data
      */
-    private static final String STATS_LAST_SCAN = "DiskImageCache_lastCheck";
+    protected static final String STATS_LAST_SCAN = "DiskImageCache_lastCheck";
 
     /**
      * The key to persist stats cache size data
      */
-    private static final String STATS_CACHE_SIZE = "DiskImageCache_size";
+    protected static final String STATS_CACHE_SIZE = "DiskImageCache_size";
 
     /**
      * The max size of the cache (50MB)
      */
-    private static final long MAX_SIZE = 50 * 1024 * 1024;
+    protected static final long MAX_SIZE = 50 * 1024 * 1024;
 
     /**
      * The bound to delete cached data to this size
      */
-    private static final long MAX_SIZE_LOWER_BOUND = (long) (MAX_SIZE * .8);
+    protected static final long MAX_SIZE_LOWER_BOUND = (long) (MAX_SIZE * .8);
 
     /**
      * The max time image is cached without use before delete
      */
-    private static final long TTL = 8 * DateUtils.DAY_IN_MILLIS;
+    protected static final long TTL = 8 * DateUtils.DAY_IN_MILLIS;
 
     /**
      * The interval to execute cache scan even when max size has not reached
      */
-    private static final long SCAN_INTERVAL = 3 * DateUtils.DAY_IN_MILLIS;
+    protected static final long SCAN_INTERVAL = 3 * DateUtils.DAY_IN_MILLIS;
+
+    /**
+     * the folder that the image cached on disk are located
+     */
+    protected final File mCacheFolder;
 
     /**
      * Application context
      */
-    private final Context mContext;
+    protected final Context mContext;
 
     /**
      * Used to post execution to main thread.
      */
-    public final Handler mHandler;
+    protected final Handler mHandler;
 
     /**
      * Threads service for all read operations.
      */
-    private final ThreadPoolExecutor mReadExecutorService;
+    protected final ThreadPoolExecutor mReadExecutorService;
 
     /**
      * Threads service for scan of cached folder operation.
      */
-    private final ThreadPoolExecutor mScanExecutorService;
+    protected final ThreadPoolExecutor mScanExecutorService;
 
     /**
      * Used to load images from the disk.
      */
-    private final DiskHandler mDiskHandler;
+    protected final Decoder mDecoder;
 
     /**
      * The time of the last cache check
@@ -109,16 +115,20 @@ public class DiskCacheImpl implements com.theartofdev.fastimageloader.DiskCache 
 
     /**
      * @param context the application object to read config stuff
-     * @param diskHandler Used to load images from the disk.
+     * @param decoder Used to load images from the disk.
      */
-    public DiskCacheImpl(Context context, MemoryPool memoryPool, DiskHandler diskHandler) {
+    public DiskCacheImpl(Context context, File cacheFolder, MemoryPool memoryPool, Decoder decoder) {
         FILUtils.notNull(context, "context");
         FILUtils.notNull(memoryPool, "memoryPool");
-        FILUtils.notNull(diskHandler, "diskHandler");
+        FILUtils.notNull(decoder, "diskHandler");
 
         mContext = context;
+        mCacheFolder = cacheFolder;
         mMemoryPool = memoryPool;
-        mDiskHandler = diskHandler;
+        mDecoder = decoder;
+
+        //noinspection ResultOfMethodCallIgnored
+        mCacheFolder.mkdirs();
 
         mHandler = new Handler(context.getMainLooper());
 
@@ -130,13 +140,27 @@ public class DiskCacheImpl implements com.theartofdev.fastimageloader.DiskCache 
     }
 
     @Override
+    public File getCacheFile(String uri, ImageLoadSpec spec) {
+        int lastSlash = uri.lastIndexOf('/');
+        if (lastSlash == -1) {
+            return null;
+        }
+        String name = FILUtils.format("{}_{}_{}_{}",
+                Integer.toHexString(uri.substring(0, lastSlash).hashCode()),
+                Integer.toHexString(uri.substring(lastSlash + 1).hashCode()),
+                uri.substring(Math.max(lastSlash + 1, uri.length() - 10)),
+                spec.getKey());
+        return new File(FILUtils.pathCombine(mCacheFolder.getAbsolutePath(), name));
+    }
+
+    @Override
     public void getAsync(final ImageRequest imageRequest, final ImageLoadSpec altSpec, final Callback callback) {
 
         File altFile = null;
         boolean exists = imageRequest.getFile().exists();
         if (!exists && altSpec != null) {
             // if primary spec file doesn't exist in cache but alternative does, load it
-            altFile = mDiskHandler.getCacheFile(imageRequest.getUri(), altSpec);
+            altFile = getCacheFile(imageRequest.getUri(), altSpec);
         }
 
         if (exists || (altFile != null && altFile.exists())) {
@@ -178,10 +202,10 @@ public class DiskCacheImpl implements com.theartofdev.fastimageloader.DiskCache 
         mReadExecutorService.execute(new Runnable() {
             @Override
             public void run() {
-                String[] list = mDiskHandler.getCacheFolder().list();
+                String[] list = mCacheFolder.list();
                 for (String filePath : list) {
                     try {
-                        File file = new File(FILUtils.pathCombine(mDiskHandler.getCacheFolder().getAbsolutePath(), filePath));
+                        File file = new File(FILUtils.pathCombine(mCacheFolder.getAbsolutePath(), filePath));
                         //noinspection ResultOfMethodCallIgnored
                         file.delete();
                     } catch (Exception e) {
@@ -228,7 +252,7 @@ public class DiskCacheImpl implements com.theartofdev.fastimageloader.DiskCache 
         if (!canceled) {
             //noinspection ResultOfMethodCallIgnored
             file.setLastModified(System.currentTimeMillis());
-            mDiskHandler.decodeImageObject(mMemoryPool, imageRequest, file, spec);
+            mDecoder.decode(mMemoryPool, imageRequest, file, spec);
         }
         mHandler.post(new Runnable() {
             @Override
@@ -255,7 +279,7 @@ public class DiskCacheImpl implements com.theartofdev.fastimageloader.DiskCache 
                     int deleteByMaxSize = 0;
 
                     // iterate over all cached files, delete stale and calculate current cache size
-                    File[] allImages = mDiskHandler.getCacheFolder().listFiles();
+                    File[] allImages = mCacheFolder.listFiles();
                     for (int i = 0; i < allImages.length; i++) {
                         long fileSize = allImages[i].length();
                         totalSizeFull += fileSize;

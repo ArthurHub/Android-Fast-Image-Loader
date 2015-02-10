@@ -59,11 +59,6 @@ public final class LoaderHandler implements DiskCacheImpl.Callback, DownloaderIm
     private final Downloader mDownloader;
 
     /**
-     * Handler for loading image from disk
-     */
-    private final DiskHandler mDiskHandler;
-
-    /**
      * stats on the number of memory cache hits
      */
     private int mMemoryHits;
@@ -97,16 +92,14 @@ public final class LoaderHandler implements DiskCacheImpl.Callback, DownloaderIm
     /**
      * Init.
      */
-    public LoaderHandler(Application application, MemoryPool memoryPool, DiskCache diskCache, DiskHandler diskHandler, Downloader downloader) {
+    public LoaderHandler(Application application, MemoryPool memoryPool, DiskCache diskCache, Downloader downloader) {
         FILUtils.notNull(application, "application");
         FILUtils.notNull(memoryPool, "memoryPool");
         FILUtils.notNull(diskCache, "diskCache");
-        FILUtils.notNull(diskHandler, "diskHandler");
         FILUtils.notNull(downloader, "downloader");
 
         mMemoryPool = memoryPool;
         mDiskCache = diskCache;
-        mDiskHandler = diskHandler;
         mDownloader = downloader;
 
         application.registerComponentCallbacks(this);
@@ -143,7 +136,7 @@ public final class LoaderHandler implements DiskCacheImpl.Callback, DownloaderIm
             String imageKey = ImageRequest.getUriUniqueKey(spec, uri);
             ImageRequest request = mLoadingRequests.get(imageKey);
             if (request == null) {
-                File file = mDiskHandler.getCacheFile(uri, spec);
+                File file = mDiskCache.getCacheFile(uri, spec);
                 if (!file.exists()) {
                     request = new ImageRequest(uri, spec, file);
                     mLoadingRequests.put(imageKey, request);
@@ -187,7 +180,7 @@ public final class LoaderHandler implements DiskCacheImpl.Callback, DownloaderIm
                         }
                     } else {
                         // start async process of loading image from disk cache or network
-                        request = new ImageRequest(target, uri, spec, mDiskHandler.getCacheFile(uri, spec));
+                        request = new ImageRequest(target, uri, spec, mDiskCache.getCacheFile(uri, spec));
                         mLoadingRequests.put(imageKey, request);
 
                         FILLogger.debug("Memory cache miss, start request handling... [{}]", request);

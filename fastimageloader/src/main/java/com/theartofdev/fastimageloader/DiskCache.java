@@ -15,10 +15,20 @@ package com.theartofdev.fastimageloader;
 import com.theartofdev.fastimageloader.impl.DiskCacheImpl;
 import com.theartofdev.fastimageloader.impl.ImageRequest;
 
+import java.io.File;
+
 /**
  * TODO:a add doc
  */
 public interface DiskCache {
+
+    /**
+     * Gets the representation of the online uri on the local disk.
+     *
+     * @param uri The online image uri
+     * @return The path of the file on the disk
+     */
+    File getCacheFile(String uri, ImageLoadSpec spec);
 
     /**
      * Get disk cached image for the given request.<br/>
