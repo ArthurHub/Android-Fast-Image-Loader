@@ -117,12 +117,7 @@ public class DiskHandler {
                 FILLogger.critical("Failed to load image from cache [{}] [{}]", imageRequest, bitmap);
                 if (bitmap != null) {
                     mBitmapPool.returnUnused(bitmap);
-                    bitmap = null;
                 }
-            }
-
-            if (bitmap != null) {
-                bitmap.setUrl(imageRequest.getUri());
             }
         } catch (Throwable e) {
             FILLogger.warn("Failed to load disk cached image [{}]", e, imageRequest);

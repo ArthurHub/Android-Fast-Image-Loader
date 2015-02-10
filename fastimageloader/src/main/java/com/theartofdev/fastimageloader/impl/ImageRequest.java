@@ -165,11 +165,14 @@ public class ImageRequest {
      * the loaded image bitmap
      */
     public void setBitmap(ReusableBitmap bitmap) {
-        if (mBitmap != null)
+        if (mBitmap != null) {
             mBitmap.setInLoadUse(false);
+        }
         mBitmap = bitmap;
-        if (mBitmap != null)
+        if (mBitmap != null) {
             mBitmap.setInLoadUse(true);
+            mBitmap.setUrl(mUri);
+        }
     }
 
     /**
