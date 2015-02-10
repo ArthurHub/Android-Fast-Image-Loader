@@ -62,7 +62,12 @@ public final class FastImageLoader {
     /**
      * used to convert image URI by spec for image service (Thumbor\imgIX\etc.)
      */
-    private ImageServiceAdapter mImageServiceAdapter;
+    private ImageServiceAdapter mDefaultImageServiceAdapter;
+
+    /**
+     * The folder to use for disk caching.
+     */
+    private File mCacheFolder;
 
     /**
      * the decoder to use
@@ -100,7 +105,7 @@ public final class FastImageLoader {
      * Initialize the image loader with given android application context.<br/>
      * Image loader can be initialized only once where you can set all the configuration
      * properties:
-     * {@link #setDefaultUriEnhancer(ImageServiceAdapter)},
+     * {@link #setDefaultImageServiceAdapter(ImageServiceAdapter)},
      * {@link #setHttpClient(com.squareup.okhttp.OkHttpClient)},
      * {@link #setDebugIndicator(boolean)}.
      *
@@ -121,9 +126,17 @@ public final class FastImageLoader {
     /**
      * used to convert image URI by spec for image service (Thumbor\imgIX\etc.)
      */
-    public FastImageLoader setDefaultUriEnhancer(ImageServiceAdapter imageServiceAdapter) {
-        mImageServiceAdapter = imageServiceAdapter;
+    public FastImageLoader setDefaultImageServiceAdapter(ImageServiceAdapter imageServiceAdapter) {
+        mDefaultImageServiceAdapter = imageServiceAdapter;
         return INST;
+    }
+
+    /**
+     * Set the folder to use for disk caching.<br/>
+     * This setter is ignored if {@link #setDiskCache(DiskCache)} is used.
+     */
+    public void setCacheFolder(File cacheFolder) {
+        mCacheFolder = cacheFolder;
     }
 
     /**
@@ -156,6 +169,7 @@ public final class FastImageLoader {
 
     /**
      * The OK HTTP client to be used to download images
+     * This setter is ignored if {@link #setDownloader(Downloader)} is used.
      */
     public FastImageLoader setHttpClient(OkHttpClient httpClient) {
         mHttpClient = httpClient;
@@ -212,7 +226,7 @@ public final class FastImageLoader {
         if (INST.mSpecs.containsKey(key)) {
             throw new IllegalArgumentException("Spec with the same key already exists");
         }
-        return new ImageLoadSpecBuilder(key, INST.mApplication, INST.mImageServiceAdapter);
+        return new ImageLoadSpecBuilder(key, INST.mApplication, INST.mDefaultImageServiceAdapter);
     }
 
     /**
@@ -302,17 +316,9 @@ public final class FastImageLoader {
     private void finishInit() {
         if (INST.mLoaderHandler == null) {
             if (INST.mApplication != null) {
-                if (INST.mHttpClient == null) {
-                    INST.mHttpClient = new OkHttpClient();
-                    INST.mHttpClient.setConnectTimeout(10, TimeUnit.SECONDS);
-                    INST.mHttpClient.setReadTimeout(15, TimeUnit.SECONDS);
+                if (INST.mDefaultImageServiceAdapter == null) {
+                    INST.mDefaultImageServiceAdapter = new IdentityAdapter();
                 }
-                if (INST.mImageServiceAdapter == null) {
-                    INST.mImageServiceAdapter = new IdentityAdapter();
-                }
-
-                File cacheFolder = new File(FILUtils.pathCombine(mApplication.getCacheDir().getPath(), "ImageCache"));
-
                 if (mMemoryPool == null) {
                     mMemoryPool = new MemoryPoolImpl();
                 }
@@ -320,12 +326,19 @@ public final class FastImageLoader {
                     mDecoder = new DecoderImpl();
                 }
                 if (mDiskCache == null) {
-                    mDiskCache = new DiskCacheImpl(mApplication, cacheFolder, mMemoryPool, mDecoder);
+                    if (mCacheFolder == null) {
+                        mCacheFolder = new File(FILUtils.pathCombine(mApplication.getCacheDir().getPath(), "ImageCache"));
+                    }
+                    mDiskCache = new DiskCacheImpl(mApplication, mCacheFolder, mMemoryPool, mDecoder);
                 }
                 if (mDownloader == null) {
+                    if (INST.mHttpClient == null) {
+                        INST.mHttpClient = new OkHttpClient();
+                        INST.mHttpClient.setConnectTimeout(10, TimeUnit.SECONDS);
+                        INST.mHttpClient.setReadTimeout(15, TimeUnit.SECONDS);
+                    }
                     mDownloader = new DownloaderImpl(mApplication, mHttpClient, mMemoryPool, mDecoder);
                 }
-
                 INST.mLoaderHandler = new LoaderHandler(mApplication, mMemoryPool, mDiskCache, mDownloader);
             } else {
                 throw new IllegalStateException("Fast Image Loader is NOT initialized, call init(...)");

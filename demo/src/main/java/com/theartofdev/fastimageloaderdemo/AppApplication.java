@@ -37,7 +37,7 @@ public class AppApplication extends Application {
 
         FastImageLoader
                 .init(this)
-                .setDefaultUriEnhancer(new ImgIXAdapter())
+                .setDefaultImageServiceAdapter(new ImgIXAdapter())
                 .setWriteLogsToLogcat(true)
                 .setLogLevel(Log.DEBUG)
                 .setDebugIndicator(true);
