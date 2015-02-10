@@ -15,6 +15,7 @@ package com.theartofdev.fastimageloader.impl;
 import android.text.TextUtils;
 
 import com.theartofdev.fastimageloader.ImageLoadSpec;
+import com.theartofdev.fastimageloader.ReusableBitmap;
 import com.theartofdev.fastimageloader.Target;
 
 import java.io.File;
@@ -58,7 +59,7 @@ class ImageRequest {
     /**
      * the loaded image bitmap
      */
-    private ReusableBitmapImpl mBitmap;
+    private ReusableBitmap mBitmap;
 
     /**
      * the target to load the image into
@@ -156,14 +157,14 @@ class ImageRequest {
     /**
      * the loaded image bitmap
      */
-    public ReusableBitmapImpl getBitmap() {
+    public ReusableBitmap getBitmap() {
         return mBitmap;
     }
 
     /**
      * the loaded image bitmap
      */
-    public void setBitmap(ReusableBitmapImpl bitmap) {
+    public void setBitmap(ReusableBitmap bitmap) {
         if (mBitmap != null)
             mBitmap.setInLoadUse(false);
         mBitmap = bitmap;

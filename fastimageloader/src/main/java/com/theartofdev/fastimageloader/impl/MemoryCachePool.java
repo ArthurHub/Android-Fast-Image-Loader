@@ -15,6 +15,7 @@ package com.theartofdev.fastimageloader.impl;
 import android.content.ComponentCallbacks2;
 
 import com.theartofdev.fastimageloader.ImageLoadSpec;
+import com.theartofdev.fastimageloader.ReusableBitmap;
 import com.theartofdev.fastimageloader.impl.util.FILLogger;
 
 import java.util.Iterator;
@@ -28,14 +29,14 @@ import java.util.Map;
  * and small for smaller.<br/>
  * Caches may be evicted when memory pressure is detected.
  */
-final class MemoryCachePool {
+final class MemoryCachePool implements com.theartofdev.fastimageloader.MemoryCachePool {
 
     //region: Fields and Consts
 
     /**
      * Cache and pool of reusable bitmaps.
      */
-    private final Map<ImageLoadSpec, LinkedList<ReusableBitmapImpl>> mBitmapsCachePool = new LinkedHashMap<>();
+    private final Map<ImageLoadSpec, LinkedList<ReusableBitmap>> mBitmapsCachePool = new LinkedHashMap<>();
 
     /**
      * stats on the number of cache hit
@@ -63,13 +64,10 @@ final class MemoryCachePool {
     private int mThrown;
     //endregion
 
-    /**
-     * Retrieve an image for the specified {@code url} and {@code spec}.<br/>
-     * If not found for primary spec, use the alternative.
-     */
-    public ReusableBitmapImpl get(String url, ImageLoadSpec spec, ImageLoadSpec altSpec) {
+    @Override
+    public ReusableBitmap get(String url, ImageLoadSpec spec, ImageLoadSpec altSpec) {
         synchronized (mBitmapsCachePool) {
-            ReusableBitmapImpl bitmap = getUnusedBitmapBySpec(url, spec);
+            ReusableBitmap bitmap = getUnusedBitmapBySpec(url, spec);
             if (bitmap == null && altSpec != null) {
                 bitmap = getUnusedBitmapBySpec(url, altSpec);
             }
@@ -82,13 +80,11 @@ final class MemoryCachePool {
         }
     }
 
-    /**
-     * Store an image in the cache for the specified {@code key}.
-     */
-    public void set(ReusableBitmapImpl bitmap) {
+    @Override
+    public void set(ReusableBitmap bitmap) {
         synchronized (mBitmapsCachePool) {
             if (bitmap != null) {
-                LinkedList<ReusableBitmapImpl> list = mBitmapsCachePool.get(bitmap.getSpec());
+                LinkedList<ReusableBitmap> list = mBitmapsCachePool.get(bitmap.getSpec());
                 if (list == null) {
                     list = new LinkedList<>();
                     mBitmapsCachePool.put(bitmap.getSpec(), list);
@@ -98,17 +94,15 @@ final class MemoryCachePool {
         }
     }
 
-    /**
-     * TODO:a. doc
-     */
-    public ReusableBitmapImpl getUnused(ImageLoadSpec spec) {
+    @Override
+    public ReusableBitmap getUnused(ImageLoadSpec spec) {
         synchronized (mBitmapsCachePool) {
-            LinkedList<ReusableBitmapImpl> list = mBitmapsCachePool.get(spec);
+            LinkedList<ReusableBitmap> list = mBitmapsCachePool.get(spec);
             if (list != null) {
-                Iterator<ReusableBitmapImpl> iter = list.iterator();
+                Iterator<ReusableBitmap> iter = list.iterator();
                 if (spec.isSizeBounded()) {
                     while (iter.hasNext()) {
-                        ReusableBitmapImpl bitmap = iter.next();
+                        ReusableBitmap bitmap = iter.next();
                         if (!bitmap.isInUse()) {
                             iter.remove();
                             mReUsed++;
@@ -120,7 +114,7 @@ final class MemoryCachePool {
                     // don't keep unbounded bitmaps (only 2 to be nice on quick return)
                     int grace = 2;
                     while (iter.hasNext()) {
-                        ReusableBitmapImpl bitmap = iter.next();
+                        ReusableBitmap bitmap = iter.next();
                         if (!bitmap.isInUse() && grace-- < 1) {
                             mThrown++;
                             iter.remove();
@@ -133,15 +127,13 @@ final class MemoryCachePool {
         return null;
     }
 
-    /**
-     * TODO:a. doc
-     */
-    public void returnUnused(ReusableBitmapImpl bitmap) {
+    @Override
+    public void returnUnused(ReusableBitmap bitmap) {
         synchronized (mBitmapsCachePool) {
             mReUsed--;
             mReturned++;
             bitmap.setInLoadUse(false);
-            LinkedList<ReusableBitmapImpl> list = mBitmapsCachePool.get(bitmap.getSpec());
+            LinkedList<ReusableBitmap> list = mBitmapsCachePool.get(bitmap.getSpec());
             if (list != null) {
                 list.addFirst(bitmap);
             } else {
@@ -151,9 +143,7 @@ final class MemoryCachePool {
         }
     }
 
-    /**
-     * Clears the cache/pool.
-     */
+    @Override
     public void clear() {
         releaseUnUsedBitmaps(0);
     }
@@ -227,12 +217,12 @@ final class MemoryCachePool {
     /**
      * Get bitmap from cache that is of the given spec and has image loaded of the given URI.
      */
-    private ReusableBitmapImpl getUnusedBitmapBySpec(String uri, ImageLoadSpec spec) {
-        LinkedList<ReusableBitmapImpl> list = mBitmapsCachePool.get(spec);
+    private ReusableBitmap getUnusedBitmapBySpec(String uri, ImageLoadSpec spec) {
+        LinkedList<ReusableBitmap> list = mBitmapsCachePool.get(spec);
         if (list != null) {
-            Iterator<ReusableBitmapImpl> iter = list.iterator();
+            Iterator<ReusableBitmap> iter = list.iterator();
             while (iter.hasNext()) {
-                ReusableBitmapImpl bitmap = iter.next();
+                ReusableBitmap bitmap = iter.next();
                 if (uri.equals(bitmap.getUri())) {
                     iter.remove();
                     list.addLast(bitmap);
@@ -250,11 +240,11 @@ final class MemoryCachePool {
      */
     private void releaseUnUsedBitmaps(int graceLevel) {
         FILLogger.debug("trim image cache to size [{}]", graceLevel);
-        for (LinkedList<ReusableBitmapImpl> list : mBitmapsCachePool.values()) {
+        for (LinkedList<ReusableBitmap> list : mBitmapsCachePool.values()) {
             int listGrace = graceLevel;
-            Iterator<ReusableBitmapImpl> iter = list.iterator();
+            Iterator<ReusableBitmap> iter = list.iterator();
             while (iter.hasNext()) {
-                ReusableBitmapImpl bitmap = iter.next();
+                ReusableBitmap bitmap = iter.next();
                 if (!bitmap.isInUse() && listGrace-- < 1) {
                     mThrown++;
                     iter.remove();

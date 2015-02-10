@@ -16,6 +16,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 import com.theartofdev.fastimageloader.ImageLoadSpec;
+import com.theartofdev.fastimageloader.ReusableBitmap;
 import com.theartofdev.fastimageloader.impl.util.FILLogger;
 import com.theartofdev.fastimageloader.impl.util.FILUtils;
 
@@ -32,7 +33,7 @@ final class DiskHandler {
     /**
      * Handler for bitmap recycling, holds recycled bitmaps by dimension key to be used later.
      */
-    private final MemoryCachePool mBitmapRecycler;
+    private final com.theartofdev.fastimageloader.MemoryCachePool mBitmapRecycler;
 
     /**
      * Used to reuse bitmaps on image loading from disk
@@ -45,7 +46,7 @@ final class DiskHandler {
     private File mCacheFolder;
     //endregion
 
-    DiskHandler(MemoryCachePool bitmapRecycler, File cacheFolder) {
+    DiskHandler(com.theartofdev.fastimageloader.MemoryCachePool bitmapRecycler, File cacheFolder) {
         mBitmapRecycler = bitmapRecycler;
         mCacheFolder = cacheFolder;
 
@@ -88,7 +89,7 @@ final class DiskHandler {
             //noinspection ResultOfMethodCallIgnored
             file.setLastModified(System.currentTimeMillis());
 
-            ReusableBitmapImpl bitmap = mBitmapRecycler.getUnused(spec);
+            ReusableBitmap bitmap = mBitmapRecycler.getUnused(spec);
             mOptions.inBitmap = bitmap != null ? bitmap.getBitmap() : null;
             mOptions.inPreferredConfig = spec.getPixelConfig();
 
@@ -108,7 +109,7 @@ final class DiskHandler {
                 }
                 if (bitmap == null) {
                     // create cached bitmap wrapper with new raw bitmap
-                    bitmap = new ReusableBitmapImpl(rawBitmap, spec);
+                    bitmap = new ReusableBitmap(rawBitmap, spec);
                     imageRequest.setBitmap(bitmap);
                 }
             } else {

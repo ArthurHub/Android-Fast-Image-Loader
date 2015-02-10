@@ -21,6 +21,7 @@ import android.text.TextUtils;
 import com.squareup.okhttp.OkHttpClient;
 import com.theartofdev.fastimageloader.ImageLoadSpec;
 import com.theartofdev.fastimageloader.LoadedFrom;
+import com.theartofdev.fastimageloader.ReusableBitmap;
 import com.theartofdev.fastimageloader.Target;
 import com.theartofdev.fastimageloader.impl.util.FILLogger;
 import com.theartofdev.fastimageloader.impl.util.FILUtils;
@@ -32,7 +33,7 @@ import java.util.Map;
 /**
  * Handler for image loading using memory/disk cache and other features.
  */
-public final class FastImageLoaderHandler implements DiskCache.Callback, Downloader.Callback, ComponentCallbacks2 {
+public final class LoaderHandler implements DiskCache.Callback, Downloader.Callback, ComponentCallbacks2 {
 
     //region: Fields and Consts
 
@@ -97,7 +98,7 @@ public final class FastImageLoaderHandler implements DiskCache.Callback, Downloa
      *
      * @param client the OkHttp client to use to download the images.
      */
-    public FastImageLoaderHandler(Application application, OkHttpClient client) {
+    public LoaderHandler(Application application, OkHttpClient client) {
 
         File cacheFolder = new File(FILUtils.pathCombine(application.getCacheDir().getPath(), "ImageCache"));
 
@@ -123,8 +124,9 @@ public final class FastImageLoaderHandler implements DiskCache.Callback, Downloa
         sb.append("Image handler report:");
         sb.append('\n');
         sb.append("Memory Hit: ").append(mMemoryHits).append('\n');
-        sb.append("Memory fallback Hit: ").append(mMemoryAltHits).append('\n');
+        sb.append("Memory alt Hit: ").append(mMemoryAltHits).append('\n');
         sb.append("Disk Hit: ").append(mDiskHits).append('\n');
+        sb.append("Disk alt Hit: ").append(mDiskAltHits).append('\n');
         sb.append("Network Requests: ").append(mNetworkRequests).append('\n');
         sb.append("Network Loaded: ").append(mNetworkLoads).append('\n');
         sb.append('\n');
@@ -170,7 +172,7 @@ public final class FastImageLoaderHandler implements DiskCache.Callback, Downloa
             String uri = target.getUri();
             if (!TextUtils.isEmpty(uri)) {
 
-                ReusableBitmapImpl image = mMemoryCache.get(uri, spec, altSpec);
+                ReusableBitmap image = mMemoryCache.get(uri, spec, altSpec);
                 if (image != null) {
                     mMemoryHits++;
                     if (image.getSpec() != spec)
