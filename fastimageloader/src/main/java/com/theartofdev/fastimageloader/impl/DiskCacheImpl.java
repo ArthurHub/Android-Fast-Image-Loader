@@ -106,17 +106,16 @@ public class DiskCacheImpl implements com.theartofdev.fastimageloader.DiskCache 
 
     /**
      * @param context the application object to read config stuff
-     * @param handler Used to post execution to main thread.
      * @param diskHandler Used to load images from the disk.
      */
-    public DiskCacheImpl(Context context, Handler handler, DiskHandler diskHandler) {
+    public DiskCacheImpl(Context context, DiskHandler diskHandler) {
         FILUtils.notNull(context, "context");
-        FILUtils.notNull(handler, "handler");
         FILUtils.notNull(diskHandler, "diskHandler");
 
-        mHandler = handler;
         mContext = context;
         mDiskHandler = diskHandler;
+
+        mHandler = new Handler(context.getMainLooper());
 
         mReadExecutorService = new ThreadPoolExecutor(0, 1, 60, TimeUnit.SECONDS,
                 new LinkedBlockingQueue<Runnable>(), Util.threadFactory("ImageCacheRead", true));

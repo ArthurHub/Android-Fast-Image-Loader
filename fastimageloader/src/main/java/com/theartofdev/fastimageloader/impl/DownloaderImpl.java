@@ -12,6 +12,7 @@
 
 package com.theartofdev.fastimageloader.impl;
 
+import android.content.Context;
 import android.os.Handler;
 
 import com.squareup.okhttp.OkHttpClient;
@@ -71,18 +72,18 @@ public final class DownloaderImpl implements com.theartofdev.fastimageloader.Dow
     //endregion
 
     /**
+     * @param context
      * @param client the OkHttp client to use to download the images.
-     * @param handler Used to post execution to main thread.
      * @param diskHandler Handler for loading image bitmap object from file on disk.
      */
-    public DownloaderImpl(OkHttpClient client, Handler handler, DiskHandler diskHandler) {
+    public DownloaderImpl(Context context, OkHttpClient client, DiskHandler diskHandler) {
         FILUtils.notNull(client, "client");
-        FILUtils.notNull(handler, "handler");
         FILUtils.notNull(diskHandler, "imageLoader");
 
         mClient = client;
-        mHandler = handler;
         mDiskHandler = diskHandler;
+
+        mHandler = new Handler(context.getMainLooper());
 
         mExecutor = new ThreadPoolExecutor(3, 3, 30, TimeUnit.SECONDS,
                 new LinkedBlockingQueue<Runnable>(), Util.threadFactory("ImageDownloader", true));

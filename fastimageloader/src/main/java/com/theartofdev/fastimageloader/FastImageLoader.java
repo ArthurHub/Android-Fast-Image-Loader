@@ -13,7 +13,6 @@
 package com.theartofdev.fastimageloader;
 
 import android.app.Application;
-import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -269,11 +268,10 @@ public final class FastImageLoader {
                 //noinspection ResultOfMethodCallIgnored
                 cacheFolder.mkdirs();
 
-                Handler handler = new Handler();
                 MemoryPool memoryPool = new MemoryPoolImpl();
                 DiskHandler mDiskHandler = new DiskHandler(memoryPool, cacheFolder);
-                DiskCache diskCache = new DiskCacheImpl(mApplication, handler, mDiskHandler);
-                Downloader downloader = new DownloaderImpl(mHttpClient, handler, mDiskHandler);
+                DiskCache diskCache = new DiskCacheImpl(mApplication, mDiskHandler);
+                Downloader downloader = new DownloaderImpl(mApplication, mHttpClient, mDiskHandler);
 
                 INST.mLoaderHandler = new LoaderHandler(mApplication, memoryPool, diskCache, mDiskHandler, downloader);
             } else {
