@@ -1,13 +1,10 @@
 apply plugin: 'com.android.library'
+apply plugin: 'maven'
 
-
-ext {
-    PUBLISH_GROUP_ID = 'com.theartofdev'
-    PUBLISH_ARTIFACT_ID = 'fast-image-loader'
-    PUBLISH_VERSION = '0.8'
-    // gradlew clean build generateRelease
-}
-
+def GROUP_ID = 'com.theartofdev'
+def ARTIFACT_ID = 'fast-image-loader'
+def VERSION = '0.8'
+// gradlew clean build generateRelease
 
 android {
     compileSdkVersion 21
@@ -17,7 +14,7 @@ android {
         minSdkVersion 14
         targetSdkVersion 21
         versionCode 1
-        versionName "0.8"
+        versionName VERSION
     }
 
     lintOptions {
@@ -29,4 +26,59 @@ dependencies {
     compile 'com.squareup.okhttp:okhttp:2.2.+'
 }
 
-apply from: 'https://raw.githubusercontent.com/blundell/release-android-library/master/android-release-aar.gradle'
+
+def localReleaseDest = "${buildDir}/release/${VERSION}"
+
+android.libraryVariants.all { variant ->
+    def name = variant.buildType.name
+    if (!name.equals(com.android.builder.core.BuilderConstants.DEBUG)) {
+        def task = project.tasks.create "jar${name.capitalize()}", Jar
+        task.dependsOn variant.javaCompile
+        task.from variant.javaCompile.destinationDir
+        artifacts.add('archives', task);
+    }
+}
+
+task androidJavadocs(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+}
+
+task androidJavadocsJar(type: Jar, dependsOn: androidJavadocs) {
+    classifier = 'javadoc'
+    from androidJavadocs.destinationDir
+}
+
+task androidSourcesJar(type: Jar) {
+    classifier = 'sources'
+    from android.sourceSets.main.java.srcDirs
+}
+
+uploadArchives {
+    repositories.mavenDeployer {
+        pom.groupId = GROUP_ID
+        pom.artifactId = ARTIFACT_ID
+        pom.version = VERSION
+        // Add other pom properties here if you want (developer details / licenses)
+        repository(url: "file://${localReleaseDest}")
+    }
+}
+
+task zipRelease(type: Zip) {
+    from localReleaseDest
+    destinationDir buildDir
+    archiveName "release-${VERSION}.zip"
+}
+
+task generateRelease << {
+    println "Release ${VERSION} can be found at ${localReleaseDest}/"
+    println "Release ${VERSION} zipped can be found ${buildDir}/release-${VERSION}.zip"
+}
+
+generateRelease.dependsOn(uploadArchives)
+generateRelease.dependsOn(zipRelease)
+
+artifacts {
+    archives androidSourcesJar
+    archives androidJavadocsJar
+}
