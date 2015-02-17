@@ -22,8 +22,13 @@ android {
     }
 }
 
+configurations {
+    optional
+    compile.extendsFrom optional
+}
+
 dependencies {
-    compile 'com.squareup.okhttp:okhttp:2.2.+'
+    optional 'com.squareup.okhttp:okhttp:2.2.+'
 }
 
 
@@ -59,6 +64,22 @@ uploadArchives {
         pom.groupId = GROUP_ID
         pom.artifactId = ARTIFACT_ID
         pom.version = VERSION
+
+        pom.withXml {
+            asNode().dependencies.dependency.findAll { xmlDep ->
+                // mark optional dependencies
+                if (project.configurations.optional.allDependencies.findAll { dep ->
+                    xmlDep.groupId.text() == dep.group && xmlDep.artifactId.text() == dep.name
+                }) {
+                    def xmlOptional = xmlDep.optional[0];
+                    if (!xmlOptional) {
+                        xmlOptional = xmlDep.appendNode('optional')
+                    }
+                    xmlOptional.value = 'true';
+                }
+            }
+        }
+
         // Add other pom properties here if you want (developer details / licenses)
         repository(url: "file://${localReleaseDest}")
     }
