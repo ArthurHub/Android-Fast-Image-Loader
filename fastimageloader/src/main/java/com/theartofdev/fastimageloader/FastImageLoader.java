@@ -23,6 +23,7 @@ import com.theartofdev.fastimageloader.impl.DownloaderImpl;
 import com.theartofdev.fastimageloader.impl.LoaderHandler;
 import com.theartofdev.fastimageloader.impl.MemoryPoolImpl;
 import com.theartofdev.fastimageloader.impl.NativeHttpClient;
+import com.theartofdev.fastimageloader.impl.OkHttpClient;
 import com.theartofdev.fastimageloader.impl.util.FILLogger;
 import com.theartofdev.fastimageloader.impl.util.FILUtils;
 import com.theartofdev.fastimageloader.target.TargetHelper;
@@ -115,6 +116,7 @@ public final class FastImageLoader {
         FILUtils.notNull(application, "context");
 
         if (INST.mLoaderHandler == null) {
+            FILLogger.debug("Init fast image loader...");
             INST.mApplication = application;
             return INST;
         } else {
@@ -225,6 +227,8 @@ public final class FastImageLoader {
         if (INST.mSpecs.containsKey(key)) {
             throw new IllegalArgumentException("Spec with the same key already exists");
         }
+
+        FILLogger.debug("Create image load spec... [{}]", key);
         return new ImageLoadSpecBuilder(key, INST.mApplication, INST.mDefaultImageServiceAdapter);
     }
 
@@ -254,6 +258,8 @@ public final class FastImageLoader {
             if (spec == null) {
                 throw new IllegalArgumentException("Invalid spec key, no spec defined for the given key: " + specKey);
             }
+
+            FILLogger.debug("Prefetch image... [{}] [{}]", uri, spec);
             INST.mLoaderHandler.prefetchImage(uri, spec);
         }
     }
@@ -283,6 +289,8 @@ public final class FastImageLoader {
         if (altSpecKey != null && altSpec == null) {
             throw new IllegalArgumentException("Invalid alternative spec key, no spec defined for the given key: " + altSpecKey);
         }
+
+        FILLogger.debug("Load image... [{}] [{}] [{}]", target, spec, altSpecKey);
         INST.mLoaderHandler.loadImage(target, spec, altSpec);
     }
 
@@ -295,6 +303,8 @@ public final class FastImageLoader {
      */
     public static void clearDiskCache() {
         INST.finishInit();
+
+        FILLogger.debug("Clear image cache...");
         INST.mLoaderHandler.clearDiskCache();
     }
 
@@ -302,6 +312,7 @@ public final class FastImageLoader {
      * Add the given image load spec to the defined specs.
      */
     static void addSpec(ImageLoadSpec spec) {
+        FILLogger.debug("Image load spec created... [{}]", spec);
         INST.mSpecs.put(spec.getKey(), spec);
     }
 
@@ -316,30 +327,58 @@ public final class FastImageLoader {
         if (INST.mLoaderHandler == null) {
             if (INST.mApplication != null) {
                 if (INST.mDefaultImageServiceAdapter == null) {
+                    FILLogger.debug("Use default identity image service adapter...");
                     INST.mDefaultImageServiceAdapter = new IdentityAdapter();
                 }
                 if (mMemoryPool == null) {
+                    FILLogger.debug("Use default memory pool...");
                     mMemoryPool = new MemoryPoolImpl();
                 }
                 if (mDecoder == null) {
+                    FILLogger.debug("Use default decoder...");
                     mDecoder = new DecoderImpl();
                 }
                 if (mDiskCache == null) {
                     if (mCacheFolder == null) {
+                        FILLogger.debug("Use default cache folder...");
                         mCacheFolder = new File(FILUtils.pathCombine(mApplication.getCacheDir().getPath(), "ImageCache"));
                     }
+                    FILLogger.debug("Use default disk cache... [{}]", mCacheFolder);
                     mDiskCache = new DiskCacheImpl(mApplication, mCacheFolder, mMemoryPool, mDecoder);
                 }
                 if (mDownloader == null) {
-                    if (INST.mHttpClient == null) {
-                        INST.mHttpClient = new NativeHttpClient();
-                        //INST.mHttpClient = new OkHttpClient();
-                    }
+                    initHttpClient();
+
+                    FILLogger.debug("Use default downloader...");
                     mDownloader = new DownloaderImpl(mApplication, mHttpClient, mMemoryPool, mDecoder);
                 }
+
+                FILLogger.debug("Create load handler... [{}] [{}] [{}]", mMemoryPool, mDiskCache, mDownloader);
                 INST.mLoaderHandler = new LoaderHandler(mApplication, mMemoryPool, mDiskCache, mDownloader);
             } else {
                 throw new IllegalStateException("Fast Image Loader is NOT initialized, call init(...)");
+            }
+        }
+    }
+
+    /**
+     * Init HTTP client to be used by the downloader.<br>
+     * 1. If one given externally use it.<br>
+     * 2. Try using OK HTTP client, won't work if there is no OK HTTP dependency<br>
+     * 3. Use native Android URL connection.<br>
+     */
+    private void initHttpClient() {
+        if (INST.mHttpClient == null) {
+            try {
+                FILLogger.debug("Try create OK HTTP client...");
+                INST.mHttpClient = new OkHttpClient();
+            } catch (Throwable e) {
+                if (e.getClass().isAssignableFrom(NoClassDefFoundError.class)) {
+                    FILLogger.debug("OK HTTP dependency no found, use native Android URL Connection");
+                } else {
+                    FILLogger.warn("Failed to init OK HTTP client, use native Android URL Connection", e);
+                }
+                INST.mHttpClient = new NativeHttpClient();
             }
         }
     }
