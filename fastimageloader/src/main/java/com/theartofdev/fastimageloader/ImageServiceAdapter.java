@@ -13,7 +13,7 @@
 package com.theartofdev.fastimageloader;
 
 /**
- * Define adapter for specific image service (Thumbor/imgIX/Cloudinary/etc.) used in image loading.<br/>
+ * Define adapter for specific image service (Thumbor/imgIX/Cloudinary/etc.) used in image loading.<br>
  * Used to add to the requested image URI the required image loading specification (format/size/etc).
  */
 public interface ImageServiceAdapter {

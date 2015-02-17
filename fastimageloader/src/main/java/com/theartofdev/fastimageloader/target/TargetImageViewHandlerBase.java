@@ -26,17 +26,17 @@ import com.theartofdev.fastimageloader.impl.util.FILLogger;
 import com.theartofdev.fastimageloader.impl.util.FILUtils;
 
 /**
- * Handler for loading image as {@link com.theartofdev.fastimageloader.ReusableBitmap} and managing its lifecycle.<br/>
- * A single instance of the handler should be used for each ImageView.<br/>
- * <p/>
+ * Handler for loading image as {@link com.theartofdev.fastimageloader.ReusableBitmap} and managing its lifecycle.<br>
+ * A single instance of the handler should be used for each ImageView.<br>
+ * <br><br>
  * Use {@link #loadImage(String, String, String, boolean)} to load of image into the
  * handler, it will handle cancellation of unfinished requests if a new loading request is given.
- * <p/>
+ * <br><br>
  * The handler attaches itself to ImageView StateChange to update the in-use of the loaded
  * bitmap, allowing to reuse bitmaps that are detached from window. This ensures the bitmap is
- * reused when the activity/fragment is destroyed.<br/>
+ * reused when the activity/fragment is destroyed.<br>
  * On reattach to window if the bitmap was reused the image will be reloaded.
- * <p/>
+ * <br><br>
  * For improved reuse it is advisable to override {@link android.widget.ImageView#onWindowVisibilityChanged(int)}
  * method and call {@link #onViewShown()}/{@link #onViewHidden()} on the handler to update in-use state.
  * <pre>
@@ -158,7 +158,7 @@ public abstract class TargetImageViewHandlerBase<T extends ImageView> implements
     }
 
     /**
-     * Load image from the given source.<br/>
+     * Load image from the given source.<br>
      * If image of the same source is already requested/loaded the request is ignored unless force is true.
      *
      * @param url the avatar source URL to load from
@@ -223,9 +223,9 @@ public abstract class TargetImageViewHandlerBase<T extends ImageView> implements
     }
 
     /**
-     * On image view shown verify that the set bitmap is still valid for the image view (not reused).<br/>
-     * If valid: set in-use on the bitmap.<br/>
-     * If not valid: execute image load request to re-load the image needed for the image view.<br/>
+     * On image view shown verify that the set bitmap is still valid for the image view (not reused).<br>
+     * If valid: set in-use on the bitmap.<br>
+     * If not valid: execute image load request to re-load the image needed for the image view.<br>
      */
     public void onViewShown() {
         if (mReusableBitmap != null && !mInUse) {
@@ -274,7 +274,7 @@ public abstract class TargetImageViewHandlerBase<T extends ImageView> implements
     }
 
     /**
-     * Called to clear the existing image in the handled image view.<br/>
+     * Called to clear the existing image in the handled image view.<br>
      * Called on loading or failure.
      */
     protected abstract void clearImage();

@@ -41,7 +41,7 @@ public final class TargetHelper {
     }
 
     /**
-     * draw indicator on where the image was loaded from.<br/>
+     * draw indicator on where the image was loaded from.<br>
      * Green - memory, Yellow - disk, Red - network.
      */
     public static void drawDebugIndicator(Canvas canvas, LoadedFrom loadedFrom, int width, int height) {

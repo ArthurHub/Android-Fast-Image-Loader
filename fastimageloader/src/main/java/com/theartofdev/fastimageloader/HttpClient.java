@@ -15,14 +15,14 @@ package com.theartofdev.fastimageloader;
 import java.io.InputStream;
 
 /**
- * Define a client to be used to download requested images.<br/>
+ * Define a client to be used to download requested images.<br>
  * The client must be thread-safe as a single instance will be used for multiple requests
  * on multiple threads.
  */
 public interface HttpClient {
 
     /**
-     * Execute image download for the given URI.<br/>
+     * Execute image download for the given URI.<br>
      * Invokes the request immediately, and blocks until the response can be processed or is in error.
      *
      * @param uri the URI of the image to download.

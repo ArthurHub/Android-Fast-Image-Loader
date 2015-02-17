@@ -17,8 +17,8 @@ import com.theartofdev.fastimageloader.ImageServiceAdapter;
 import com.theartofdev.fastimageloader.impl.util.FILUtils;
 
 /**
- * thumbor image service (http://thumbor.org/) adapter.<br/>
- * Add image load specification into the path of the image URL.<br/>
+ * thumbor image service (http://thumbor.org/) adapter.<br>
+ * Add image load specification into the path of the image URL.<br>
  * Using Thumbor service URI to build new URI with the image URI as suffix.
  */
 public class ThumborAdapter implements ImageServiceAdapter {

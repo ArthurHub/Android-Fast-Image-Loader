@@ -31,8 +31,8 @@ public interface DiskCache {
     File getCacheFile(String uri, ImageLoadSpec spec);
 
     /**
-     * Get disk cached image for the given request.<br/>
-     * If the image is NOT in the cache the callback will be executed immediately.<br/>
+     * Get disk cached image for the given request.<br>
+     * If the image is NOT in the cache the callback will be executed immediately.<br>
      * If the image is in cache an async operation will load the image from disk and then execute the callback.
      *
      * @param callback The callback to execute on async requests to the cache

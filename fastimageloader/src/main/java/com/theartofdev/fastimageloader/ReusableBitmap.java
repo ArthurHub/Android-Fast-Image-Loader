@@ -81,8 +81,8 @@ public class ReusableBitmap {
     }
 
     /**
-     * the URI of the loaded image in the bitmap.<br/>
-     * Used to know if the target requested image has been changed.<br/>
+     * the URI of the loaded image in the bitmap.<br>
+     * Used to know if the target requested image has been changed.<br>
      */
     public String getUri() {
         return mBitmapUrl;
@@ -111,8 +111,8 @@ public class ReusableBitmap {
     }
 
     /**
-     * Increment the bitmap in use count by 1.<br/>
-     * Affects the {@link #isInUse()} to know if the bitmap can be reused.<br/>
+     * Increment the bitmap in use count by 1.<br>
+     * Affects the {@link #isInUse()} to know if the bitmap can be reused.<br>
      * Critical to call this method correctly.
      */
     public void incrementInUse() {
@@ -121,8 +121,8 @@ public class ReusableBitmap {
     }
 
     /**
-     * Decrement the bitmap in use count by 1.<br/>
-     * Affects the {@link #isInUse()} to know if the bitmap can be reused.<br/>
+     * Decrement the bitmap in use count by 1.<br>
+     * Affects the {@link #isInUse()} to know if the bitmap can be reused.<br>
      * Critical to call this method correctly.
      */
     public void decrementInUse() {

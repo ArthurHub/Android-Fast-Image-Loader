@@ -31,7 +31,7 @@ public class TargetImageViewDrawableHandler extends TargetImageViewHandlerBase<I
 
     /**
      * {@inheritDoc}
-     * <p/>
+     * <br><br>
      * Set image drawable to null.
      */
     @Override
@@ -41,7 +41,7 @@ public class TargetImageViewDrawableHandler extends TargetImageViewHandlerBase<I
 
     /**
      * {@inheritDoc}
-     * <p/>
+     * <br><br>
      * Create {@link TargetDrawable} and set it.
      */
     @Override

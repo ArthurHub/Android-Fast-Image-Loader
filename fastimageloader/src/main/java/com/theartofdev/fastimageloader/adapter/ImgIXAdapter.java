@@ -16,7 +16,7 @@ import com.theartofdev.fastimageloader.ImageLoadSpec;
 import com.theartofdev.fastimageloader.ImageServiceAdapter;
 
 /**
- * imgIX image service (http://www.imgix.com) adapter.<br/>
+ * imgIX image service (http://www.imgix.com) adapter.<br>
  */
 public class ImgIXAdapter implements ImageServiceAdapter {
 

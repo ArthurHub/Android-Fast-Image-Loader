@@ -1,5 +1,14 @@
 apply plugin: 'com.android.library'
 
+
+ext {
+    PUBLISH_GROUP_ID = 'com.theartofdev'
+    PUBLISH_ARTIFACT_ID = 'fast-image-loader'
+    PUBLISH_VERSION = '0.8'
+    // gradlew clean build generateRelease
+}
+
+
 android {
     compileSdkVersion 21
     buildToolsVersion "21.1.2"
@@ -10,8 +19,14 @@ android {
         versionCode 1
         versionName "0.9"
     }
+
+    lintOptions {
+        abortOnError false
+    }
 }
 
 dependencies {
     compile 'com.squareup.okhttp:okhttp:2.2.+'
 }
+
+apply from: 'https://raw.githubusercontent.com/blundell/release-android-library/master/android-release-aar.gradle'

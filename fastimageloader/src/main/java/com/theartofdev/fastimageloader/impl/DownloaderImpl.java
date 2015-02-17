@@ -180,7 +180,7 @@ public final class DownloaderImpl implements com.theartofdev.fastimageloader.Dow
     }
 
     /**
-     * Download image data from the given web response.<br/>
+     * Download image data from the given web response.<br>
      * Download to temp file so if error occurred it won't result in corrupted cached file and handle
      * smart cancelling, if request is no longer valid but more than 50% has been downloaded, finish it but
      * don't load the image object.

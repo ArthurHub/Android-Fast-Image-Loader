@@ -24,7 +24,7 @@ import com.theartofdev.fastimageloader.impl.util.FILLogger;
 import java.io.File;
 
 /**
- * Handler for decoding image object from image File.<br/>
+ * Handler for decoding image object from image File.<br>
  */
 public class DecoderImpl implements Decoder {
 

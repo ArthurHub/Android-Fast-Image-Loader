@@ -27,11 +27,11 @@ import com.theartofdev.fastimageloader.LoadedFrom;
 import com.theartofdev.fastimageloader.impl.util.FILUtils;
 
 /**
- * Drawable used for loaded images with additional capabilities:<br/>
- * 1. scale the image to the set rectangle.<br/>
- * 2. render round image<br/>
- * 3. fade effect for showing the image at start.<br/>
- * 4. showing indicator if the image was loading from memory/disk/network.<br/>
+ * Drawable used for loaded images with additional capabilities:<br>
+ * 1. scale the image to the set rectangle.<br>
+ * 2. render round image<br>
+ * 3. fade effect for showing the image at start.<br>
+ * 4. showing indicator if the image was loading from memory/disk/network.<br>
  */
 public class TargetDrawable extends Drawable {
 
@@ -113,8 +113,8 @@ public class TargetDrawable extends Drawable {
     /**
      * {@inheritDoc}
      * <p>
-     * On set of bounds update the transform matrix applied on the bitmap to fit into the bounds.<br/>
-     * - Scale to fit the dimensions of the image into the bounded rectangle.<br/>
+     * On set of bounds update the transform matrix applied on the bitmap to fit into the bounds.<br>
+     * - Scale to fit the dimensions of the image into the bounded rectangle.<br>
      * - Offset the rendered bitmap to center the dimension that is larger\smaller than the bounds.
      * </p>
      */
@@ -144,9 +144,9 @@ public class TargetDrawable extends Drawable {
     /**
      * {@inheritDoc}
      * <p>
-     * Additional functionality:<br/>
-     * Draw bitmap with opacity to show fade-in if animating.<br/>
-     * Draw loaded from debug indicator.<br/>
+     * Additional functionality:<br>
+     * Draw bitmap with opacity to show fade-in if animating.<br>
+     * Draw loaded from debug indicator.<br>
      * </p>
      */
     @Override

@@ -126,7 +126,7 @@ public final class LoaderHandler implements DiskCacheImpl.Callback, DownloaderIm
     }
 
     /**
-     * Prefetch image (uri+spec) to be available in disk cache.<br/>
+     * Prefetch image (uri+spec) to be available in disk cache.<br>
      *
      * @param uri the URI of the image to prefetch
      * @param spec the spec to prefetch the image by
@@ -151,8 +151,8 @@ public final class LoaderHandler implements DiskCacheImpl.Callback, DownloaderIm
     }
 
     /**
-     * Load image by given URL to the given target.<br/>
-     * Handle transformation on the image, image dimension specification and dimension fallback.<br/>
+     * Load image by given URL to the given target.<br>
+     * Handle transformation on the image, image dimension specification and dimension fallback.<br>
      * If the image of the requested dimensions is not found in memory cache we try to find the fallback dimension, if
      * found it will be set to the target, and the requested dimension image will be loaded async.
      */
@@ -205,9 +205,9 @@ public final class LoaderHandler implements DiskCacheImpl.Callback, DownloaderIm
     //region: Private methods
 
     /**
-     * Callback after the disk cache loaded the image or returned cache miss.<br/>
-     * Hit - set the loaded image on the requesting target.<br/>
-     * Miss - pass the request to image downloader.<br/>
+     * Callback after the disk cache loaded the image or returned cache miss.<br>
+     * Hit - set the loaded image on the requesting target.<br>
+     * Miss - pass the request to image downloader.<br>
      */
     @Override
     public void loadImageDiskCacheCallback(ImageRequest imageRequest, boolean canceled) {
@@ -256,9 +256,9 @@ public final class LoaderHandler implements DiskCacheImpl.Callback, DownloaderIm
     }
 
     /**
-     * Callback after image downloader downloaded the image and loaded from disk, failed or canceled.<br/>
-     * Success - set the loaded image on the requesting target.<br/>
-     * Failed - set failure on the requesting target.<br/>
+     * Callback after image downloader downloaded the image and loaded from disk, failed or canceled.<br>
+     * Success - set the loaded image on the requesting target.<br>
+     * Failed - set failure on the requesting target.<br>
      */
     @Override
     public void loadImageDownloaderCallback(ImageRequest imageRequest, boolean downloaded, boolean canceled) {

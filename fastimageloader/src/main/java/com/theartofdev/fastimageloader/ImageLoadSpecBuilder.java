@@ -23,11 +23,11 @@ import com.theartofdev.fastimageloader.impl.util.FILUtils;
 
 /**
  * Builder for creating {@link com.theartofdev.fastimageloader.ImageLoadSpec} instances.
- * <p/>
- * Defaults:<br/>
- * Format - JPEG<br/>
- * Max Density - 1.5<br/>
- * Pixel Config - ARGB_8888<br/>
+ * <br><br>
+ * Defaults:<br>
+ * Format - JPEG<br>
+ * Max Density - 1.5<br>
+ * Pixel Config - ARGB_8888<br>
  */
 public final class ImageLoadSpecBuilder {
 
@@ -144,7 +144,7 @@ public final class ImageLoadSpecBuilder {
     }
 
     /**
-     * the width and height of the image in pixels.<br/>
+     * the width and height of the image in pixels.<br>
      * to set one dimension and the second to scale set the second to 0.
      */
     public ImageLoadSpecBuilder setDimension(int width, int height) {
@@ -154,7 +154,7 @@ public final class ImageLoadSpecBuilder {
     }
 
     /**
-     * the width of the image in pixels.<br/>
+     * the width of the image in pixels.<br>
      * to set the height to scale set it to 0.
      */
     public ImageLoadSpecBuilder setWidth(int width) {
@@ -163,7 +163,7 @@ public final class ImageLoadSpecBuilder {
     }
 
     /**
-     * the height of the image in pixels.<br/>
+     * the height of the image in pixels.<br>
      * to set the width to scale set it to 0.
      */
     public ImageLoadSpecBuilder setHeight(int height) {
@@ -180,7 +180,7 @@ public final class ImageLoadSpecBuilder {
     }
 
     /**
-     * the width and height of the image in pixels.<br/>
+     * the width and height of the image in pixels.<br>
      * to set one dimension and the second to scale set the second to 0.
      */
     public ImageLoadSpecBuilder setDimensionByResource(int widthResId, int heightResId) {
@@ -190,7 +190,7 @@ public final class ImageLoadSpecBuilder {
     }
 
     /**
-     * the width of the image by reading dimension resource by the given key.<br/>
+     * the width of the image by reading dimension resource by the given key.<br>
      * to set the height to scale set it to 0.
      */
     public ImageLoadSpecBuilder setWidthByResource(int resId) {
@@ -199,7 +199,7 @@ public final class ImageLoadSpecBuilder {
     }
 
     /**
-     * the height of the image by reading dimension resource by the given key.<br/>
+     * the height of the image by reading dimension resource by the given key.<br>
      * to set the width to scale set it to 0.
      */
     public ImageLoadSpecBuilder setHeightByResource(int resId) {
@@ -218,7 +218,7 @@ public final class ImageLoadSpecBuilder {
     /**
      * the max pixel per inch deviceDensity to load the image in
      *
-     * @throws IllegalArgumentException if value if < 0.5
+     * @throws IllegalArgumentException if value if &lt; 0.5
      */
     public ImageLoadSpecBuilder setMaxDensity(float maxDensity) {
         if (maxDensity <= 0.5)

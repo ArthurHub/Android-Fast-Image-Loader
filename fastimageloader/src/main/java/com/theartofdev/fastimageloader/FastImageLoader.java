@@ -101,7 +101,7 @@ public final class FastImageLoader {
     }
 
     /**
-     * Initialize the image loader with given android application context.<br/>
+     * Initialize the image loader with given android application context.<br>
      * Image loader can be initialized only once where you can set all the configuration
      * properties:
      * {@link #setDefaultImageServiceAdapter(ImageServiceAdapter)},
@@ -131,7 +131,7 @@ public final class FastImageLoader {
     }
 
     /**
-     * Set the folder to use for disk caching.<br/>
+     * Set the folder to use for disk caching.<br>
      * This setter is ignored if {@link #setDiskCache(DiskCache)} is used.
      */
     public void setCacheFolder(File cacheFolder) {
@@ -184,7 +184,7 @@ public final class FastImageLoader {
     }
 
     /**
-     * The min log level to write logs at, logs below this level are ignored (Default: INFO).<br/>
+     * The min log level to write logs at, logs below this level are ignored (Default: INFO).<br>
      * Use: {@link Log#DEBUG}, {@link Log#INFO}, {@link Log#WARN}, {@link Log#ERROR}, {@link Log#ASSERT}.
      */
     public FastImageLoader setLogLevel(int level) {
@@ -210,8 +210,8 @@ public final class FastImageLoader {
 
     /**
      * Create {@link com.theartofdev.fastimageloader.ImageLoadSpec} using
-     * {@link com.theartofdev.fastimageloader.ImageLoadSpecBuilder}.<br/>
-     * <p/>
+     * {@link com.theartofdev.fastimageloader.ImageLoadSpecBuilder}.<br>
+     * <br><br>
      * Must be initialized first using {@link #init(android.app.Application)}.
      *
      * @param key the unique key of the spec used for identification
@@ -240,7 +240,7 @@ public final class FastImageLoader {
     }
 
     /**
-     * Prefetch image (uri+spec) to be available in disk cache.<br/>
+     * Prefetch image (uri+spec) to be available in disk cache.<br>
      *
      * @param uri the URI of the image to prefetch
      * @param specKey the spec to prefetch the image by
@@ -259,11 +259,11 @@ public final class FastImageLoader {
     }
 
     /**
-     * Load image by and to the given target.<br/>
-     * Handle transformation on the image, image dimension specification and dimension fallback.<br/>
+     * Load image by and to the given target.<br>
+     * Handle transformation on the image, image dimension specification and dimension fallback.<br>
      * If the image of the requested dimensions is not found in memory cache we try to find the fallback dimension, if
-     * found it will be set to the target, and the requested dimension image will be loaded async.<br/>
-     * <p/>
+     * found it will be set to the target, and the requested dimension image will be loaded async.<br>
+     * <br><br>
      * Must be initialized first using {@link #init(android.app.Application)}.
      *
      * @param target the target to load the image to, use it's URL and Spec
@@ -288,7 +288,7 @@ public final class FastImageLoader {
 
     /**
      * Clear the disk image cache, deleting all cached images.
-     * <p/>
+     * <br><br>
      * Must be initialized first using {@link #init(android.app.Application)}.
      *
      * @throws IllegalStateException NOT initialized.

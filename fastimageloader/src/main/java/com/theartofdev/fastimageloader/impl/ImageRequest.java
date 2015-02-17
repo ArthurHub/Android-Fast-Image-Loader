@@ -184,7 +184,7 @@ public class ImageRequest {
     }
 
     /**
-     * Is the loading of the requested image is still valid or was it canceled.<br/>
+     * Is the loading of the requested image is still valid or was it canceled.<br>
      */
     public boolean isValid() {
         filterValidTargets();
@@ -206,8 +206,8 @@ public class ImageRequest {
     }
 
     /**
-     * Add another target to the request.<br/>
-     * Check if the request was prefetch that its download has not been started yet.<br/>
+     * Add another target to the request.<br>
+     * Check if the request was prefetch that its download has not been started yet.<br>
      * If the request was prefetch it will be set to not prefetch
      *
      * @return true - request was prefetch and the download not started, false - otherwise.

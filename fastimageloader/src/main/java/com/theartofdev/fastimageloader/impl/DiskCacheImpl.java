@@ -18,7 +18,6 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.text.format.DateUtils;
 
-import com.squareup.okhttp.internal.Util;
 import com.theartofdev.fastimageloader.Decoder;
 import com.theartofdev.fastimageloader.ImageLoadSpec;
 import com.theartofdev.fastimageloader.MemoryPool;
@@ -34,7 +33,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Disk cache for image handler.<br/>
+ * Disk cache for image handler.<br>
  */
 public class DiskCacheImpl implements com.theartofdev.fastimageloader.DiskCache {
 
@@ -133,10 +132,10 @@ public class DiskCacheImpl implements com.theartofdev.fastimageloader.DiskCache 
         mHandler = new Handler(context.getMainLooper());
 
         mReadExecutorService = new ThreadPoolExecutor(0, 1, 60, TimeUnit.SECONDS,
-                new LinkedBlockingQueue<Runnable>(), Util.threadFactory("ImageCacheRead", true));
+                new LinkedBlockingQueue<Runnable>(), FILUtils.threadFactory("ImageCacheRead", true));
 
         mScanExecutorService = new ThreadPoolExecutor(0, 1, 10, TimeUnit.SECONDS,
-                new LinkedBlockingQueue<Runnable>(), Util.threadFactory("ImageCacheScan", true));
+                new LinkedBlockingQueue<Runnable>(), FILUtils.threadFactory("ImageCacheScan", true));
     }
 
     @Override
@@ -243,7 +242,7 @@ public class DiskCacheImpl implements com.theartofdev.fastimageloader.DiskCache 
     //region: Private methods
 
     /**
-     * Load the given cached image file into reusable bitmap, post result on given callback.<br/>
+     * Load the given cached image file into reusable bitmap, post result on given callback.<br>
      * This method is executed on a dedicated separate thread.
      */
     protected void loadImageFromCache(final ImageRequest imageRequest, File file, ImageLoadSpec spec, final Callback callback) {
@@ -336,7 +335,7 @@ public class DiskCacheImpl implements com.theartofdev.fastimageloader.DiskCache 
     }
 
     /**
-     * Load stats used for cache operation: last cache scan, total cache size.<br/>
+     * Load stats used for cache operation: last cache scan, total cache size.<br>
      * The states are persisted so cache scan won't happen unless really required.
      */
     protected void loadStats() {
@@ -346,7 +345,7 @@ public class DiskCacheImpl implements com.theartofdev.fastimageloader.DiskCache 
     }
 
     /**
-     * Save stats used for cache operation: last cache scan, total cache size.<br/>
+     * Save stats used for cache operation: last cache scan, total cache size.<br>
      * The states are persisted so cache scan won't happen unless really required.
      */
     protected void saveStats() {

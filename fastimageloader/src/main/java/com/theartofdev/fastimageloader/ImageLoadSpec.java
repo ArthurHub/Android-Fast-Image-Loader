@@ -15,8 +15,8 @@ package com.theartofdev.fastimageloader;
 import android.graphics.Bitmap;
 
 /**
- * The image loading spec data.<br/>
- * <p/>
+ * The image loading spec data.<br>
+ * <br><br>
  * equals and hashCode are used to match image request that can reuse bitmaps by spec, so it
  * contains only the config that define unique reusable bitmap.
  */

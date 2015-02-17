@@ -25,9 +25,9 @@ import java.util.LinkedList;
 import java.util.Map;
 
 /**
- * Memory cache for image handler.<br/>
+ * Memory cache for image handler.<br>
  * Holds the images loaded two caches: large for images larger than 300px (width+height)
- * and small for smaller.<br/>
+ * and small for smaller.<br>
  * Caches may be evicted when memory pressure is detected.
  */
 public class MemoryPoolImpl implements MemoryPool {

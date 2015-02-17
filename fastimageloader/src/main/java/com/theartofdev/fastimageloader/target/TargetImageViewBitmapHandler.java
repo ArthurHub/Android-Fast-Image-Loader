@@ -31,7 +31,7 @@ public class TargetImageViewBitmapHandler extends TargetImageViewHandlerBase<Ima
 
     /**
      * {@inheritDoc}
-     * <p/>
+     * <br><br>
      * Set image view bitmap to null.
      */
     @Override
@@ -41,7 +41,7 @@ public class TargetImageViewBitmapHandler extends TargetImageViewHandlerBase<Ima
 
     /**
      * {@inheritDoc}
-     * <p/>
+     * <br><br>
      * Set image view bitmap to the loaded image.
      */
     @Override

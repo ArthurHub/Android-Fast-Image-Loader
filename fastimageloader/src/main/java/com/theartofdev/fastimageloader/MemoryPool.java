@@ -18,7 +18,7 @@ package com.theartofdev.fastimageloader;
 public interface MemoryPool {
 
     /**
-     * Retrieve an image for the specified {@code url} and {@code spec}.<br/>
+     * Retrieve an image for the specified {@code url} and {@code spec}.<br>
      * If not found for primary spec, use the alternative.
      */
     ReusableBitmap get(String url, ImageLoadSpec spec, ImageLoadSpec altSpec);
