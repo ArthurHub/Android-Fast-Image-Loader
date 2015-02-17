@@ -20,6 +20,7 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.concurrent.ThreadFactory;
 
 /**
  * General utility methods for Fast Image Loader internal use only.
@@ -212,4 +213,16 @@ public final class FILUtils {
         }
         return format;
     }
+
+    public static ThreadFactory threadFactory(final String name, final boolean daemon) {
+        return new ThreadFactory() {
+            @Override
+            public Thread newThread(Runnable runnable) {
+                Thread result = new Thread(runnable, name);
+                result.setDaemon(daemon);
+                return result;
+            }
+        };
+    }
+
 }

@@ -15,11 +15,8 @@ package com.theartofdev.fastimageloader.impl;
 import android.content.Context;
 import android.os.Handler;
 
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
-import com.squareup.okhttp.internal.Util;
 import com.theartofdev.fastimageloader.Decoder;
+import com.theartofdev.fastimageloader.HttpClient;
 import com.theartofdev.fastimageloader.MemoryPool;
 import com.theartofdev.fastimageloader.impl.util.FILLogger;
 import com.theartofdev.fastimageloader.impl.util.FILUtils;
@@ -45,7 +42,7 @@ public final class DownloaderImpl implements com.theartofdev.fastimageloader.Dow
     /**
      * The HTTP client used to execute download image requests
      */
-    private final OkHttpClient mClient;
+    private final HttpClient mClient;
 
     /**
      * Used to post execution to main thread.
@@ -80,7 +77,7 @@ public final class DownloaderImpl implements com.theartofdev.fastimageloader.Dow
      * @param client the OkHttp client to use to download the images.
      * @param decoder Handler for loading image bitmap object from file on disk.
      */
-    public DownloaderImpl(Context context, OkHttpClient client, MemoryPool memoryPool, Decoder decoder) {
+    public DownloaderImpl(Context context, HttpClient client, MemoryPool memoryPool, Decoder decoder) {
         FILUtils.notNull(client, "client");
         FILUtils.notNull(memoryPool, "memoryPool");
         FILUtils.notNull(decoder, "imageLoader");
@@ -92,11 +89,11 @@ public final class DownloaderImpl implements com.theartofdev.fastimageloader.Dow
         mHandler = new Handler(context.getMainLooper());
 
         mExecutor = new ThreadPoolExecutor(3, 3, 30, TimeUnit.SECONDS,
-                new LinkedBlockingQueue<Runnable>(), Util.threadFactory("ImageDownloader", true));
+                new LinkedBlockingQueue<Runnable>(), FILUtils.threadFactory("ImageDownloader", true));
         mExecutor.allowCoreThreadTimeOut(true);
 
         mPrefetchExecutor = new ThreadPoolExecutor(1, 1, 30, TimeUnit.SECONDS,
-                new LinkedBlockingQueue<Runnable>(), Util.threadFactory("ImagePrefetchDownloader", true));
+                new LinkedBlockingQueue<Runnable>(), FILUtils.threadFactory("ImagePrefetchDownloader", true));
         mPrefetchExecutor.allowCoreThreadTimeOut(true);
     }
 
@@ -142,11 +139,10 @@ public final class DownloaderImpl implements com.theartofdev.fastimageloader.Dow
             if (!canceled) {
 
                 // start image download request
-                Request httpRequest = new Request.Builder().url(imageRequest.getEnhancedUri()).build();
-                Response httpResponse = mClient.newCall(httpRequest).execute();
+                HttpClient.HttpResponse httpResponse = mClient.execute(imageRequest.getEnhancedUri());
 
                 // check handshake
-                responseCode = httpResponse.code();
+                responseCode = httpResponse.getCode();
                 if (responseCode < 300) {
                     canceled = !imageRequest.isValid();
                     if (!canceled) {
@@ -156,8 +152,8 @@ public final class DownloaderImpl implements com.theartofdev.fastimageloader.Dow
                         canceled = !imageRequest.isValid();
                     }
                 } else {
-                    error = new ConnectException(httpResponse.code() + ": " + httpResponse.message());
-                    FILLogger.error("Failed to download image... [{}] [{}] [{}]", httpResponse.code(), httpResponse.message(), imageRequest);
+                    error = new ConnectException(httpResponse.getCode() + ": " + httpResponse.getErrorMessage());
+                    FILLogger.error("Failed to download image... [{}] [{}] [{}]", httpResponse.getCode(), httpResponse.getErrorMessage(), imageRequest);
                 }
             }
         } catch (Exception e) {
@@ -191,14 +187,14 @@ public final class DownloaderImpl implements com.theartofdev.fastimageloader.Dow
      *
      * @return true - download successful, false - otherwise.
      */
-    private boolean download(ImageRequest imageRequest, Response response) throws IOException {
+    private boolean download(ImageRequest imageRequest, HttpClient.HttpResponse response) throws IOException {
 
         byte[] buffer = null;
         InputStream in = null;
         OutputStream out = null;
         File tmpFile = new File(imageRequest.getFile().getAbsolutePath() + "_tmp");
         try {
-            in = response.body().byteStream();
+            in = response.getBodyStream();
             out = new FileOutputStream(tmpFile);
 
             int len = 0;
@@ -206,7 +202,7 @@ public final class DownloaderImpl implements com.theartofdev.fastimageloader.Dow
             buffer = getBuffer();
 
             // don't cancel download if passed 50%
-            long contentLength = FILUtils.parseLong(response.header("content-length"), -1);
+            long contentLength = response.getContentLength();
             while ((contentLength < 0 || contentLength * .5f < size || imageRequest.isValid()) && (len = in.read(buffer)) != -1) {
                 size += len;
                 out.write(buffer, 0, len);

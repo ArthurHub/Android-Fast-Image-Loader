@@ -16,13 +16,13 @@ import android.app.Application;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.squareup.okhttp.OkHttpClient;
 import com.theartofdev.fastimageloader.adapter.IdentityAdapter;
 import com.theartofdev.fastimageloader.impl.DecoderImpl;
 import com.theartofdev.fastimageloader.impl.DiskCacheImpl;
 import com.theartofdev.fastimageloader.impl.DownloaderImpl;
 import com.theartofdev.fastimageloader.impl.LoaderHandler;
 import com.theartofdev.fastimageloader.impl.MemoryPoolImpl;
+import com.theartofdev.fastimageloader.impl.OkHttpClient;
 import com.theartofdev.fastimageloader.impl.util.FILLogger;
 import com.theartofdev.fastimageloader.impl.util.FILUtils;
 import com.theartofdev.fastimageloader.target.TargetHelper;
@@ -30,7 +30,6 @@ import com.theartofdev.fastimageloader.target.TargetHelper;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 /**
  * TODO:a add doc
@@ -90,9 +89,9 @@ public final class FastImageLoader {
     private Downloader mDownloader;
 
     /**
-     * The OK HTTP client to be used to download images
+     * The HTTP client to be used to download images
      */
-    private OkHttpClient mHttpClient;
+    private HttpClient mHttpClient;
     //endregion
 
     /**
@@ -106,7 +105,7 @@ public final class FastImageLoader {
      * Image loader can be initialized only once where you can set all the configuration
      * properties:
      * {@link #setDefaultImageServiceAdapter(ImageServiceAdapter)},
-     * {@link #setHttpClient(com.squareup.okhttp.OkHttpClient)},
+     * {@link #setHttpClient(HttpClient)},
      * {@link #setDebugIndicator(boolean)}.
      *
      * @param application the android mApplication instance
@@ -168,10 +167,10 @@ public final class FastImageLoader {
     }
 
     /**
-     * The OK HTTP client to be used to download images
+     * The HTTP client to be used to download images
      * This setter is ignored if {@link #setDownloader(Downloader)} is used.
      */
-    public FastImageLoader setHttpClient(OkHttpClient httpClient) {
+    public FastImageLoader setHttpClient(HttpClient httpClient) {
         mHttpClient = httpClient;
         return INST;
     }
@@ -334,8 +333,6 @@ public final class FastImageLoader {
                 if (mDownloader == null) {
                     if (INST.mHttpClient == null) {
                         INST.mHttpClient = new OkHttpClient();
-                        INST.mHttpClient.setConnectTimeout(10, TimeUnit.SECONDS);
-                        INST.mHttpClient.setReadTimeout(15, TimeUnit.SECONDS);
                     }
                     mDownloader = new DownloaderImpl(mApplication, mHttpClient, mMemoryPool, mDecoder);
                 }
