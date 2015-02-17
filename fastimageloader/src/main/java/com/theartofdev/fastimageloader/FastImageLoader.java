@@ -22,7 +22,7 @@ import com.theartofdev.fastimageloader.impl.DiskCacheImpl;
 import com.theartofdev.fastimageloader.impl.DownloaderImpl;
 import com.theartofdev.fastimageloader.impl.LoaderHandler;
 import com.theartofdev.fastimageloader.impl.MemoryPoolImpl;
-import com.theartofdev.fastimageloader.impl.OkHttpClient;
+import com.theartofdev.fastimageloader.impl.NativeHttpClient;
 import com.theartofdev.fastimageloader.impl.util.FILLogger;
 import com.theartofdev.fastimageloader.impl.util.FILUtils;
 import com.theartofdev.fastimageloader.target.TargetHelper;
@@ -332,7 +332,8 @@ public final class FastImageLoader {
                 }
                 if (mDownloader == null) {
                     if (INST.mHttpClient == null) {
-                        INST.mHttpClient = new OkHttpClient();
+                        INST.mHttpClient = new NativeHttpClient();
+                        //INST.mHttpClient = new OkHttpClient();
                     }
                     mDownloader = new DownloaderImpl(mApplication, mHttpClient, mMemoryPool, mDecoder);
                 }
