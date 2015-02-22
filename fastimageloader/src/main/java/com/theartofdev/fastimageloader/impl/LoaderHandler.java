@@ -152,7 +152,7 @@ public final class LoaderHandler implements DiskCacheImpl.Callback, DownloaderIm
                     mLoadingRequests.put(imageKey, request);
 
                     FILLogger.debug("Add prefetch request... [{}]", request);
-                    mDownloader.downloadAsync(request, true, this);
+                    mDownloader.downloadAsync(request, true, mDecoder, mMemoryPool, this);
                 }
             }
         } catch (Exception e) {
@@ -186,7 +186,7 @@ public final class LoaderHandler implements DiskCacheImpl.Callback, DownloaderIm
                     if (request != null) {
                         FILLogger.debug("Memory cache miss, image already requested, add target to request... [{}] [{}]", request, target);
                         if (request.addTargetAndCheck(target)) {
-                            mDownloader.downloadAsync(request, false, this);
+                            mDownloader.downloadAsync(request, false, mDecoder, mMemoryPool, this);
                         }
                     } else {
                         // start async process of loading image from disk cache or network
@@ -253,7 +253,7 @@ public final class LoaderHandler implements DiskCacheImpl.Callback, DownloaderIm
                         mDiskCache.getAsync(imageRequest, null, mDecoder, mMemoryPool, this);
                     } else {
                         mNetworkRequests++;
-                        mDownloader.downloadAsync(imageRequest, false, this);
+                        mDownloader.downloadAsync(imageRequest, false, mDecoder, mMemoryPool, this);
                     }
                 }
             } else {

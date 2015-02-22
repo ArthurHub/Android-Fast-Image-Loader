@@ -50,11 +50,6 @@ public final class DownloaderImpl implements com.theartofdev.fastimageloader.Dow
     private final Handler mHandler;
 
     /**
-     * Used to load images from the disk.
-     */
-    private final Decoder mDecoder;
-
-    /**
      * Threads service for download operations.
      */
     private final ThreadPoolExecutor mExecutor;
@@ -68,23 +63,17 @@ public final class DownloaderImpl implements com.theartofdev.fastimageloader.Dow
      * the buffers used to download image
      */
     private final byte[][] mBuffers = new byte[4][];
-
-    private MemoryPool mMemoryPool;
     //endregion
 
     /**
-     * @param context
+     * @param context the application object to read config stuff
      * @param client the OkHttp client to use to download the images.
-     * @param decoder Used to decode images from the disk to bitmap.
      */
-    public DownloaderImpl(Context context, HttpClient client, MemoryPool memoryPool, Decoder decoder) {
+    public DownloaderImpl(Context context, HttpClient client) {
+        FILUtils.notNull(context, "context");
         FILUtils.notNull(client, "client");
-        FILUtils.notNull(memoryPool, "memoryPool");
-        FILUtils.notNull(decoder, "imageLoader");
 
         mClient = client;
-        mMemoryPool = memoryPool;
-        mDecoder = decoder;
 
         mHandler = new Handler(context.getMainLooper());
 
@@ -98,7 +87,7 @@ public final class DownloaderImpl implements com.theartofdev.fastimageloader.Dow
     }
 
     @Override
-    public void downloadAsync(final ImageRequest imageRequest, final boolean prefetch, final Callback callback) {
+    public void downloadAsync(final ImageRequest imageRequest, final boolean prefetch, final Decoder decoder, final MemoryPool memoryPool, final Callback callback) {
         Executor executor = prefetch ? mPrefetchExecutor : mExecutor;
         executor.execute(new Runnable() {
             @Override
@@ -106,7 +95,7 @@ public final class DownloaderImpl implements com.theartofdev.fastimageloader.Dow
                 // mark start download, the first to do this will win (sync between prefetch and load)
                 if ((prefetch || !imageRequest.isPrefetch()) && imageRequest.startDownload()) {
                     FILLogger.debug("Start image request download... [{}]", imageRequest);
-                    final boolean canceled = download(imageRequest);
+                    final boolean canceled = download(imageRequest, decoder, memoryPool);
                     final boolean downloaded = imageRequest.getFileSize() > 0;
                     mHandler.post(new Runnable() {
                         @Override
@@ -128,7 +117,7 @@ public final class DownloaderImpl implements com.theartofdev.fastimageloader.Dow
      *
      * @return 0: downloaded, canceled - false, 10: downloaded
      */
-    private boolean download(final ImageRequest imageRequest) {
+    private boolean download(final ImageRequest imageRequest, final Decoder decoder, final MemoryPool memoryPool) {
         int responseCode = 0;
         Exception error = null;
         boolean canceled = false;
@@ -171,7 +160,7 @@ public final class DownloaderImpl implements com.theartofdev.fastimageloader.Dow
             if (!canceled) {
                 canceled = false;
                 if (!imageRequest.isPrefetch()) {
-                    mDecoder.decode(mMemoryPool, imageRequest, imageRequest.getFile(), imageRequest.getSpec());
+                    decoder.decode(memoryPool, imageRequest, imageRequest.getFile(), imageRequest.getSpec());
                 }
             }
         }
