@@ -223,6 +223,7 @@ public final class FastImageLoader {
      */
     public static ImageLoadSpecBuilder buildSpec(String key) {
         FILUtils.notNullOrEmpty(key, "key");
+        FILUtils.verifyOnMainThread();
 
         INST.finishInit();
         if (INST.mSpecs.containsKey(key)) {
@@ -252,6 +253,8 @@ public final class FastImageLoader {
      */
     public static void prefetchImage(String uri, String specKey) {
         FILUtils.notNullOrEmpty(specKey, "specKey");
+        FILUtils.verifyOnMainThread();
+
         if (!TextUtils.isEmpty(uri)) {
 
             INST.finishInit();
@@ -280,6 +283,7 @@ public final class FastImageLoader {
      */
     public static void loadImage(Target target, String altSpecKey) {
         FILUtils.notNull(target, "target");
+        FILUtils.verifyOnMainThread();
 
         INST.finishInit();
         ImageLoadSpec spec = INST.mSpecs.get(target.getSpecKey());
@@ -327,6 +331,8 @@ public final class FastImageLoader {
     private void finishInit() {
         if (INST.mLoaderHandler == null) {
             if (INST.mApplication != null) {
+                FILUtils.verifyOnMainThread();
+
                 if (INST.mDefaultImageServiceAdapter == null) {
                     FILLogger.debug("Use default identity image service adapter...");
                     INST.mDefaultImageServiceAdapter = new IdentityAdapter();
