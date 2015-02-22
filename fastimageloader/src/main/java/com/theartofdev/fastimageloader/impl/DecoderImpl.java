@@ -31,16 +31,10 @@ public class DecoderImpl implements Decoder {
     //region: Fields and Consts
 
     /**
-     * Used to reuse bitmaps on image loading from disk
+     * Used to reuse bitmaps on image loading from disk.
      */
-    private final BitmapFactory.Options mOptions;
+    private final BitmapFactory.Options[] mOptions = new BitmapFactory.Options[2];
     //endregion
-
-    public DecoderImpl() {
-        mOptions = new BitmapFactory.Options();
-        mOptions.inSampleSize = 1;
-        mOptions.inMutable = true;
-    }
 
     @Override
     public void decode(MemoryPool memoryPool, ImageRequest imageRequest, File file, ImageLoadSpec spec) {
@@ -62,11 +56,13 @@ public class DecoderImpl implements Decoder {
      * Load image from disk file on the current thread and set it in the image request object.
      */
     protected ReusableBitmap decode(File file, ImageLoadSpec spec, ReusableBitmap poolBitmap) {
-        try {
-            mOptions.inBitmap = poolBitmap != null ? poolBitmap.getBitmap() : null;
-            mOptions.inPreferredConfig = spec.getPixelConfig();
 
-            Bitmap rawBitmap = BitmapFactory.decodeFile(file.getAbsolutePath(), mOptions);
+        BitmapFactory.Options options = getOptions();
+        try {
+            options.inBitmap = poolBitmap != null ? poolBitmap.getBitmap() : null;
+            options.inPreferredConfig = spec.getPixelConfig();
+
+            Bitmap rawBitmap = BitmapFactory.decodeFile(file.getAbsolutePath(), options);
             if (rawBitmap != null) {
                 if (poolBitmap != null && poolBitmap.getBitmap() == rawBitmap) {
                     // successful load of image into reusable bitmap
@@ -82,6 +78,48 @@ public class DecoderImpl implements Decoder {
         } catch (Throwable e) {
             FILLogger.warn("Failed to load disk cached image [{}] [{}] [{}]", e, file, spec, poolBitmap);
             return null;
+        } finally {
+            returnOptions(options);
+        }
+    }
+
+    /**
+     * Get options to be used for decoding, use existing if possible.
+     */
+    private BitmapFactory.Options getOptions() {
+        BitmapFactory.Options options = null;
+        synchronized (mOptions) {
+            for (int i = 0; i < mOptions.length; i++) {
+                if (mOptions[i] != null) {
+                    options = mOptions[i];
+                    mOptions[i] = null;
+                    break;
+                }
+            }
+        }
+        if (options == null) {
+            options = new BitmapFactory.Options();
+            options.inSampleSize = 1;
+            options.inMutable = true;
+            options.inTempStorage = new byte[16 * 1024];
+        }
+        return options;
+    }
+
+    /**
+     * Return options to be used for decoding to reuse object.
+     */
+    private void returnOptions(BitmapFactory.Options options) {
+        if (options != null) {
+            options.inBitmap = null;
+            synchronized (mOptions) {
+                for (int i = 0; i < mOptions.length; i++) {
+                    if (mOptions[i] == null) {
+                        mOptions[i] = options;
+                        break;
+                    }
+                }
+            }
         }
     }
 }
