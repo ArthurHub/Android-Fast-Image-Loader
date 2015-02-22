@@ -14,6 +14,7 @@ package com.theartofdev.fastimageloader;
 
 import android.app.Application;
 import android.text.TextUtils;
+import android.text.format.DateUtils;
 import android.util.Log;
 
 import com.theartofdev.fastimageloader.adapter.IdentityAdapter;
@@ -68,6 +69,16 @@ public final class FastImageLoader {
      * The folder to use for disk caching.
      */
     private File mCacheFolder;
+
+    /**
+     * The max size of the cache (50MB)
+     */
+    private long mCacheMaxSize = 50 * 1024 * 1024;
+
+    /**
+     * The max time image is cached without use before delete
+     */
+    private long mCacheTtl = 8 * DateUtils.DAY_IN_MILLIS;
 
     /**
      * Used to decode images from the disk to bitmap.
@@ -137,36 +148,59 @@ public final class FastImageLoader {
      * Set the folder to use for disk caching.<br>
      * This setter is ignored if {@link #setDiskCache(DiskCache)} is used.
      */
-    public void setCacheFolder(File cacheFolder) {
+    public FastImageLoader setCacheFolder(File cacheFolder) {
         mCacheFolder = cacheFolder;
+        return INST;
+    }
+
+    /**
+     * The max size of the disk cache (default 50MB).<br>
+     * This setter is ignored if {@link #setDiskCache(DiskCache)} is used.
+     */
+    public FastImageLoader setCacheMaxSize(long cacheMaxSize) {
+        mCacheMaxSize = cacheMaxSize;
+        return INST;
+    }
+
+    /**
+     * The max time image is cached without use before is delete (default 8 days).<br>
+     * This setter is ignored if {@link #setDiskCache(DiskCache)} is used.
+     */
+    public FastImageLoader setCacheTtl(long cacheTtl) {
+        mCacheTtl = cacheTtl;
+        return INST;
     }
 
     /**
      * Used to decode images from the disk to bitmap.
      */
-    public void setDecoder(Decoder decoder) {
+    public FastImageLoader setDecoder(Decoder decoder) {
         mDecoder = decoder;
+        return INST;
     }
 
     /**
      * Set the memory pool handler to be used.
      */
-    public void setMemoryPool(MemoryPool memoryPool) {
+    public FastImageLoader setMemoryPool(MemoryPool memoryPool) {
         mMemoryPool = memoryPool;
+        return INST;
     }
 
     /**
      * Set the disk cache handler to be used.
      */
-    public void setDiskCache(DiskCache diskCache) {
+    public FastImageLoader setDiskCache(DiskCache diskCache) {
         mDiskCache = diskCache;
+        return INST;
     }
 
     /**
      * Set the downloader handler to be used.
      */
-    public void setDownloader(Downloader downloader) {
+    public FastImageLoader setDownloader(Downloader downloader) {
         mDownloader = downloader;
+        return INST;
     }
 
     /**
@@ -351,7 +385,7 @@ public final class FastImageLoader {
                         mCacheFolder = new File(FILUtils.pathCombine(mApplication.getCacheDir().getPath(), "ImageCache"));
                     }
                     FILLogger.debug("Use default disk cache... [{}]", mCacheFolder);
-                    mDiskCache = new DiskCacheImpl(mApplication, mCacheFolder);
+                    mDiskCache = new DiskCacheImpl(mApplication, mCacheFolder, mCacheMaxSize, mCacheTtl);
                 }
                 if (mDownloader == null) {
                     initHttpClient();

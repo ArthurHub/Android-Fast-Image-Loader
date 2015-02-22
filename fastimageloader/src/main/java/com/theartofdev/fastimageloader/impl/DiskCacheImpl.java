@@ -51,22 +51,22 @@ public class DiskCacheImpl implements com.theartofdev.fastimageloader.DiskCache 
     /**
      * The max size of the cache (50MB)
      */
-    protected static final long MAX_SIZE = 50 * 1024 * 1024;
+    protected final long mMaxSize;
 
     /**
      * The bound to delete cached data to this size
      */
-    protected static final long MAX_SIZE_LOWER_BOUND = (long) (MAX_SIZE * .8);
+    protected final long mMaxSizeLowerBound;
 
     /**
      * The max time image is cached without use before delete
      */
-    protected static final long TTL = 8 * DateUtils.DAY_IN_MILLIS;
+    protected final long mCacheTtl;
 
     /**
      * The interval to execute cache scan even when max size has not reached
      */
-    protected static final long SCAN_INTERVAL = 3 * DateUtils.DAY_IN_MILLIS;
+    protected final long SCAN_INTERVAL = 2 * DateUtils.DAY_IN_MILLIS;
 
     /**
      * the folder that the image cached on disk are located
@@ -101,13 +101,19 @@ public class DiskCacheImpl implements com.theartofdev.fastimageloader.DiskCache 
 
     /**
      * @param context the application object to read config stuff
+     * @param cacheFolder the folder to keep the cached image data
+     * @param maxSize the max size of the disk cache in bytes
+     * @param cacheTtl the max time a cached image remains in cache without use before deletion
      */
-    public DiskCacheImpl(Context context, File cacheFolder) {
+    public DiskCacheImpl(Context context, File cacheFolder, long maxSize, long cacheTtl) {
         FILUtils.notNull(context, "context");
         FILUtils.notNull(cacheFolder, "cacheFolder");
 
         mContext = context;
         mCacheFolder = cacheFolder;
+        mMaxSize = maxSize;
+        mCacheTtl = cacheTtl;
+        mMaxSizeLowerBound = (long) (mMaxSize * .8);
 
         //noinspection ResultOfMethodCallIgnored
         mCacheFolder.mkdirs();
@@ -165,7 +171,7 @@ public class DiskCacheImpl implements com.theartofdev.fastimageloader.DiskCache 
     @Override
     public void imageAdded(long size) {
         mCurrentCacheSize += size;
-        if (mLastCacheScanTime < 1 || mLastCacheScanTime + SCAN_INTERVAL < System.currentTimeMillis() || mCurrentCacheSize > MAX_SIZE) {
+        if (mLastCacheScanTime < 1 || mLastCacheScanTime + SCAN_INTERVAL < System.currentTimeMillis() || mCurrentCacheSize > mMaxSize) {
             mScanExecutorService.execute(new Runnable() {
                 @Override
                 public void run() {
@@ -180,19 +186,7 @@ public class DiskCacheImpl implements com.theartofdev.fastimageloader.DiskCache 
         mReadExecutorService.execute(new Runnable() {
             @Override
             public void run() {
-                String[] list = mCacheFolder.list();
-                for (String filePath : list) {
-                    try {
-                        File file = new File(FILUtils.pathCombine(mCacheFolder.getAbsolutePath(), filePath));
-                        //noinspection ResultOfMethodCallIgnored
-                        file.delete();
-                    } catch (Exception e) {
-                        FILLogger.warn("Failed to delete disk cached image", e);
-                    }
-                }
-                mCurrentCacheSize = 0;
-                mLastCacheScanTime = System.currentTimeMillis();
-                saveStats();
+                clearCache();
             }
         });
     }
@@ -224,7 +218,12 @@ public class DiskCacheImpl implements com.theartofdev.fastimageloader.DiskCache 
      * Load the given cached image file into reusable bitmap, post result on given callback.<br>
      * This method is executed on a dedicated separate thread.
      */
-    protected void loadImageFromCache(final ImageRequest imageRequest, File file, ImageLoadSpec spec, Decoder decoder, MemoryPool memoryPool, final Callback callback) {
+    protected void loadImageFromCache(ImageRequest imageRequest,
+                                      File file,
+                                      ImageLoadSpec spec,
+                                      Decoder decoder,
+                                      MemoryPool memoryPool,
+                                      Callback callback) {
 
         final boolean canceled = !imageRequest.isValid();
         if (!canceled) {
@@ -243,7 +242,7 @@ public class DiskCacheImpl implements com.theartofdev.fastimageloader.DiskCache 
             if (mLastCacheScanTime < 1) {
                 loadStats();
             }
-            if (mLastCacheScanTime + SCAN_INTERVAL < System.currentTimeMillis() || mCurrentCacheSize > MAX_SIZE) {
+            if (mLastCacheScanTime + SCAN_INTERVAL < System.currentTimeMillis() || mCurrentCacheSize > mMaxSize) {
                 long startTime = System.currentTimeMillis();
                 try {
                     long totalSize = 0;
@@ -256,7 +255,7 @@ public class DiskCacheImpl implements com.theartofdev.fastimageloader.DiskCache 
                     for (int i = 0; i < allImages.length; i++) {
                         long fileSize = allImages[i].length();
                         totalSizeFull += fileSize;
-                        if (allImages[i].lastModified() + TTL < System.currentTimeMillis()) {
+                        if (allImages[i].lastModified() + mCacheTtl < System.currentTimeMillis()) {
                             if (allImages[i].delete()) {
                                 deleteByTTL++;
                                 allImages[i] = null;
@@ -267,7 +266,7 @@ public class DiskCacheImpl implements com.theartofdev.fastimageloader.DiskCache 
                     }
 
                     // if cache max size reached, need to delete LRU images
-                    if (totalSize > MAX_SIZE) {
+                    if (totalSize > mMaxSize) {
 
                         // sort all cached files by last access date
                         Arrays.sort(allImages, new Comparator<File>() {
@@ -280,7 +279,7 @@ public class DiskCacheImpl implements com.theartofdev.fastimageloader.DiskCache 
                         });
 
                         // delete cached images until cache size is reduced to 90% of max
-                        for (int i = 0; i < allImages.length && totalSize > MAX_SIZE_LOWER_BOUND; i++) {
+                        for (int i = 0; i < allImages.length && totalSize > mMaxSizeLowerBound; i++) {
                             if (allImages[i] != null) {
                                 long length = allImages[i].length();
                                 if (allImages[i].delete()) {
@@ -306,6 +305,25 @@ public class DiskCacheImpl implements com.theartofdev.fastimageloader.DiskCache 
         } catch (Exception e) {
             FILLogger.critical("Error in image disk cache scan", e);
         }
+    }
+
+    /**
+     * Delete all cached images and update the cache scan data.
+     */
+    protected void clearCache() {
+        String[] list = mCacheFolder.list();
+        for (String filePath : list) {
+            try {
+                File file = new File(FILUtils.pathCombine(mCacheFolder.getAbsolutePath(), filePath));
+                //noinspection ResultOfMethodCallIgnored
+                file.delete();
+            } catch (Exception e) {
+                FILLogger.warn("Failed to delete disk cached image", e);
+            }
+        }
+        mCurrentCacheSize = 0;
+        mLastCacheScanTime = System.currentTimeMillis();
+        saveStats();
     }
 
     /**
