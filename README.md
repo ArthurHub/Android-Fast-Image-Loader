@@ -5,7 +5,7 @@ This library requires fine-tuning work, if you are just looking for simple libra
 
 ### Quick Start   
 ```      
-compile  'com.theartofdev.fastimageloader:fastimageloader:0.9.+'  (soon)
+compile  'com.theartofdev:fast-image-loader:0.8.+'
 ```   
 
 soon…   
