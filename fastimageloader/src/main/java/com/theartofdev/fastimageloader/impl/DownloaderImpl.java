@@ -12,9 +12,6 @@
 
 package com.theartofdev.fastimageloader.impl;
 
-import android.content.Context;
-import android.os.Handler;
-
 import com.theartofdev.fastimageloader.Decoder;
 import com.theartofdev.fastimageloader.HttpClient;
 import com.theartofdev.fastimageloader.MemoryPool;
@@ -45,11 +42,6 @@ public final class DownloaderImpl implements com.theartofdev.fastimageloader.Dow
     private final HttpClient mClient;
 
     /**
-     * Used to post execution to main thread.
-     */
-    private final Handler mHandler;
-
-    /**
      * Threads service for download operations.
      */
     private final ThreadPoolExecutor mExecutor;
@@ -66,16 +58,12 @@ public final class DownloaderImpl implements com.theartofdev.fastimageloader.Dow
     //endregion
 
     /**
-     * @param context the application object to read config stuff
      * @param client the OkHttp client to use to download the images.
      */
-    public DownloaderImpl(Context context, HttpClient client) {
-        FILUtils.notNull(context, "context");
+    public DownloaderImpl(HttpClient client) {
         FILUtils.notNull(client, "client");
 
         mClient = client;
-
-        mHandler = new Handler(context.getMainLooper());
 
         mExecutor = new ThreadPoolExecutor(3, 3, 30, TimeUnit.SECONDS,
                 new LinkedBlockingQueue<Runnable>(), FILUtils.threadFactory("ImageDownloader", true));
@@ -95,14 +83,9 @@ public final class DownloaderImpl implements com.theartofdev.fastimageloader.Dow
                 // mark start download, the first to do this will win (sync between prefetch and load)
                 if ((prefetch || !imageRequest.isPrefetch()) && imageRequest.startDownload()) {
                     FILLogger.debug("Start image request download... [{}]", imageRequest);
-                    final boolean canceled = download(imageRequest, decoder, memoryPool);
-                    final boolean downloaded = imageRequest.getFileSize() > 0;
-                    mHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            callback.loadImageDownloaderCallback(imageRequest, downloaded, canceled);
-                        }
-                    });
+                    boolean canceled = download(imageRequest, decoder, memoryPool);
+                    boolean downloaded = imageRequest.getFileSize() > 0;
+                    callback.loadImageDownloaderCallback(imageRequest, downloaded, canceled);
                 } else {
                     FILLogger.debug("Image request download already handled [{}]", imageRequest);
                 }

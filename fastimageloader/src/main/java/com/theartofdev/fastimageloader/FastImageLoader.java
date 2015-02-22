@@ -351,7 +351,7 @@ public final class FastImageLoader {
                     initHttpClient();
 
                     FILLogger.debug("Use default downloader...");
-                    mDownloader = new DownloaderImpl(mApplication, mHttpClient);
+                    mDownloader = new DownloaderImpl(mHttpClient);
                 }
 
                 FILLogger.debug("Create load handler... [{}] [{}] [{}]", mMemoryPool, mDiskCache, mDownloader);

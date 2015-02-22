@@ -239,6 +239,19 @@ public final class LoaderHandler implements DiskCacheImpl.Callback, DownloaderIm
             });
     }
 
+    @Override
+    public void loadImageDownloaderCallback(final ImageRequest imageRequest, final boolean downloaded, final boolean canceled) {
+        if (FILUtils.isOnMainThread()) {
+            onLoadImageDownloaderCallback(imageRequest, downloaded, canceled);
+        } else
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    onLoadImageDownloaderCallback(imageRequest, downloaded, canceled);
+                }
+            });
+    }
+
     /**
      * Callback after the disk cache loaded the image or returned cache miss.<br>
      * Hit - set the loaded image on the requesting target.<br>
@@ -294,8 +307,7 @@ public final class LoaderHandler implements DiskCacheImpl.Callback, DownloaderIm
      * Success - set the loaded image on the requesting target.<br>
      * Failed - set failure on the requesting target.<br>
      */
-    @Override
-    public void loadImageDownloaderCallback(ImageRequest imageRequest, boolean downloaded, boolean canceled) {
+    private void onLoadImageDownloaderCallback(ImageRequest imageRequest, boolean downloaded, boolean canceled) {
         try {
             FILLogger.debug("Load image from network callback... [{}] [Downloaded: {}] [Canceled: {}]", imageRequest, downloaded, canceled);
 
