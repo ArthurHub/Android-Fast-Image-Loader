@@ -271,6 +271,8 @@ public abstract class TargetImageViewHandlerBase<T extends ImageView> implements
         mLoadState = LoadState.FAILED;
         if (mImageView.getDrawable() == null) {
             clearImage();
+            mUrl = url;
+            mSpecKey = specKey;
             mImageView.invalidate();
         }
         FILLogger.operation(url, specKey, null, false, System.currentTimeMillis() - mStartImageLoadTime);

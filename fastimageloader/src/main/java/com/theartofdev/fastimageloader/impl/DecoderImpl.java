@@ -73,14 +73,17 @@ public class DecoderImpl implements Decoder {
                 return new ReusableBitmap(rawBitmap, spec);
             } else {
                 FILLogger.critical("Failed to load image from cache [{}] [{}] [{}]", file, spec, poolBitmap);
-                return null;
             }
         } catch (Throwable e) {
             FILLogger.warn("Failed to load disk cached image [{}] [{}] [{}]", e, file, spec, poolBitmap);
-            return null;
         } finally {
             returnOptions(options);
         }
+        if (poolBitmap != null) {
+            FILLogger.warn("Retry image decode without pool bitmap... [{}] [{}]", file, spec);
+            return decode(file, spec, null);
+        }
+        return null;
     }
 
     /**
