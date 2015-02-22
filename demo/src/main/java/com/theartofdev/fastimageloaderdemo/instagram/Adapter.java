@@ -31,7 +31,7 @@ public final class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
 
     private InstagramService mService;
 
-    private Item[] mItems = new Item[0];
+    private static Item[] mItems = new Item[0];
 
     public Adapter() {
         RestAdapter restAdapter = new RestAdapter.Builder()
@@ -46,25 +46,27 @@ public final class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
     }
 
     public void loadData(final Callback<Feed> callback) {
-        mService.getFeed(new Callback<Feed>() {
-            @Override
-            public void success(Feed feed, Response response) {
-                mItems = feed.data;
-                if (AppApplication.mPrefetchImages) {
-                    for (Item item : mItems) {
-                        FastImageLoader.prefetchImage(item.user.profile_picture, Specs.INSTA_IMAGE);
-                        FastImageLoader.prefetchImage(item.images.standard_resolution.url, Specs.INSTA_IMAGE);
+        if (mItems.length < 1) {
+            mService.getFeed(new Callback<Feed>() {
+                @Override
+                public void success(Feed feed, Response response) {
+                    mItems = feed.data;
+                    if (AppApplication.mPrefetchImages) {
+                        for (Item item : mItems) {
+                            FastImageLoader.prefetchImage(item.user.profile_picture, Specs.INSTA_IMAGE);
+                            FastImageLoader.prefetchImage(item.images.standard_resolution.url, Specs.INSTA_IMAGE);
+                        }
                     }
+                    Adapter.this.notifyDataSetChanged();
+                    callback.success(feed, response);
                 }
-                Adapter.this.notifyDataSetChanged();
-                callback.success(feed, response);
-            }
 
-            @Override
-            public void failure(RetrofitError error) {
-                callback.failure(error);
-            }
-        });
+                @Override
+                public void failure(RetrofitError error) {
+                    callback.failure(error);
+                }
+            });
+        }
     }
 
     // Create new views (invoked by the layout manager)

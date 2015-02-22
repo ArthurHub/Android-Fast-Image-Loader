@@ -13,12 +13,14 @@
 package com.theartofdev.fastimageloaderdemo.zoom;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.theartofdev.fastimageloader.LoadedFrom;
 import com.theartofdev.fastimageloader.ReusableBitmap;
+import com.theartofdev.fastimageloader.target.TargetHelper;
 import com.theartofdev.fastimageloader.target.TargetImageViewBitmapHandler;
 
 import uk.co.senab.photoview.PhotoView;
@@ -35,11 +37,13 @@ public class ZoomImageView extends PhotoView {
     public ZoomImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
         mHandler = new ZoomTargetImageViewBitmapHandler(this);
+        mHandler.setInvalidateOnDownloading(true);
     }
 
     public ZoomImageView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         mHandler = new ZoomTargetImageViewBitmapHandler(this);
+        mHandler.setInvalidateOnDownloading(true);
     }
 
     /**
@@ -61,6 +65,18 @@ public class ZoomImageView extends PhotoView {
             mHandler.onViewShown();
         } else {
             mHandler.onViewHidden();
+        }
+    }
+
+    /**
+     * Override draw to draw download progress indicator.
+     */
+    @Override
+    public void onDraw(@SuppressWarnings("NullableProblems") Canvas canvas) {
+        super.onDraw(canvas);
+
+        if (mHandler.getContentLength() > 0 && mHandler.getDownloaded() < mHandler.getContentLength()) {
+            TargetHelper.drawProgressIndicator(canvas, mHandler.getDownloaded(), mHandler.getContentLength());
         }
     }
 

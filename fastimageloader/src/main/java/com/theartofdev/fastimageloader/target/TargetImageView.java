@@ -25,7 +25,7 @@ import com.theartofdev.fastimageloader.impl.util.FILUtils;
  * {@link ImageView} with embedded handling of loading image using {@link com.theartofdev.fastimageloader.FastImageLoader}
  * and managing its lifecycle.
  */
-public class TargetImageView extends ImageView implements TargetImageViewHandlerBase.TargetProgressImageView {
+public class TargetImageView extends ImageView {
 
     //region: Fields and Consts
 
@@ -38,31 +38,24 @@ public class TargetImageView extends ImageView implements TargetImageViewHandler
      * The placeholder drawable to draw while the image is not loaded
      */
     protected Drawable mPlaceholder;
-
-    /**
-     * the number of bytes already downloaded
-     */
-    protected long mDownloaded;
-
-    /**
-     * the total number of bytes to download
-     */
-    protected long mContentLength;
     //endregion
 
     public TargetImageView(Context context) {
         super(context);
         mHandler = new TargetImageViewDrawableHandler(this);
+        mHandler.setInvalidateOnDownloading(true);
     }
 
     public TargetImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
         mHandler = new TargetImageViewDrawableHandler(this);
+        mHandler.setInvalidateOnDownloading(true);
     }
 
     public TargetImageView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         mHandler = new TargetImageViewDrawableHandler(this);
+        mHandler.setInvalidateOnDownloading(true);
     }
 
     /**
@@ -94,6 +87,20 @@ public class TargetImageView extends ImageView implements TargetImageViewHandler
     }
 
     /**
+     * If to show download progress indicator when the requested image is downloading.
+     */
+    public boolean isShowDownloadProgressIndicator() {
+        return mHandler.isInvalidateOnDownloading();
+    }
+
+    /**
+     * If to show download progress indicator when the requested image is downloading.
+     */
+    public void setShowDownloadProgressIndicator(boolean show) {
+        mHandler.setInvalidateOnDownloading(show);
+    }
+
+    /**
      * The placeholder drawable to draw while the image is not loaded
      */
     public Drawable getPlaceholder() {
@@ -115,19 +122,10 @@ public class TargetImageView extends ImageView implements TargetImageViewHandler
         }
     }
 
-    @Override
-    public void onBitmapDownloading(long downloaded, long contentLength) {
-        mDownloaded = downloaded;
-        mContentLength = contentLength;
-        postInvalidate();
-    }
-
     /**
      * See: {@link #loadImage(String, String, String, boolean)}.
      */
     public void loadImage(String url, String specKey) {
-        mDownloaded = 0;
-        mContentLength = 0;
         mHandler.loadImage(url, specKey, null, false);
     }
 
@@ -135,8 +133,6 @@ public class TargetImageView extends ImageView implements TargetImageViewHandler
      * See: {@link #loadImage(String, String, String, boolean)}.
      */
     public void loadImage(String url, String specKey, String altSpecKey) {
-        mDownloaded = 0;
-        mContentLength = 0;
         mHandler.loadImage(url, specKey, altSpecKey, false);
     }
 
@@ -149,8 +145,6 @@ public class TargetImageView extends ImageView implements TargetImageViewHandler
      * @param force true - force image load even if it is the same source
      */
     public void loadImage(String url, String specKey, String altSpecKey, boolean force) {
-        mDownloaded = 0;
-        mContentLength = 0;
         mHandler.loadImage(url, specKey, altSpecKey, force);
     }
 
@@ -178,7 +172,7 @@ public class TargetImageView extends ImageView implements TargetImageViewHandler
 
         super.onDraw(canvas);
 
-        if (mContentLength > 0 && mDownloaded < mContentLength) {
+        if (isShowDownloadProgressIndicator() && mHandler.getContentLength() > 0 && mHandler.getDownloaded() < mHandler.getContentLength()) {
             drawProgressIndicator(canvas);
         }
     }
@@ -200,6 +194,6 @@ public class TargetImageView extends ImageView implements TargetImageViewHandler
      * Draw indicator of download progress.
      */
     protected void drawProgressIndicator(Canvas canvas) {
-        TargetHelper.drawProgressIndicator(canvas, mDownloaded, mContentLength);
+        TargetHelper.drawProgressIndicator(canvas, mHandler.getDownloaded(), mHandler.getContentLength());
     }
 }

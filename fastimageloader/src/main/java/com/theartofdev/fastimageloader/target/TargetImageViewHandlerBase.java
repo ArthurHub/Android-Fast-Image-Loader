@@ -85,6 +85,11 @@ public abstract class TargetImageViewHandlerBase<T extends ImageView> implements
     protected boolean mRounded;
 
     /**
+     * Is the handled image view should be invalidated on bitmap downloading progress event
+     */
+    protected boolean mInvalidateOnDownloading;
+
+    /**
      * The current loading states of the image in the handler.
      */
     protected LoadState mLoadState = LoadState.UNSET;
@@ -93,6 +98,16 @@ public abstract class TargetImageViewHandlerBase<T extends ImageView> implements
      * when the image load request started, measure image load request time
      */
     protected long mStartImageLoadTime;
+
+    /**
+     * the number of bytes already downloaded, if requested image is downloading
+     */
+    protected long mDownloaded;
+
+    /**
+     * the total number of bytes to download, if requested image is downloading
+     */
+    protected long mContentLength;
     //endregion
 
     /**
@@ -133,6 +148,34 @@ public abstract class TargetImageViewHandlerBase<T extends ImageView> implements
         mRounded = isRounded;
     }
 
+    /**
+     * Is the handled image view should be invalidated on bitmap downloading progress event
+     */
+    public boolean isInvalidateOnDownloading() {
+        return mInvalidateOnDownloading;
+    }
+
+    /**
+     * Is the handled image view should be invalidated on bitmap downloading progress event
+     */
+    public void setInvalidateOnDownloading(boolean invalidateOnDownloading) {
+        mInvalidateOnDownloading = invalidateOnDownloading;
+    }
+
+    /**
+     * the number of bytes already downloaded, if requested image is downloading
+     */
+    public long getDownloaded() {
+        return mDownloaded;
+    }
+
+    /**
+     * the total number of bytes to download, if requested image is downloading
+     */
+    public long getContentLength() {
+        return mContentLength;
+    }
+
     @Override
     public String getUri() {
         return mUrl;
@@ -169,6 +212,8 @@ public abstract class TargetImageViewHandlerBase<T extends ImageView> implements
     public void loadImage(String url, String specKey, String altSpecKey, boolean force) {
         FILUtils.notNull(specKey, "spec");
 
+        mDownloaded = 0;
+        mContentLength = 0;
         if (!TextUtils.equals(mUrl, url) || TextUtils.isEmpty(url) || force) {
             mStartImageLoadTime = System.currentTimeMillis();
             clearImage();
@@ -196,8 +241,10 @@ public abstract class TargetImageViewHandlerBase<T extends ImageView> implements
 
     @Override
     public void onBitmapDownloading(long downloaded, long contentLength) {
-        if (mImageView instanceof TargetProgressImageView) {
-            ((TargetProgressImageView) mImageView).onBitmapDownloading(downloaded, contentLength);
+        mDownloaded = downloaded;
+        mContentLength = contentLength;
+        if (mInvalidateOnDownloading && mImageView != null) {
+            mImageView.postInvalidate();
         }
     }
 
@@ -308,19 +355,4 @@ public abstract class TargetImageViewHandlerBase<T extends ImageView> implements
             mReusableBitmap = null;
         }
     }
-
-    //region: Inner class: TargetProgressImageView
-
-    /**
-     * Define Image View handled by this handler that can receive bitmap downloading progress data.
-     */
-    public static interface TargetProgressImageView {
-
-        /**
-         * @param downloaded the number of bytes already downloaded
-         * @param contentLength the total number of bytes to download
-         */
-        public void onBitmapDownloading(long downloaded, long contentLength);
-    }
-    //endregion
 }
