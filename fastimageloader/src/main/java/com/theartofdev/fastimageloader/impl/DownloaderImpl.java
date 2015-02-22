@@ -12,9 +12,7 @@
 
 package com.theartofdev.fastimageloader.impl;
 
-import com.theartofdev.fastimageloader.Decoder;
 import com.theartofdev.fastimageloader.HttpClient;
-import com.theartofdev.fastimageloader.MemoryPool;
 import com.theartofdev.fastimageloader.impl.util.FILLogger;
 import com.theartofdev.fastimageloader.impl.util.FILUtils;
 
@@ -75,7 +73,7 @@ public final class DownloaderImpl implements com.theartofdev.fastimageloader.Dow
     }
 
     @Override
-    public void downloadAsync(final ImageRequest imageRequest, final boolean prefetch, final Decoder decoder, final MemoryPool memoryPool, final Callback callback) {
+    public void downloadAsync(final ImageRequest imageRequest, final boolean prefetch, final Callback callback) {
         Executor executor = prefetch ? mPrefetchExecutor : mExecutor;
         executor.execute(new Runnable() {
             @Override
@@ -83,7 +81,7 @@ public final class DownloaderImpl implements com.theartofdev.fastimageloader.Dow
                 // mark start download, the first to do this will win (sync between prefetch and load)
                 if ((prefetch || !imageRequest.isPrefetch()) && imageRequest.startDownload()) {
                     FILLogger.debug("Start image request download... [{}]", imageRequest);
-                    boolean canceled = download(imageRequest, decoder, memoryPool);
+                    boolean canceled = download(imageRequest);
                     boolean downloaded = imageRequest.getFileSize() > 0;
                     callback.loadImageDownloaderCallback(imageRequest, downloaded, canceled);
                 } else {
@@ -100,10 +98,10 @@ public final class DownloaderImpl implements com.theartofdev.fastimageloader.Dow
      *
      * @return 0: downloaded, canceled - false, 10: downloaded
      */
-    private boolean download(final ImageRequest imageRequest, final Decoder decoder, final MemoryPool memoryPool) {
+    protected boolean download(final ImageRequest imageRequest) {
         int responseCode = 0;
         Exception error = null;
-        boolean canceled = false;
+        boolean canceled;
         boolean downloaded = false;
         long start = System.currentTimeMillis();
         try {
@@ -118,10 +116,8 @@ public final class DownloaderImpl implements com.theartofdev.fastimageloader.Dow
                 if (responseCode < 300) {
                     canceled = !imageRequest.isValid();
                     if (!canceled) {
-
                         // download data
                         downloaded = download(imageRequest, httpResponse);
-                        canceled = !imageRequest.isValid();
                     }
                 } else {
                     error = new ConnectException(httpResponse.getCode() + ": " + httpResponse.getErrorMessage());
@@ -137,17 +133,7 @@ public final class DownloaderImpl implements com.theartofdev.fastimageloader.Dow
             FILLogger.operation(imageRequest.getEnhancedUri(), imageRequest.getSpec().getKey(), responseCode, System.currentTimeMillis() - start, imageRequest.getFileSize(), error);
         }
 
-        // if downloaded and request is still valid - load the image object
-        if (downloaded) {
-            canceled = !imageRequest.isValid();
-            if (!canceled) {
-                canceled = false;
-                if (!imageRequest.isPrefetch()) {
-                    decoder.decode(memoryPool, imageRequest, imageRequest.getFile(), imageRequest.getSpec());
-                }
-            }
-        }
-
+        canceled = !imageRequest.isValid();
         return canceled;
     }
 
@@ -159,7 +145,7 @@ public final class DownloaderImpl implements com.theartofdev.fastimageloader.Dow
      *
      * @return true - download successful, false - otherwise.
      */
-    private boolean download(ImageRequest imageRequest, HttpClient.HttpResponse response) throws IOException {
+    protected boolean download(ImageRequest imageRequest, HttpClient.HttpResponse response) throws IOException {
 
         byte[] buffer = null;
         InputStream in = null;

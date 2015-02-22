@@ -24,11 +24,9 @@ public interface Downloader {
      *
      * @param imageRequest the request to download the image for.
      * @param prefetch if the request is prefetch or actually required now.
-     * @param decoder Used to decode images from the disk to bitmap.
-     * @param memoryPool Used to provide reusable bitmaps for image decoding into.
      * @param callback The callback to execute on async requests to the downloader
      */
-    void downloadAsync(ImageRequest imageRequest, boolean prefetch, Decoder decoder, MemoryPool memoryPool, Callback callback);
+    void downloadAsync(ImageRequest imageRequest, boolean prefetch, Callback callback);
 
     //region: Inner class: Callback
 
