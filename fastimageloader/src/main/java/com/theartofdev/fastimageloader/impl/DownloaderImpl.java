@@ -78,15 +78,8 @@ public final class DownloaderImpl implements com.theartofdev.fastimageloader.Dow
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                // mark start download, the first to do this will win (sync between prefetch and load)
-                if ((prefetch || !imageRequest.isPrefetch()) && imageRequest.startDownload()) {
-                    FILLogger.debug("Start image request download... [{}]", imageRequest);
-                    boolean canceled = download(imageRequest);
-                    boolean downloaded = imageRequest.getFileSize() > 0;
-                    callback.loadImageDownloaderCallback(imageRequest, downloaded, canceled);
-                } else {
-                    FILLogger.debug("Image request download already handled [{}]", imageRequest);
-                }
+                handleExecutorDownload(imageRequest, prefetch, callback);
+
             }
         });
     }
@@ -94,15 +87,35 @@ public final class DownloaderImpl implements com.theartofdev.fastimageloader.Dow
     //region: Private methods
 
     /**
-     * Download
-     *
-     * @return 0: downloaded, canceled - false, 10: downloaded
+     * Handle starting download execution on executor worker thread.<br>
+     * Request can be executed twice, on prefetch and regular executor so it must safeguard
+     * from handling the same request twice.<br>
+     * Raise the given callback when download return with flags if the request was downloaded/canceled in
+     * any combination possible.
      */
-    protected boolean download(final ImageRequest imageRequest) {
+    protected void handleExecutorDownload(ImageRequest imageRequest, boolean prefetch, Callback callback) {
+        // mark start download, the first to do this will win (sync between prefetch and load)
+        if ((prefetch || !imageRequest.isPrefetch()) && imageRequest.startDownload()) {
+            FILLogger.debug("Start image request download... [{}]", imageRequest);
+            boolean canceled = downloadByClient(imageRequest);
+            boolean downloaded = imageRequest.getFileSize() > 0;
+            callback.loadImageDownloaderCallback(imageRequest, downloaded, canceled);
+        } else {
+            FILLogger.debug("Image request download already handled [{}]", imageRequest);
+        }
+    }
+
+    /**
+     * Execute client request to download the file, if valid response is returned use
+     * {@link #downloadToFile(ImageRequest, com.theartofdev.fastimageloader.HttpClient.HttpResponse)}
+     * to download the image from response body.
+     *
+     * @return true - download was canceled before finishing, false - otherwise.
+     */
+    protected boolean downloadByClient(ImageRequest imageRequest) {
         int responseCode = 0;
         Exception error = null;
-        boolean canceled;
-        boolean downloaded = false;
+        boolean canceled = false;
         long start = System.currentTimeMillis();
         try {
             canceled = !imageRequest.isValid();
@@ -117,7 +130,7 @@ public final class DownloaderImpl implements com.theartofdev.fastimageloader.Dow
                     canceled = !imageRequest.isValid();
                     if (!canceled) {
                         // download data
-                        downloaded = download(imageRequest, httpResponse);
+                        canceled = downloadToFile(imageRequest, httpResponse);
                     }
                 } else {
                     error = new ConnectException(httpResponse.getCode() + ": " + httpResponse.getErrorMessage());
@@ -129,11 +142,11 @@ public final class DownloaderImpl implements com.theartofdev.fastimageloader.Dow
             FILLogger.error("Failed to download image [{}]", e, imageRequest);
         }
 
-        if (downloaded || error != null) {
+        // if downloaded or error occurred - report operation, don't report cancelled
+        if (imageRequest.getFileSize() > 0 || error != null) {
             FILLogger.operation(imageRequest.getEnhancedUri(), imageRequest.getSpec().getKey(), responseCode, System.currentTimeMillis() - start, imageRequest.getFileSize(), error);
         }
 
-        canceled = !imageRequest.isValid();
         return canceled;
     }
 
@@ -143,13 +156,13 @@ public final class DownloaderImpl implements com.theartofdev.fastimageloader.Dow
      * smart cancelling, if request is no longer valid but more than 50% has been downloaded, finish it but
      * don't load the image object.
      *
-     * @return true - download successful, false - otherwise.
+     * @return true - download was canceled before finishing, false - otherwise.
      */
-    protected boolean download(ImageRequest imageRequest, HttpClient.HttpResponse response) throws IOException {
-
+    protected boolean downloadToFile(ImageRequest imageRequest, HttpClient.HttpResponse response) throws IOException {
         byte[] buffer = null;
         InputStream in = null;
         OutputStream out = null;
+        boolean canceled = false;
         File tmpFile = new File(imageRequest.getFile().getAbsolutePath() + "_tmp");
         try {
             in = response.getBodyStream();
@@ -170,10 +183,11 @@ public final class DownloaderImpl implements com.theartofdev.fastimageloader.Dow
             if (len == -1) {
                 if (tmpFile.renameTo(imageRequest.getFile())) {
                     imageRequest.setFileSize(size);
-                    return true;
                 } else {
                     FILLogger.warn("Failed to rename temp download file to target file");
                 }
+            } else {
+                canceled = true;
             }
         } finally {
             FILUtils.closeSafe(out);
@@ -181,7 +195,7 @@ public final class DownloaderImpl implements com.theartofdev.fastimageloader.Dow
             FILUtils.deleteSafe(tmpFile);
             returnBuffer(buffer);
         }
-        return false;
+        return canceled;
     }
 
     /**
