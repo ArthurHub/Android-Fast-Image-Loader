@@ -38,6 +38,28 @@ public final class FILUtils {
     public static final RectF rectF = new RectF();
 
     /**
+     * The ID of the main thread of the application, used to know if currently execution on main thread.
+     */
+    public static long MainThreadId;
+
+    /**
+     * Validate that the current executing thread is the main Android thread for the app.
+     *
+     * @throws RuntimeException current thread is not main thread.
+     */
+    public static void verifyOnMainThread() {
+        if (!isOnMainThread())
+            throw new RuntimeException("Access to this method must be on main thread only");
+    }
+
+    /**
+     * Returns true if the current executing thread is the main Android app thread, false otherwise.
+     */
+    public static boolean isOnMainThread() {
+        return Thread.currentThread().getId() == MainThreadId;
+    }
+
+    /**
      * Validate given argument isn't null.
      *
      * @param arg argument to validate

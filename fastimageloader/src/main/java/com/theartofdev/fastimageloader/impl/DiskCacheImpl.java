@@ -14,7 +14,6 @@ package com.theartofdev.fastimageloader.impl;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.text.format.DateUtils;
 
@@ -80,11 +79,6 @@ public class DiskCacheImpl implements com.theartofdev.fastimageloader.DiskCache 
     protected final Context mContext;
 
     /**
-     * Used to post execution to main thread.
-     */
-    protected final Handler mHandler;
-
-    /**
      * Threads service for all read operations.
      */
     protected final ThreadPoolExecutor mReadExecutorService;
@@ -118,8 +112,6 @@ public class DiskCacheImpl implements com.theartofdev.fastimageloader.DiskCache 
         //noinspection ResultOfMethodCallIgnored
         mCacheFolder.mkdirs();
 
-        mHandler = new Handler(context.getMainLooper());
-
         mReadExecutorService = new ThreadPoolExecutor(0, 1, 60, TimeUnit.SECONDS,
                 new LinkedBlockingQueue<Runnable>(), FILUtils.threadFactory("ImageCacheRead", true));
 
@@ -142,7 +134,11 @@ public class DiskCacheImpl implements com.theartofdev.fastimageloader.DiskCache 
     }
 
     @Override
-    public void getAsync(final ImageRequest imageRequest, final ImageLoadSpec altSpec, final Decoder decoder, final MemoryPool memoryPool, final Callback callback) {
+    public void getAsync(final ImageRequest imageRequest,
+                         final ImageLoadSpec altSpec,
+                         final Decoder decoder,
+                         final MemoryPool memoryPool,
+                         final Callback callback) {
 
         File altFile = null;
         boolean exists = imageRequest.getFile().exists();
@@ -242,12 +238,7 @@ public class DiskCacheImpl implements com.theartofdev.fastimageloader.DiskCache 
             file.setLastModified(System.currentTimeMillis());
             decoder.decode(memoryPool, imageRequest, file, spec);
         }
-        mHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                callback.loadImageDiskCacheCallback(imageRequest, canceled);
-            }
-        });
+        callback.loadImageDiskCacheCallback(imageRequest, canceled);
     }
 
     /**

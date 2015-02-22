@@ -117,6 +117,7 @@ public final class FastImageLoader {
 
         if (INST.mLoaderHandler == null) {
             FILLogger.debug("Init fast image loader...");
+            FILUtils.MainThreadId = application.getMainLooper().getThread().getId();
             INST.mApplication = application;
             return INST;
         } else {

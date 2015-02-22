@@ -15,6 +15,7 @@ package com.theartofdev.fastimageloader.impl;
 import android.app.Application;
 import android.content.ComponentCallbacks2;
 import android.content.res.Configuration;
+import android.os.Handler;
 import android.text.TextUtils;
 
 import com.theartofdev.fastimageloader.Decoder;
@@ -65,6 +66,11 @@ public final class LoaderHandler implements DiskCacheImpl.Callback, DownloaderIm
     private final Decoder mDecoder;
 
     /**
+     * Used to post execution to main thread.
+     */
+    private final Handler mHandler;
+
+    /**
      * stats on the number of memory cache hits
      */
     private int mMemoryHits;
@@ -100,7 +106,11 @@ public final class LoaderHandler implements DiskCacheImpl.Callback, DownloaderIm
      *
      * @param decoder Used to decode images from the disk to bitmap.
      */
-    public LoaderHandler(Application application, MemoryPool memoryPool, DiskCache diskCache, Downloader downloader, Decoder decoder) {
+    public LoaderHandler(Application application,
+                         MemoryPool memoryPool,
+                         DiskCache diskCache,
+                         Downloader downloader,
+                         Decoder decoder) {
         FILUtils.notNull(application, "application");
         FILUtils.notNull(memoryPool, "memoryPool");
         FILUtils.notNull(diskCache, "diskCache");
@@ -111,6 +121,8 @@ public final class LoaderHandler implements DiskCacheImpl.Callback, DownloaderIm
         mDiskCache = diskCache;
         mDownloader = downloader;
         mDecoder = decoder;
+
+        mHandler = new Handler(application.getMainLooper());
 
         application.registerComponentCallbacks(this);
     }
@@ -214,13 +226,25 @@ public final class LoaderHandler implements DiskCacheImpl.Callback, DownloaderIm
 
     //region: Private methods
 
+    @Override
+    public void loadImageDiskCacheCallback(final ImageRequest imageRequest, final boolean canceled) {
+        if (FILUtils.isOnMainThread()) {
+            onLoadImageDiskCacheCallback(imageRequest, canceled);
+        } else
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    onLoadImageDiskCacheCallback(imageRequest, canceled);
+                }
+            });
+    }
+
     /**
      * Callback after the disk cache loaded the image or returned cache miss.<br>
      * Hit - set the loaded image on the requesting target.<br>
      * Miss - pass the request to image downloader.<br>
      */
-    @Override
-    public void loadImageDiskCacheCallback(ImageRequest imageRequest, boolean canceled) {
+    private void onLoadImageDiskCacheCallback(ImageRequest imageRequest, boolean canceled) {
         try {
             boolean loaded = imageRequest.getBitmap() != null;
             boolean loadedAlt = loaded && imageRequest.getBitmap().getSpec() != imageRequest.getSpec();
