@@ -17,6 +17,7 @@ import android.content.ComponentCallbacks2;
 import android.content.res.Configuration;
 import android.text.TextUtils;
 
+import com.theartofdev.fastimageloader.Decoder;
 import com.theartofdev.fastimageloader.DiskCache;
 import com.theartofdev.fastimageloader.Downloader;
 import com.theartofdev.fastimageloader.ImageLoadSpec;
@@ -59,6 +60,11 @@ public final class LoaderHandler implements DiskCacheImpl.Callback, DownloaderIm
     private final Downloader mDownloader;
 
     /**
+     * Used to decode images from the disk to bitmap.
+     */
+    private final Decoder mDecoder;
+
+    /**
      * stats on the number of memory cache hits
      */
     private int mMemoryHits;
@@ -91,16 +97,20 @@ public final class LoaderHandler implements DiskCacheImpl.Callback, DownloaderIm
 
     /**
      * Init.
+     *
+     * @param decoder Used to decode images from the disk to bitmap.
      */
-    public LoaderHandler(Application application, MemoryPool memoryPool, DiskCache diskCache, Downloader downloader) {
+    public LoaderHandler(Application application, MemoryPool memoryPool, DiskCache diskCache, Downloader downloader, Decoder decoder) {
         FILUtils.notNull(application, "application");
         FILUtils.notNull(memoryPool, "memoryPool");
         FILUtils.notNull(diskCache, "diskCache");
         FILUtils.notNull(downloader, "downloader");
+        FILUtils.notNull(decoder, "decoder");
 
         mMemoryPool = memoryPool;
         mDiskCache = diskCache;
         mDownloader = downloader;
+        mDecoder = decoder;
 
         application.registerComponentCallbacks(this);
     }
@@ -185,7 +195,7 @@ public final class LoaderHandler implements DiskCacheImpl.Callback, DownloaderIm
 
                         FILLogger.debug("Memory cache miss, start request handling... [{}]", request);
                         // don't use alternative spec if image was loaded from memory cache
-                        mDiskCache.getAsync(request, image == null ? altSpec : null, this);
+                        mDiskCache.getAsync(request, image == null ? altSpec : null, mDecoder, mMemoryPool, this);
                     }
                 }
             }
@@ -240,7 +250,7 @@ public final class LoaderHandler implements DiskCacheImpl.Callback, DownloaderIm
                     // need to download primary
                     if (canceled) {
                         // race-condition, canceled request that add valid target (run again)
-                        mDiskCache.getAsync(imageRequest, null, this);
+                        mDiskCache.getAsync(imageRequest, null, mDecoder, mMemoryPool, this);
                     } else {
                         mNetworkRequests++;
                         mDownloader.downloadAsync(imageRequest, false, this);
@@ -286,7 +296,7 @@ public final class LoaderHandler implements DiskCacheImpl.Callback, DownloaderIm
                 } else {
                     if (canceled) {
                         // race-condition, canceled request that add valid target (run again)
-                        mDiskCache.getAsync(imageRequest, null, this);
+                        mDiskCache.getAsync(imageRequest, null, mDecoder, mMemoryPool, this);
                     } else {
                         mLoadingRequests.remove(imageRequest.getUniqueKey());
                         for (Target target : imageRequest.getValidTargets()) {

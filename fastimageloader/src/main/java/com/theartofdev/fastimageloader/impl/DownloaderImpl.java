@@ -75,7 +75,7 @@ public final class DownloaderImpl implements com.theartofdev.fastimageloader.Dow
     /**
      * @param context
      * @param client the OkHttp client to use to download the images.
-     * @param decoder Handler for loading image bitmap object from file on disk.
+     * @param decoder Used to decode images from the disk to bitmap.
      */
     public DownloaderImpl(Context context, HttpClient client, MemoryPool memoryPool, Decoder decoder) {
         FILUtils.notNull(client, "client");

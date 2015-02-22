@@ -95,11 +95,6 @@ public class DiskCacheImpl implements com.theartofdev.fastimageloader.DiskCache 
     protected final ThreadPoolExecutor mScanExecutorService;
 
     /**
-     * Used to load images from the disk.
-     */
-    protected final Decoder mDecoder;
-
-    /**
      * The time of the last cache check
      */
     private long mLastCacheScanTime = -1;
@@ -108,23 +103,17 @@ public class DiskCacheImpl implements com.theartofdev.fastimageloader.DiskCache 
      * the current size of the cache
      */
     private long mCurrentCacheSize;
-
-    private MemoryPool mMemoryPool;
     //endregion
 
     /**
      * @param context the application object to read config stuff
-     * @param decoder Used to load images from the disk.
      */
-    public DiskCacheImpl(Context context, File cacheFolder, MemoryPool memoryPool, Decoder decoder) {
+    public DiskCacheImpl(Context context, File cacheFolder) {
         FILUtils.notNull(context, "context");
-        FILUtils.notNull(memoryPool, "memoryPool");
-        FILUtils.notNull(decoder, "diskHandler");
+        FILUtils.notNull(cacheFolder, "cacheFolder");
 
         mContext = context;
         mCacheFolder = cacheFolder;
-        mMemoryPool = memoryPool;
-        mDecoder = decoder;
 
         //noinspection ResultOfMethodCallIgnored
         mCacheFolder.mkdirs();
@@ -153,7 +142,7 @@ public class DiskCacheImpl implements com.theartofdev.fastimageloader.DiskCache 
     }
 
     @Override
-    public void getAsync(final ImageRequest imageRequest, final ImageLoadSpec altSpec, final Callback callback) {
+    public void getAsync(final ImageRequest imageRequest, final ImageLoadSpec altSpec, final Decoder decoder, final MemoryPool memoryPool, final Callback callback) {
 
         File altFile = null;
         boolean exists = imageRequest.getFile().exists();
@@ -169,7 +158,7 @@ public class DiskCacheImpl implements com.theartofdev.fastimageloader.DiskCache 
             mReadExecutorService.execute(new Runnable() {
                 @Override
                 public void run() {
-                    loadImageFromCache(imageRequest, file, spec, callback);
+                    loadImageFromCache(imageRequest, file, spec, decoder, memoryPool, callback);
                 }
             });
         } else {
@@ -245,13 +234,13 @@ public class DiskCacheImpl implements com.theartofdev.fastimageloader.DiskCache 
      * Load the given cached image file into reusable bitmap, post result on given callback.<br>
      * This method is executed on a dedicated separate thread.
      */
-    protected void loadImageFromCache(final ImageRequest imageRequest, File file, ImageLoadSpec spec, final Callback callback) {
+    protected void loadImageFromCache(final ImageRequest imageRequest, File file, ImageLoadSpec spec, Decoder decoder, MemoryPool memoryPool, final Callback callback) {
 
         final boolean canceled = !imageRequest.isValid();
         if (!canceled) {
             //noinspection ResultOfMethodCallIgnored
             file.setLastModified(System.currentTimeMillis());
-            mDecoder.decode(mMemoryPool, imageRequest, file, spec);
+            decoder.decode(memoryPool, imageRequest, file, spec);
         }
         mHandler.post(new Runnable() {
             @Override

@@ -70,7 +70,7 @@ public final class FastImageLoader {
     private File mCacheFolder;
 
     /**
-     * the decoder to use
+     * Used to decode images from the disk to bitmap.
      */
     private Decoder mDecoder;
 
@@ -141,7 +141,7 @@ public final class FastImageLoader {
     }
 
     /**
-     * Set the decoder handler to be used.
+     * Used to decode images from the disk to bitmap.
      */
     public void setDecoder(Decoder decoder) {
         mDecoder = decoder;
@@ -344,7 +344,7 @@ public final class FastImageLoader {
                         mCacheFolder = new File(FILUtils.pathCombine(mApplication.getCacheDir().getPath(), "ImageCache"));
                     }
                     FILLogger.debug("Use default disk cache... [{}]", mCacheFolder);
-                    mDiskCache = new DiskCacheImpl(mApplication, mCacheFolder, mMemoryPool, mDecoder);
+                    mDiskCache = new DiskCacheImpl(mApplication, mCacheFolder);
                 }
                 if (mDownloader == null) {
                     initHttpClient();
@@ -354,7 +354,7 @@ public final class FastImageLoader {
                 }
 
                 FILLogger.debug("Create load handler... [{}] [{}] [{}]", mMemoryPool, mDiskCache, mDownloader);
-                INST.mLoaderHandler = new LoaderHandler(mApplication, mMemoryPool, mDiskCache, mDownloader);
+                INST.mLoaderHandler = new LoaderHandler(mApplication, mMemoryPool, mDiskCache, mDownloader, mDecoder);
             } else {
                 throw new IllegalStateException("Fast Image Loader is NOT initialized, call init(...)");
             }

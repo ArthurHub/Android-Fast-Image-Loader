@@ -35,9 +35,12 @@ public interface DiskCache {
      * If the image is NOT in the cache the callback will be executed immediately.<br>
      * If the image is in cache an async operation will load the image from disk and then execute the callback.
      *
+     * @param imageRequest the request to load the image from disk for.
+     * @param decoder Used to decode images from the disk to bitmap.
+     * @param memoryPool Used to provide reusable bitmaps for image decoding into.
      * @param callback The callback to execute on async requests to the cache
      */
-    void getAsync(ImageRequest imageRequest, ImageLoadSpec altSpec, DiskCacheImpl.Callback callback);
+    void getAsync(ImageRequest imageRequest, ImageLoadSpec altSpec, Decoder decoder, MemoryPool memoryPool, DiskCacheImpl.Callback callback);
 
     void imageAdded(long size);
 
