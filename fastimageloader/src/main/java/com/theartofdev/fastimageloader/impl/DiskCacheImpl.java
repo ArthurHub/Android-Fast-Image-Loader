@@ -336,19 +336,5 @@ public class DiskCacheImpl implements com.theartofdev.fastimageloader.DiskCache 
         editor.apply();
     }
     //endregion
-
-    //region: Inner class: Callbacks
-
-    /**
-     * Callback for getting cached image.
-     */
-    public static interface Callback {
-
-        /**
-         * Callback for getting cached image, if not cached will have null.
-         */
-        void loadImageDiskCacheCallback(ImageRequest imageRequest, boolean canceled);
-    }
-    //endregion
 }
 

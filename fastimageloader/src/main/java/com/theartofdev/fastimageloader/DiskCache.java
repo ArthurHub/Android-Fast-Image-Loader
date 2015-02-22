@@ -12,7 +12,6 @@
 
 package com.theartofdev.fastimageloader;
 
-import com.theartofdev.fastimageloader.impl.DiskCacheImpl;
 import com.theartofdev.fastimageloader.impl.ImageRequest;
 
 import java.io.File;
@@ -40,9 +39,23 @@ public interface DiskCache {
      * @param memoryPool Used to provide reusable bitmaps for image decoding into.
      * @param callback The callback to execute on async requests to the cache
      */
-    void getAsync(ImageRequest imageRequest, ImageLoadSpec altSpec, Decoder decoder, MemoryPool memoryPool, DiskCacheImpl.Callback callback);
+    void getAsync(ImageRequest imageRequest, ImageLoadSpec altSpec, Decoder decoder, MemoryPool memoryPool, Callback callback);
 
     void imageAdded(long size);
 
     void clear();
+
+    //region: Inner class: Callbacks
+
+    /**
+     * Callback for getting cached image.
+     */
+    public static interface Callback {
+
+        /**
+         * Callback for getting cached image, if not cached will have null.
+         */
+        void loadImageDiskCacheCallback(ImageRequest imageRequest, boolean canceled);
+    }
+    //endregion
 }

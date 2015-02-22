@@ -12,7 +12,6 @@
 
 package com.theartofdev.fastimageloader;
 
-import com.theartofdev.fastimageloader.impl.DownloaderImpl;
 import com.theartofdev.fastimageloader.impl.ImageRequest;
 
 /**
@@ -29,5 +28,19 @@ public interface Downloader {
      * @param memoryPool Used to provide reusable bitmaps for image decoding into.
      * @param callback The callback to execute on async requests to the downloader
      */
-    void downloadAsync(ImageRequest imageRequest, boolean prefetch, Decoder decoder, MemoryPool memoryPool, DownloaderImpl.Callback callback);
+    void downloadAsync(ImageRequest imageRequest, boolean prefetch, Decoder decoder, MemoryPool memoryPool, Callback callback);
+
+    //region: Inner class: Callback
+
+    /**
+     * Callback for getting cached image.
+     */
+    public static interface Callback {
+
+        /**
+         * Callback for getting cached image, if not cached will have null.
+         */
+        public void loadImageDownloaderCallback(ImageRequest imageRequest, boolean downloaded, boolean canceled);
+    }
+    //endregion
 }

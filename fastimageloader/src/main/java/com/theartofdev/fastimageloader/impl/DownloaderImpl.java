@@ -234,18 +234,4 @@ public final class DownloaderImpl implements com.theartofdev.fastimageloader.Dow
         }
     }
     //endregion
-
-    //region: Inner class: Callback
-
-    /**
-     * Callback for getting cached image.
-     */
-    public static interface Callback {
-
-        /**
-         * Callback for getting cached image, if not cached will have null.
-         */
-        public void loadImageDownloaderCallback(ImageRequest imageRequest, boolean downloaded, boolean canceled);
-    }
-    //endregion
 }
