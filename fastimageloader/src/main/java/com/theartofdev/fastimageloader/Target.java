@@ -39,6 +39,14 @@ public interface Target {
     String getSpecKey();
 
     /**
+     * Callback when image is been downloaded to show progress.
+     *
+     * @param downloaded the number of bytes already downloaded
+     * @param contentLength the total number of bytes to download
+     */
+    void onBitmapDownloading(long downloaded, long contentLength);
+
+    /**
      * Callback when an image has been successfully loaded.<br>
      * <strong>Note:</strong> You must not recycle the bitmap.
      */

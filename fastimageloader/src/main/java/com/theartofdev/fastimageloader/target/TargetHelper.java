@@ -13,7 +13,9 @@
 package com.theartofdev.fastimageloader.target;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.RectF;
 
 import com.theartofdev.fastimageloader.LoadedFrom;
 
@@ -33,9 +35,19 @@ public final class TargetHelper {
     private static Paint mDebugPaint;
 
     /**
+     * Paint used to draw download progress
+     */
+    private static Paint mProgressPaint;
+
+    /**
      * If to show indicator if the image was loaded from MEMORY/DISK/NETWORK.
      */
     public static boolean debugIndicator;
+
+    /**
+     * The density of the current
+     */
+    public static float mDensity;
 
     private TargetHelper() {
     }
@@ -52,11 +64,31 @@ public final class TargetHelper {
             }
 
             mDebugPaint.setColor(WHITE);
-            canvas.drawCircle(width / 2, height / 2, 12, mDebugPaint);
+            canvas.drawCircle(width / 2, height / 2, 6 * mDensity, mDebugPaint);
 
             mDebugPaint.setColor(loadedFrom == LoadedFrom.MEMORY ? GREEN : loadedFrom == LoadedFrom.DISK ? YELLOW : RED);
-            canvas.drawCircle(width / 2, height / 2, 8, mDebugPaint);
+            canvas.drawCircle(width / 2, height / 2, 4 * mDensity, mDebugPaint);
         }
+    }
+
+    /**
+     * Draw indicator of download progress.
+     *
+     * @param downloaded downloaded bytes
+     * @param contentLength total bytes
+     */
+    public static void drawProgressIndicator(Canvas canvas, long downloaded, long contentLength) {
+        if (mProgressPaint == null) {
+            mProgressPaint = new Paint();
+            mProgressPaint.setAntiAlias(true);
+            mProgressPaint.setColor(Color.argb(90, 0, 150, 0));
+        }
+
+        float s = (float) Math.min(30 * mDensity, Math.min(canvas.getWidth() * .2, canvas.getHeight() * .2));
+        int l = canvas.getWidth() / 2;
+        int t = canvas.getHeight() / 2;
+        RectF rect = new RectF(l - s / 2, t - s / 2, l + s / 2, t + s / 2);
+        canvas.drawArc(rect, -90, 360f * downloaded / contentLength, true, mProgressPaint);
     }
 }
 

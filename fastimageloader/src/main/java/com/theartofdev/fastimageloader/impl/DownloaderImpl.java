@@ -52,7 +52,9 @@ public final class DownloaderImpl implements com.theartofdev.fastimageloader.Dow
     /**
      * the buffers used to download image
      */
-    private final byte[][] mBuffers = new byte[4][];
+    private final byte[][] mBuffers;
+
+    private int mExecutorThreads = 2;
     //endregion
 
     /**
@@ -63,7 +65,9 @@ public final class DownloaderImpl implements com.theartofdev.fastimageloader.Dow
 
         mClient = client;
 
-        mExecutor = new ThreadPoolExecutor(3, 3, 30, TimeUnit.SECONDS,
+        mBuffers = new byte[mExecutorThreads + 1][];
+
+        mExecutor = new ThreadPoolExecutor(mExecutorThreads, mExecutorThreads, 30, TimeUnit.SECONDS,
                 new LinkedBlockingQueue<Runnable>(), FILUtils.threadFactory("ImageDownloader", true));
         mExecutor.allowCoreThreadTimeOut(true);
 
@@ -177,6 +181,7 @@ public final class DownloaderImpl implements com.theartofdev.fastimageloader.Dow
             while ((contentLength < 0 || contentLength * .5f < size || imageRequest.isValid()) && (len = in.read(buffer)) != -1) {
                 size += len;
                 out.write(buffer, 0, len);
+                imageRequest.updateDownloading(size, contentLength);
             }
 
             // if we finished download

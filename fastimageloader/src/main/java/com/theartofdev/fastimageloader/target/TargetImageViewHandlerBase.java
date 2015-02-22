@@ -195,6 +195,13 @@ public abstract class TargetImageViewHandlerBase<T extends ImageView> implements
     }
 
     @Override
+    public void onBitmapDownloading(long downloaded, long contentLength) {
+        if (mImageView instanceof TargetProgressImageView) {
+            ((TargetProgressImageView) mImageView).onBitmapDownloading(downloaded, contentLength);
+        }
+    }
+
+    @Override
     public void onBitmapLoaded(ReusableBitmap bitmap, LoadedFrom from) {
 
         clearUsedBitmap(false);
@@ -301,4 +308,19 @@ public abstract class TargetImageViewHandlerBase<T extends ImageView> implements
             mReusableBitmap = null;
         }
     }
+
+    //region: Inner class: TargetProgressImageView
+
+    /**
+     * Define Image View handled by this handler that can receive bitmap downloading progress data.
+     */
+    public static interface TargetProgressImageView {
+
+        /**
+         * @param downloaded the number of bytes already downloaded
+         * @param contentLength the total number of bytes to download
+         */
+        public void onBitmapDownloading(long downloaded, long contentLength);
+    }
+    //endregion
 }

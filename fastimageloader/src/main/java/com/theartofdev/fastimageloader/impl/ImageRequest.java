@@ -206,6 +206,21 @@ public class ImageRequest {
     }
 
     /**
+     * Send update to all current targets on the download progress.
+     *
+     * @param downloaded the number of bytes already downloaded
+     * @param contentLength the total number of bytes to download
+     */
+    public void updateDownloading(int downloaded, long contentLength) {
+        for (int i = 0; i < mTargets.size(); i++) {
+            try {
+                mTargets.get(i).onBitmapDownloading(downloaded, contentLength);
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
+    /**
      * Add another target to the request.<br>
      * Check if the request was prefetch that its download has not been started yet.<br>
      * If the request was prefetch it will be set to not prefetch

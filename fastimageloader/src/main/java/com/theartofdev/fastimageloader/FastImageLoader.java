@@ -129,6 +129,7 @@ public final class FastImageLoader {
         if (INST.mLoaderHandler == null) {
             FILLogger.debug("Init fast image loader...");
             FILUtils.MainThreadId = application.getMainLooper().getThread().getId();
+            TargetHelper.mDensity = application.getResources().getDisplayMetrics().density;
             INST.mApplication = application;
             return INST;
         } else {
