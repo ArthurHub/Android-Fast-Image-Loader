@@ -162,9 +162,6 @@ public class DiskCacheImpl implements com.theartofdev.fastimageloader.DiskCache 
         }
     }
 
-    /**
-     * Image added to disk cache, update the disk cache.
-     */
     @Override
     public void imageAdded(long size) {
         mCurrentCacheSize += size;
@@ -178,9 +175,6 @@ public class DiskCacheImpl implements com.theartofdev.fastimageloader.DiskCache 
         }
     }
 
-    /**
-     * Clear all the cached files.
-     */
     @Override
     public void clear() {
         mReadExecutorService.execute(new Runnable() {

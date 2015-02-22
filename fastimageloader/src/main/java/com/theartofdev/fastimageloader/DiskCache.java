@@ -22,7 +22,8 @@ import java.io.File;
 public interface DiskCache {
 
     /**
-     * Gets the representation of the online uri on the local disk.
+     * Gets the representation of the online uri on the local disk.<br>
+     * Must be unique mapping from URI to file path.
      *
      * @param uri The online image uri
      * @return The path of the file on the disk
@@ -41,8 +42,16 @@ public interface DiskCache {
      */
     void getAsync(ImageRequest imageRequest, ImageLoadSpec altSpec, Decoder decoder, MemoryPool memoryPool, Callback callback);
 
+    /**
+     * Image added to disk cache, update the disk cache.<br>
+     * Called when an image was downloaded and now is part of the disk cache, disk cache will update
+     * its knowledge of the disk cache size, may trigger cleanup of the cache if limit is reached.
+     */
     void imageAdded(long size);
 
+    /**
+     * Clear all the cached files async.
+     */
     void clear();
 
     //region: Inner class: Callbacks
@@ -54,6 +63,8 @@ public interface DiskCache {
 
         /**
          * Callback for getting cached image, if not cached will have null.
+         *
+         * @param canceled if the request was canceled during execution therefor not loading the image
          */
         void loadImageDiskCacheCallback(ImageRequest imageRequest, boolean canceled);
     }

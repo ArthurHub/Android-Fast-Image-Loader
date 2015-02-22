@@ -31,12 +31,18 @@ public interface Downloader {
     //region: Inner class: Callback
 
     /**
-     * Callback for getting cached image.
+     * Callback for downloading image.
      */
     public static interface Callback {
 
         /**
-         * Callback for getting cached image, if not cached will have null.
+         * Callback for downloading image.<br>
+         * If the image was downloaded the download flag will be true, it can be false is request
+         * was canceled during execution or download has failed. download can be true even if
+         * the request was canceled if more than 50% was download before cancellation.
+         *
+         * @param downloaded if the image was downloaded, maybe false if canceled or failed
+         * @param canceled if the request was canceled during execution therefor not loading the image
          */
         public void loadImageDownloaderCallback(ImageRequest imageRequest, boolean downloaded, boolean canceled);
     }
