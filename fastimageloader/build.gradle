@@ -3,7 +3,7 @@ apply plugin: 'com.android.library'
 ext {
     PUBLISH_GROUP_ID = 'com.theartofdev'
     PUBLISH_ARTIFACT_ID = 'fast-image-loader'
-    PUBLISH_VERSION = '0.8'
+    PUBLISH_VERSION = '0.8.3'
     // gradlew clean build generateRelease
 }
 

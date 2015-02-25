@@ -37,13 +37,11 @@ public class ZoomImageView extends PhotoView {
     public ZoomImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
         mHandler = new ZoomTargetImageViewBitmapHandler(this);
-        mHandler.setInvalidateOnDownloading(true);
     }
 
     public ZoomImageView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         mHandler = new ZoomTargetImageViewBitmapHandler(this);
-        mHandler.setInvalidateOnDownloading(true);
     }
 
     /**
@@ -87,6 +85,7 @@ public class ZoomImageView extends PhotoView {
          */
         public ZoomTargetImageViewBitmapHandler(ImageView imageView) {
             super(imageView);
+            setInvalidateOnDownloading(true);
         }
 
         @Override
