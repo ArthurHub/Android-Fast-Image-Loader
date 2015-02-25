@@ -21,7 +21,7 @@ import android.widget.ProgressBar;
 import com.theartofdev.fastimageloader.LoadedFrom;
 import com.theartofdev.fastimageloader.ReusableBitmap;
 import com.theartofdev.fastimageloader.target.TargetHelper;
-import com.theartofdev.fastimageloader.target.TargetImageViewBitmapHandler;
+import com.theartofdev.fastimageloader.target.TargetImageViewHandler;
 
 import uk.co.senab.photoview.PhotoView;
 
@@ -32,16 +32,16 @@ public class ZoomImageView extends PhotoView {
     /**
      * The target image handler to load the image and control its lifecycle.
      */
-    private ZoomTargetImageViewBitmapHandler mHandler;
+    private TargetImageViewHandler mHandler;
 
     public ZoomImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mHandler = new ZoomTargetImageViewBitmapHandler(this);
+        mHandler = new ZoomTargetImageViewHandler(this);
     }
 
     public ZoomImageView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        mHandler = new ZoomTargetImageViewBitmapHandler(this);
+        mHandler = new ZoomTargetImageViewHandler(this);
     }
 
     /**
@@ -71,13 +71,13 @@ public class ZoomImageView extends PhotoView {
         TargetHelper.drawProgressIndicator(canvas, mHandler.getDownloaded(), mHandler.getContentLength());
     }
 
-    private final class ZoomTargetImageViewBitmapHandler extends TargetImageViewBitmapHandler {
+    private final class ZoomTargetImageViewHandler extends TargetImageViewHandler {
 
         /**
          * @param imageView The image view to handle.
          */
-        public ZoomTargetImageViewBitmapHandler(ImageView imageView) {
-            super(imageView);
+        public ZoomTargetImageViewHandler(ImageView imageView) {
+            super(imageView, false);
             setInvalidateOnDownloading(true);
         }
 

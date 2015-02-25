@@ -50,14 +50,19 @@ import com.theartofdev.fastimageloader.impl.util.FILUtils;
  * }}
  * </pre>
  */
-public abstract class TargetImageViewHandlerBase<T extends ImageView> implements Target, View.OnAttachStateChangeListener {
+public class TargetImageViewHandler implements Target, View.OnAttachStateChangeListener {
 
     //region: Fields and Consts
 
     /**
      * the image view
      */
-    protected T mImageView;
+    protected final ImageView mImageView;
+
+    /**
+     * If to use drawable on the loaded image or set the bitmap directly
+     */
+    protected final boolean mUseDrawable;
 
     /**
      * The URL source of the image
@@ -111,11 +116,27 @@ public abstract class TargetImageViewHandlerBase<T extends ImageView> implements
     //endregion
 
     /**
+     * Default to use drawable.
+     *
      * @param imageView The image view to handle.
      */
-    public TargetImageViewHandlerBase(T imageView) {
+    public TargetImageViewHandler(ImageView imageView) {
+        this(imageView, true);
+    }
+
+    /**
+     * Using drawable allows for fade-in effect and debug indicator but some custom views
+     * may require direct bitmap setting.
+     *
+     * @param imageView The image view to handle.
+     * @param useDrawable If to use drawable on the loaded image or set the bitmap directly.
+     */
+    public TargetImageViewHandler(ImageView imageView, boolean useDrawable) {
         FILUtils.notNull(imageView, "imageView");
+
         mImageView = imageView;
+        mUseDrawable = useDrawable;
+
         mImageView.addOnAttachStateChangeListener(this);
     }
 
@@ -346,12 +367,25 @@ public abstract class TargetImageViewHandlerBase<T extends ImageView> implements
      * Called to clear the existing image in the handled image view.<br>
      * Called on loading or failure.
      */
-    protected abstract void clearImage();
+    protected void clearImage() {
+        if (mUseDrawable) {
+            mImageView.setImageDrawable(null);
+        } else {
+            mImageView.setImageBitmap(null);
+        }
+    }
 
     /**
      * Called to set the loaded image bitmap in the handled image view.
      */
-    protected abstract void setImage(ReusableBitmap bitmap, LoadedFrom from);
+    protected void setImage(ReusableBitmap bitmap, LoadedFrom from) {
+        if (mUseDrawable) {
+            TargetDrawable drawable = new TargetDrawable(bitmap.getBitmap(), from, mRounded, from == LoadedFrom.NETWORK && mImageView.getDrawable() == null);
+            mImageView.setImageDrawable(drawable);
+        } else {
+            mImageView.setImageBitmap(bitmap.getBitmap());
+        }
+    }
 
     /**
      * Clear the currently used bitmap and mark it as not in use.

@@ -23,7 +23,7 @@ package com.theartofdev.fastimageloader;
  * Those methods will also be used to cancel image load request if the returned value of
  * {@link #getUri()} has been changed or nullified.
  * <br><br>
- * <b>Note: </b> Prefer using {@link com.theartofdev.fastimageloader.target.TargetImageViewHandlerBase}, it
+ * <b>Note: </b> Prefer using {@link com.theartofdev.fastimageloader.target.TargetImageViewHandler}, it
  * implements most of the required functionality.
  */
 public interface Target {
