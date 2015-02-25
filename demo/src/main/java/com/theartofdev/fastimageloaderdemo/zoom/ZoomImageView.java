@@ -59,11 +59,7 @@ public class ZoomImageView extends PhotoView {
     @Override
     protected void onWindowVisibilityChanged(int visibility) {
         super.onWindowVisibilityChanged(visibility);
-        if (visibility == VISIBLE) {
-            mHandler.onViewShown();
-        } else {
-            mHandler.onViewHidden();
-        }
+        mHandler.onViewVisibilityChanged(visibility);
     }
 
     /**
@@ -72,10 +68,7 @@ public class ZoomImageView extends PhotoView {
     @Override
     public void onDraw(@SuppressWarnings("NullableProblems") Canvas canvas) {
         super.onDraw(canvas);
-
-        if (mHandler.getContentLength() > 0 && mHandler.getDownloaded() < mHandler.getContentLength()) {
-            TargetHelper.drawProgressIndicator(canvas, mHandler.getDownloaded(), mHandler.getContentLength());
-        }
+        TargetHelper.drawProgressIndicator(canvas, mHandler.getDownloaded(), mHandler.getContentLength());
     }
 
     private final class ZoomTargetImageViewBitmapHandler extends TargetImageViewBitmapHandler {

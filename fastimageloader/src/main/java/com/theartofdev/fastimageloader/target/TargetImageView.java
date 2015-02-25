@@ -154,11 +154,7 @@ public class TargetImageView extends ImageView {
     @Override
     protected void onWindowVisibilityChanged(int visibility) {
         super.onWindowVisibilityChanged(visibility);
-        if (visibility == VISIBLE) {
-            mHandler.onViewShown();
-        } else {
-            mHandler.onViewHidden();
-        }
+        mHandler.onViewVisibilityChanged(visibility);
     }
 
     /**

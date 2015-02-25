@@ -78,17 +78,19 @@ public final class TargetHelper {
      * @param contentLength total bytes
      */
     public static void drawProgressIndicator(Canvas canvas, long downloaded, long contentLength) {
-        if (mProgressPaint == null) {
-            mProgressPaint = new Paint();
-            mProgressPaint.setAntiAlias(true);
-            mProgressPaint.setColor(Color.argb(160, 0, 160, 0));
-        }
+        if (contentLength > 0 && downloaded < contentLength) {
+            if (mProgressPaint == null) {
+                mProgressPaint = new Paint();
+                mProgressPaint.setAntiAlias(true);
+                mProgressPaint.setColor(Color.argb(160, 0, 160, 0));
+            }
 
-        float s = (float) Math.min(36 * mDensity, Math.min(canvas.getWidth() * .2, canvas.getHeight() * .2));
-        int l = canvas.getWidth() / 2;
-        int t = canvas.getHeight() / 2;
-        RectF rect = new RectF(l - s / 2, t - s / 2, l + s / 2, t + s / 2);
-        canvas.drawArc(rect, -90, 360f * downloaded / contentLength, true, mProgressPaint);
+            float s = (float) Math.min(36 * mDensity, Math.min(canvas.getWidth() * .2, canvas.getHeight() * .2));
+            int l = canvas.getWidth() / 2;
+            int t = canvas.getHeight() / 2;
+            RectF rect = new RectF(l - s / 2, t - s / 2, l + s / 2, t + s / 2);
+            canvas.drawArc(rect, -90, 360f * downloaded / contentLength, true, mProgressPaint);
+        }
     }
 }
 

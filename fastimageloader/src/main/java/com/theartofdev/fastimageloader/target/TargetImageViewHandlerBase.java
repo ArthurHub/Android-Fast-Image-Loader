@@ -279,29 +279,15 @@ public abstract class TargetImageViewHandlerBase<T extends ImageView> implements
     }
 
     /**
-     * On image view shown verify that the set bitmap is still valid for the image view (not reused).<br>
-     * If valid: set in-use on the bitmap.<br>
-     * If not valid: execute image load request to re-load the image needed for the image view.<br>
+     * Handle Image View visibility change by updating the used bitmap.<br>
+     * If the Image View is hidden then we decrement the in-use.<br>
+     * If the Image View is shown we use the existing bitmap or reload the image.
      */
-    public void onViewShown() {
-        if (mReusableBitmap != null && !mInUse) {
-            if (TextUtils.equals(mReusableBitmap.getUri(), mUrl)) {
-                mInUse = true;
-                mReusableBitmap.incrementInUse();
-            } else {
-                FILLogger.info("ImageView attachToWindow uses recycled bitmap, reload... [{}]", mReusableBitmap);
-                loadImage(mUrl, mSpecKey, null, true);
-            }
-        }
-    }
-
-    /**
-     * On image view hidden set the used bitmap to not-in-use so it can be reused.
-     */
-    public void onViewHidden() {
-        if (mReusableBitmap != null && mInUse) {
-            mInUse = false;
-            mReusableBitmap.decrementInUse();
+    public void onViewVisibilityChanged(int visibility) {
+        if (visibility == View.VISIBLE) {
+            onViewShown();
+        } else {
+            onViewHidden();
         }
     }
 
@@ -319,6 +305,33 @@ public abstract class TargetImageViewHandlerBase<T extends ImageView> implements
     @Override
     public void onViewDetachedFromWindow(View v) {
         onViewHidden();
+    }
+
+    /**
+     * On image view shown verify that the set bitmap is still valid for the image view (not reused).<br>
+     * If valid: set in-use on the bitmap.<br>
+     * If not valid: execute image load request to re-load the image needed for the image view.<br>
+     */
+    protected void onViewShown() {
+        if (mReusableBitmap != null && !mInUse) {
+            if (TextUtils.equals(mReusableBitmap.getUri(), mUrl)) {
+                mInUse = true;
+                mReusableBitmap.incrementInUse();
+            } else {
+                FILLogger.info("ImageView attachToWindow uses recycled bitmap, reload... [{}]", mReusableBitmap);
+                loadImage(mUrl, mSpecKey, null, true);
+            }
+        }
+    }
+
+    /**
+     * On image view hidden set the used bitmap to not-in-use so it can be reused.
+     */
+    protected void onViewHidden() {
+        if (mReusableBitmap != null && mInUse) {
+            mInUse = false;
+            mReusableBitmap.decrementInUse();
+        }
     }
 
     /**
