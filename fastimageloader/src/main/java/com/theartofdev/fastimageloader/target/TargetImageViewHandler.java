@@ -60,11 +60,6 @@ public class TargetImageViewHandler implements Target, View.OnAttachStateChangeL
     protected final ImageView mImageView;
 
     /**
-     * If to use drawable on the loaded image or set the bitmap directly
-     */
-    protected final boolean mUseDrawable;
-
-    /**
      * The URL source of the image
      */
     protected String mUrl;
@@ -116,27 +111,12 @@ public class TargetImageViewHandler implements Target, View.OnAttachStateChangeL
     //endregion
 
     /**
-     * Default to use drawable.
-     *
      * @param imageView The image view to handle.
      */
     public TargetImageViewHandler(ImageView imageView) {
-        this(imageView, true);
-    }
-
-    /**
-     * Using drawable allows for fade-in effect and debug indicator but some custom views
-     * may require direct bitmap setting.
-     *
-     * @param imageView The image view to handle.
-     * @param useDrawable If to use drawable on the loaded image or set the bitmap directly.
-     */
-    public TargetImageViewHandler(ImageView imageView, boolean useDrawable) {
         FILUtils.notNull(imageView, "imageView");
 
         mImageView = imageView;
-        mUseDrawable = useDrawable;
-
         mImageView.addOnAttachStateChangeListener(this);
     }
 
@@ -152,7 +132,9 @@ public class TargetImageViewHandler implements Target, View.OnAttachStateChangeL
      */
     public boolean isAnimating() {
         Drawable drawable = mImageView.getDrawable();
-        return drawable != null && drawable instanceof TargetDrawable && ((TargetDrawable) drawable).isAnimating();
+        return drawable != null &&
+                drawable instanceof AnimatingTargetDrawable &&
+                ((AnimatingTargetDrawable) drawable).isAnimating();
     }
 
     /**
@@ -264,7 +246,7 @@ public class TargetImageViewHandler implements Target, View.OnAttachStateChangeL
     public void onBitmapDownloading(long downloaded, long contentLength) {
         mDownloaded = downloaded;
         mContentLength = contentLength;
-        if (mInvalidateOnDownloading && mImageView != null) {
+        if (mInvalidateOnDownloading) {
             mImageView.postInvalidate();
         }
     }
@@ -368,29 +350,24 @@ public class TargetImageViewHandler implements Target, View.OnAttachStateChangeL
      * Called on loading or failure.
      */
     protected void clearImage() {
-        if (mUseDrawable) {
-            mImageView.setImageDrawable(null);
-        } else {
-            mImageView.setImageBitmap(null);
-        }
+        mImageView.setImageDrawable(null);
     }
 
     /**
      * Called to set the loaded image bitmap in the handled image view.
      */
     protected void setImage(ReusableBitmap bitmap, LoadedFrom from) {
-        if (mUseDrawable) {
-            TargetDrawable drawable = new TargetDrawable(bitmap.getBitmap(), from, mRounded, from == LoadedFrom.NETWORK && mImageView.getDrawable() == null);
-            mImageView.setImageDrawable(drawable);
-        } else {
-            mImageView.setImageBitmap(bitmap.getBitmap());
-        }
+        boolean showFade = from == LoadedFrom.NETWORK && mImageView.getDrawable() == null;
+        Drawable drawable = mRounded
+                ? new TargetCircleDrawable(bitmap.getBitmap(), from, showFade)
+                : new TargetDrawable(bitmap.getBitmap(), from, showFade);
+        mImageView.setImageDrawable(drawable);
     }
 
     /**
      * Clear the currently used bitmap and mark it as not in use.
      */
-    private void clearUsedBitmap(boolean full) {
+    protected void clearUsedBitmap(boolean full) {
         if (full) {
             mUrl = null;
             mSpecKey = null;

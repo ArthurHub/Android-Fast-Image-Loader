@@ -13,14 +13,9 @@
 package com.theartofdev.fastimageloader.target;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapShader;
 import android.graphics.Canvas;
-import android.graphics.ColorFilter;
-import android.graphics.Matrix;
-import android.graphics.Paint;
 import android.graphics.Rect;
-import android.graphics.Shader;
-import android.graphics.drawable.Drawable;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.SystemClock;
 
 import com.theartofdev.fastimageloader.LoadedFrom;
@@ -28,37 +23,16 @@ import com.theartofdev.fastimageloader.impl.util.FILUtils;
 
 /**
  * Drawable used for loaded images with additional capabilities:<br>
- * 1. scale the image to the set rectangle.<br>
- * 2. render round image<br>
- * 3. fade effect for showing the image at start.<br>
- * 4. showing indicator if the image was loading from memory/disk/network.<br>
+ * 1. fade effect for showing the image at start.<br>
+ * 2. showing indicator if the image was loading from memory/disk/network.<br>
  */
-public class TargetDrawable extends Drawable {
+public class TargetDrawable extends BitmapDrawable implements AnimatingTargetDrawable {
 
     //region: Fields and Consts
 
     private static final float FADE_DURATION = 200f;
 
-    protected final Paint mPaint;
-
-    protected final Matrix mMatrix = new Matrix();
-
     protected final LoadedFrom mLoadedFrom;
-
-    protected final float mBitmapWidth;
-
-    protected final float mBitmapHeight;
-
-    protected float mScale = -1;
-
-    protected int mTranslateX = -1;
-
-    protected int mTranslateY = -1;
-
-    /**
-     * If to draw the bitmap as a circle
-     */
-    protected boolean mRounded;
 
     /**
      * used for fade animation progress
@@ -69,76 +43,20 @@ public class TargetDrawable extends Drawable {
     /**
      * @param bitmap the bitmap to render in the drawable
      * @param loadedFrom where the bitmap was loaded from MEMORY/DISK/NETWORK for debug indicator
-     * @param rounded is to render the bitmap rounded or rectangle
      * @param showFade if to show fade effect starting from now
      */
-    public TargetDrawable(Bitmap bitmap, LoadedFrom loadedFrom, boolean rounded, boolean showFade) {
+    public TargetDrawable(Bitmap bitmap, LoadedFrom loadedFrom, boolean showFade) {
+        super(bitmap);
         FILUtils.notNull(bitmap, "bitmap");
 
         mLoadedFrom = loadedFrom;
-        mRounded = rounded;
-
-        mBitmapWidth = bitmap.getWidth();
-        mBitmapHeight = bitmap.getHeight();
-
-        mPaint = new Paint();
-        mPaint.setAntiAlias(true);
-        mPaint.setShader(new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP));
 
         mStartTimeMillis = showFade ? SystemClock.uptimeMillis() : 0;
     }
 
-    /**
-     * Is the drawable is currently animating fade-in of the image
-     */
+    @Override
     public boolean isAnimating() {
         return mStartTimeMillis > 0;
-    }
-
-    @Override
-    public void setAlpha(int alpha) {
-
-    }
-
-    @Override
-    public void setColorFilter(ColorFilter cf) {
-
-    }
-
-    @Override
-    public int getOpacity() {
-        return 0;
-    }
-
-    /**
-     * {@inheritDoc}
-     * <p>
-     * On set of bounds update the transform matrix applied on the bitmap to fit into the bounds.<br>
-     * - Scale to fit the dimensions of the image into the bounded rectangle.<br>
-     * - Offset the rendered bitmap to center the dimension that is larger\smaller than the bounds.
-     * </p>
-     */
-    @Override
-    public void setBounds(int left, int top, int right, int bottom) {
-        super.setBounds(left, top, right, bottom);
-        float scale = Math.max((right - left) / mBitmapWidth, (bottom - top) / mBitmapHeight);
-        int translateX = (int) (((right - left) - mBitmapWidth * scale) / 2);
-        int translateY = (int) (((bottom - top) - mBitmapHeight * scale) / 2);
-
-        if (Math.abs(scale - mScale) > 0.01 || translateX != mTranslateX || translateY != mTranslateY) {
-            mScale = scale;
-            mTranslateX = translateX;
-            mTranslateY = translateY;
-            if (mScale != 0 || mTranslateX != 0 || mTranslateY != 0) {
-                if (mScale != 0)
-                    mMatrix.setScale(mScale, mScale);
-                if (mTranslateX != 0 || mTranslateY != 0)
-                    mMatrix.postTranslate(mTranslateX, mTranslateY);
-                mPaint.getShader().setLocalMatrix(mMatrix);
-            } else {
-                mPaint.getShader().setLocalMatrix(null);
-            }
-        }
     }
 
     /**
@@ -153,14 +71,14 @@ public class TargetDrawable extends Drawable {
     public void draw(Canvas canvas) {
         float normalized = (SystemClock.uptimeMillis() - mStartTimeMillis) / FADE_DURATION;
         if (normalized >= 1f) {
-            drawBitmap(canvas);
+            super.draw(canvas);
             if (mStartTimeMillis > 0)
                 invalidateSelf();
             mStartTimeMillis = 0;
         } else {
-            mPaint.setAlpha((int) (255 * normalized));
-            drawBitmap(canvas);
-            mPaint.setAlpha(255);
+            setAlpha((int) (255 * normalized));
+            super.draw(canvas);
+            setAlpha(255);
             invalidateSelf();
         }
 
@@ -170,16 +88,7 @@ public class TargetDrawable extends Drawable {
         }
     }
 
-    /**
-     * Draw the bitmap on the canvas either rounded or rectangular.
-     */
-    protected void drawBitmap(Canvas canvas) {
-        Rect bounds = getBounds();
-        FILUtils.rectF.set(0, 0, bounds.width(), bounds.height());
-        if (mRounded) {
-            canvas.drawRoundRect(FILUtils.rectF, bounds.width() / 2, bounds.height() / 2, mPaint);
-        } else {
-            canvas.drawRect(FILUtils.rectF, mPaint);
-        }
-    }
+    //region: Inner class: Animated
+
+    //endregion
 }

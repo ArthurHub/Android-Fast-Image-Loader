@@ -77,7 +77,7 @@ public class ZoomImageView extends PhotoView {
          * @param imageView The image view to handle.
          */
         public ZoomTargetImageViewHandler(ImageView imageView) {
-            super(imageView, false);
+            super(imageView);
             setInvalidateOnDownloading(true);
         }
 
