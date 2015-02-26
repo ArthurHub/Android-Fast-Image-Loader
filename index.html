@@ -41,10 +41,24 @@
 <h3>
 <a id="quick-start" class="anchor" href="#quick-start" aria-hidden="true"><span class="octicon octicon-link"></span></a>Quick Start</h3>
 
-<pre><code>compile  'com.theartofdev:fast-image-loader:0.8.+'
-</code></pre>
+<div class="highlight highlight-groovy"><pre>compile  <span class="pl-s1"><span class="pl-pds">'</span>com.theartofdev:fast-image-loader:0.8.+<span class="pl-pds">'</span></span></pre></div>
 
-<p>soon…   </p>
+<p>.</p>
+
+<div class="highlight highlight-java"><pre><span class="pl-c">// initialize fast image loader to use thumbor image service</span>
+<span class="pl-stj">FastImageLoader</span><span class="pl-k">.</span>init(application)
+        .setDefaultImageServiceAdapter(<span class="pl-k">new</span> <span class="pl-stj">ThumborAdapter</span>(<span class="pl-s1"><span class="pl-pds">"</span>http://myThumbor.com/<span class="pl-pds">"</span></span>))
+        .setDebugIndicator(<span class="pl-c1">true</span>);
+
+<span class="pl-c">// create image loading specification with specific image dimensions</span>
+<span class="pl-stj">FastImageLoader</span><span class="pl-k">.</span>buildSpec(<span class="pl-s1"><span class="pl-pds">"</span>ImageSpec<span class="pl-pds">"</span></span>)
+        .setDimensionByResource(<span class="pl-stj">R</span><span class="pl-k">.</span>dimen<span class="pl-k">.</span>imageWidth, <span class="pl-stj">R</span><span class="pl-k">.</span>dimen<span class="pl-k">.</span>imageHeight)
+        .build();</pre></div>
+
+<p>.</p>
+
+<div class="highlight highlight-java"><pre><span class="pl-c">// replace ImageView with TargetImageView in the UI</span>
+((<span class="pl-stj">TargetImageView</span>)findViewById(<span class="pl-stj">R</span><span class="pl-k">.</span>id<span class="pl-k">.</span>imageView))<span class="pl-k">.</span>loadImage(imageUri, <span class="pl-s1"><span class="pl-pds">"</span>ImageSpec<span class="pl-pds">"</span></span>);</pre></div>
 
 <h3>
 <a id="features" class="anchor" href="#features" aria-hidden="true"><span class="octicon octicon-link"></span></a>Features</h3>
@@ -70,7 +84,7 @@
 </li>
 <li>Smart prioritization and canceling of image load requests, more than list item reuse.<br>
 </li>
-<li>Placeholder, round rendering, fade-in animation support.<br>
+<li>Placeholder, round rendering, download progress, fade-in animation support.<br>
 </li>
 <li>Extensive extensibility.<br>
 </li>
@@ -115,8 +129,8 @@
 <a id="license" class="anchor" href="#license" aria-hidden="true"><span class="octicon octicon-link"></span></a>License</h3>
 
 <p>The MIT License (MIT)<br>
-  Copyright (c) 2015 Arthur Teplitzki<br>
-  See <a href="https://github.com/ArthurHub/Android-Fast-Image-Loader/blob/master/license.md">license.md</a>     </p>
+Copyright (c) 2015 Arthur Teplitzki<br>
+See <a href="https://github.com/ArthurHub/Android-Fast-Image-Loader/blob/master/license.md">license.md</a>     </p>
       </section>
     </div>
 
@@ -128,7 +142,17 @@
       </footer>
     </div>
 
-    
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-52577707-5");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
 
   </body>
 </html>
