@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Android Fast Image Loader : New approach to image loading to provide the fastest and most lightweight image handling possible.">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Android Fast Image Loader</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/ArthurHub/Android-Fast-Image-Loader">View on GitHub</a>
+
+          <h1 id="project_title">Android Fast Image Loader</h1>
+          <h2 id="project_tagline">New approach to image loading to provide the fastest and most lightweight image handling possible.</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/ArthurHub/Android-Fast-Image-Loader/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/ArthurHub/Android-Fast-Image-Loader/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a id="android-fast-image-loader" class="anchor" href="#android-fast-image-loader" aria-hidden="true"><span class="octicon octicon-link"></span></a>Android Fast Image Loader</h1>
+
+<p>New approach to image loading that overcomes Android memory management limitation by leveraging size, density, config, aggressive bitmap reuse and super-fast disk loading, to provide the fastest and most lightweight image handling possible.   </p>
+
+<p>This library requires fine-tuning work, if you are just looking for simple library I would recommend: <a href="http://square.github.io/picasso/">Picasso</a>, <a href="https://github.com/bumptech/glide">Glide</a>, <a href="https://github.com/nostra13/Android-Universal-Image-Loader">Universal Image Loader</a> or <a href="https://github.com/mcxiaoke/android-volley">Volley</a>.   </p>
+
+<h3>
+<a id="quick-start" class="anchor" href="#quick-start" aria-hidden="true"><span class="octicon octicon-link"></span></a>Quick Start</h3>
+
+<pre><code>compile  'com.theartofdev:fast-image-loader:0.8.+'
+</code></pre>
+
+<p>soon…   </p>
+
+<h3>
+<a id="features" class="anchor" href="#features" aria-hidden="true"><span class="octicon octicon-link"></span></a>Features</h3>
+
+<ul>
+<li>Smart memory and disk caching.<br>
+</li>
+<li>Super-fast, asynchronous, disk cache loading.<br>
+</li>
+<li>Asynchronous and parallel download.<br>
+</li>
+<li>Low memory footprint and optimizations for memory pressure.<br>
+</li>
+<li>Image services support ( <a href="https://github.com/thumbor/thumbor">Thumbor </a>, <a href="http://www.imgix.com/">imgIX </a>, etc.)<br>
+</li>
+<li>Highly customizable specification loading (size/format/density/bitmap config/etc.)<br>
+</li>
+<li>Alternative specification loading.<br>
+</li>
+<li>Pre-fetch download images.<br>
+</li>
+<li>Advanced bitmaps reuse using inBitmap, reusing bitmaps on destroy and invisibility.<br>
+</li>
+<li>Smart prioritization and canceling of image load requests, more than list item reuse.<br>
+</li>
+<li>Placeholder, round rendering, fade-in animation support.<br>
+</li>
+<li>Extensive extensibility.<br>
+</li>
+<li>Logging and analytics hooks.<br>
+</li>
+<li>Debug indicator (loaded from Memory/Disk/Network).<br>
+</li>
+</ul>
+
+<h3>
+<a id="leverage-size-density-and-config" class="anchor" href="#leverage-size-density-and-config" aria-hidden="true"><span class="octicon octicon-link"></span></a>Leverage Size, Density and Config</h3>
+
+<p>There is a little benefit to download 1500x1500 pixel (450 ppi) image that will take <strong>8.5 MB</strong>  of memory to show 500x500 preview in a feed where the user scrolls quickly. It will be much better to decrees the image density by half and use 565 bitmap config lowering the memory footprint to <strong>1 MB</strong> , empirically, without loss of quality.   </p>
+
+<h3>
+<a id="aggressive-bitmap-reuse" class="anchor" href="#aggressive-bitmap-reuse" aria-hidden="true"><span class="octicon octicon-link"></span></a>Aggressive bitmap reuse</h3>
+
+<p>To limit the amount of memory allocated and GC work the library reused bitmaps as soon as they are no longer visible in the UI.   </p>
+
+<ul>
+<li>Activity/Fragment images that have not been destroyed but are no longer visible (onStop has been called) are eligible for bitmap reuse.<br>
+</li>
+<li>When the Activity/Fragment becomes visible again, if the bitmap was reused, the image is reload.<br>
+</li>
+<li>After initial allocations, bitmap reuse prevents almost all subsequent allocations.<br>
+</li>
+<li>High disk loading performance make this process seamless.<br>
+</li>
+</ul>
+
+<h3>
+<a id="high-disk-cache-performance" class="anchor" href="#high-disk-cache-performance" aria-hidden="true"><span class="octicon octicon-link"></span></a>High disk cache performance</h3>
+
+<ul>
+<li>Up to 5-8 times faster load of cached images from disk.<br>
+</li>
+<li>Will add benchmark comparison…<br>
+</li>
+</ul>
+
+<h3>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span class="octicon octicon-link"></span></a>License</h3>
+
+<p>The MIT License (MIT)<br>
+  Copyright (c) 2015 Arthur Teplitzki<br>
+  See <a href="https://github.com/ArthurHub/Android-Fast-Image-Loader/blob/master/license.md">license.md</a>     </p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Android Fast Image Loader maintained by <a href="https://github.com/ArthurHub">ArthurHub</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
