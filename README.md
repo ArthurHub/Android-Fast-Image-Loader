@@ -4,11 +4,26 @@ New approach to image loading that overcomes Android memory management limitatio
 This library requires fine-tuning work, if you are just looking for simple library I would recommend: [Picasso][1], [Glide][2], [Universal Image Loader][3] or [Volley][4].   
 
 ### Quick Start   
-```      
+```groovy      
 compile  'com.theartofdev:fast-image-loader:0.8.+'
 ```   
 
-soon…   
+```java
+// initialize fast image loader to use thumbor image service
+FastImageLoader.init(application)
+        .setDefaultImageServiceAdapter(new ThumborAdapter("http://myThumbor.com/"))
+        .setDebugIndicator(true);
+
+// create image loading specification with specific image dimensions
+FastImageLoader.buildSpec("ImageSpec")
+        .setDimensionByResource(R.dimen.imageWidth, R.dimen.imageHeight)
+        .build();
+```
+
+```java
+// replace ImageView with TargetImageView in the UI
+((TargetImageView)findViewById(R.id.imageView)).loadImage(imageUri, "ImageSpec");
+```
 
 ### Features   
  
@@ -22,7 +37,7 @@ soon…
 * Pre-fetch download images.  
 * Advanced bitmaps reuse using inBitmap, reusing bitmaps on destroy and invisibility.  
 * Smart prioritization and canceling of image load requests, more than list item reuse.  
-* Placeholder, round rendering, fade-in animation support.  
+* Placeholder, round rendering, download progress, fade-in animation support.  
 * Extensive extensibility.  
 * Logging and analytics hooks.  
 * Debug indicator (loaded from Memory/Disk/Network).    
